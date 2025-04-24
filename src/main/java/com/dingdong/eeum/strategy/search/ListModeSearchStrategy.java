@@ -9,6 +9,7 @@ import com.dingdong.eeum.dto.response.ScrollResponseDto;
 import com.dingdong.eeum.dto.response.SearchResult;
 import com.dingdong.eeum.model.Place;
 import com.dingdong.eeum.repository.PlaceRepository;
+import com.dingdong.eeum.utils.FieldValueExtractor;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
