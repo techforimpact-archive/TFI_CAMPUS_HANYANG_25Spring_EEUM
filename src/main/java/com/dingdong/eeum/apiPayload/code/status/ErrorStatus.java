@@ -28,8 +28,9 @@ public enum ErrorStatus implements BaseErrorCode {
     PLACE_COORDINATES_REQUIRED(HttpStatus.BAD_REQUEST, "PLACE400_4", "위치 정보(경도, 위도)가 필요합니다."),
     PLACE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "PLACE403_1", "해당 장소에 접근 권한이 없습니다."),
     PLACE_ALREADY_EXISTS(HttpStatus.CONFLICT, "PLACE409_1", "이미 존재하는 장소입니다."),
-    PLACE_REVIEW_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "PLACE400_5", "해당 장소에 리뷰를 작성할 권한이 없습니다.");
-
+    PLACE_REVIEW_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "PLACE400_5", "해당 장소에 리뷰를 작성할 권한이 없습니다."),
+    INVALID_SEARCH_MODE(HttpStatus.BAD_REQUEST, "PLACE400_6", "유효하지 않은 검색 모드입니다."),
+    INVALID_PARAMETERS(HttpStatus.BAD_REQUEST, "PLACE400_7", "검색에 필요한 필수 파라미터가 누락되었습니다.");
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
