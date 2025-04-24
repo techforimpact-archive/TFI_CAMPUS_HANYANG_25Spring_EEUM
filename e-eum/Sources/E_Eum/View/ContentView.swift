@@ -33,6 +33,6 @@ struct ContentView: View {
             .tag(ContentTab.settings)
         }
         .environment(viewModel)
-        .preferredColorScheme(appearance == "dark" ? .dark : appearance == "light" ? .light : nil)
+        .preferredColorScheme(.light)
     }
 }
