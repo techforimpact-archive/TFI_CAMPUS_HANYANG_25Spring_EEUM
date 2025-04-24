@@ -39,17 +39,18 @@ public class MapController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "장소 검색 성공 (MAP 모드)",
-                    content = @Content(
-                            schema = @Schema(implementation = MapSearchResultDto.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "장소 검색 성공 (LIST 모드)",
-                    content = @Content(
-                            schema = @Schema(implementation = ListSearchResultDto.class)
-                    )
+                    description = "장소 검색 성공",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(
+                                            oneOf = {
+                                                    MapSearchResultDto.class,
+                                                    ListSearchResultDto.class
+                                            }
+                                    )
+                            )
+                    }
             ),
             @ApiResponse(
                     responseCode = "400",
