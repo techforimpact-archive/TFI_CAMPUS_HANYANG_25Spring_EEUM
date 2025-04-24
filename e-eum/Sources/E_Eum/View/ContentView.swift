@@ -1,11 +1,11 @@
 import SwiftUI
 
 enum ContentTab: String, Hashable {
-    case welcome, home, settings
+    case ddingdong, home, settings
 }
 
 struct ContentView: View {
-    @AppStorage("tab") var tab = ContentTab.welcome
+    @AppStorage("tab") var tab = ContentTab.ddingdong
     @AppStorage("name") var welcomeName = "Skipper"
     @AppStorage("appearance") var appearance = ""
     @State var viewModel = ViewModel()
@@ -13,23 +13,23 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $tab) {
             NavigationStack {
-                WelcomeView(welcomeName: $welcomeName)
+                DdingdongView()
             }
-            .tabItem { Label("Welcome", systemImage: "heart.fill") }
-            .tag(ContentTab.welcome)
+            .tabItem { Label("띵동", systemImage: "house.fill") }
+            .tag(ContentTab.ddingdong)
 
             NavigationStack {
                 ItemListView()
                     .navigationTitle(Text("\(viewModel.items.count) Items"))
             }
-            .tabItem { Label("Home", systemImage: "house.fill") }
+            .tabItem { Label("지도", systemImage: "map.fill") }
             .tag(ContentTab.home)
 
             NavigationStack {
                 SettingsView(appearance: $appearance, welcomeName: $welcomeName)
                     .navigationTitle("Settings")
             }
-            .tabItem { Label("Settings", systemImage: "gearshape.fill") }
+            .tabItem { Label("설정", systemImage: "gearshape.fill") }
             .tag(ContentTab.settings)
         }
         .environment(viewModel)
