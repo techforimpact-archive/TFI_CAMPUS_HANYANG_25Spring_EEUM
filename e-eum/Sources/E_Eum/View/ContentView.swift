@@ -11,11 +11,19 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $tab) {
             InfoView()
-                .tabItem { Label("띵동", systemImage: "house.fill") }
+                .tabItem {
+                    Label("띵동", systemImage: "house")
+                }
                 .tag(ContentTab.info)
             
             PlaceView()
-                .tabItem { Label("지도", systemImage: "map.fill") }
+                .tabItem {
+                    #if SKIP
+                    Label("장소", systemImage: "Icons.Outlined.Place")
+                    #else
+                    Label("장소", systemImage: "mappin.and.ellipse")
+                    #endif
+                }
                 .tag(ContentTab.place)
         }
         .preferredColorScheme(.light)
