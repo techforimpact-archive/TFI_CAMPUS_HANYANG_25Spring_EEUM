@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		014AAC2C2DBCFE0C00841559 /* SkipDevice in Frameworks */ = {isa = PBXBuildFile; productRef = 014AAC2B2DBCFE0C00841559 /* SkipDevice */; };
+		014AAC2F2DBCFF7E00841559 /* SkipKit in Frameworks */ = {isa = PBXBuildFile; productRef = 014AAC2E2DBCFF7E00841559 /* SkipKit */; };
 		491F27822DA55B72004926EE /* E_Eum in Frameworks */ = {isa = PBXBuildFile; productRef = 491F27812DA55B72004926EE /* E_Eum */; };
 		491F27832DA55B72004926EE /* E_Eum in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 491F27812DA55B72004926EE /* E_Eum */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		499CD43B2AC5B799001AE8D8 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F90C2B2A52156200F06D93 /* Main.swift */; };
@@ -45,7 +47,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				014AAC2F2DBCFF7E00841559 /* SkipKit in Frameworks */,
 				491F27822DA55B72004926EE /* E_Eum in Frameworks */,
+				014AAC2C2DBCFE0C00841559 /* SkipDevice in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +116,8 @@
 			name = "E_Eum App";
 			packageProductDependencies = (
 				491F27812DA55B72004926EE /* E_Eum */,
+				014AAC2B2DBCFE0C00841559 /* SkipDevice */,
+				014AAC2E2DBCFF7E00841559 /* SkipKit */,
 			);
 			productName = App;
 			productReference = 496BDBEB2B89A47800C09264 /* E_Eum.app */;
@@ -136,6 +142,8 @@
 			);
 			mainGroup = 49F90C1F2A52156200F06D93;
 			packageReferences = (
+				014AAC2A2DBCFE0C00841559 /* XCRemoteSwiftPackageReference "skip-device" */,
+				014AAC2D2DBCFF7E00841559 /* XCRemoteSwiftPackageReference "skip-kit" */,
 			);
 			productRefGroup = 496BDBEC2B89A47800C09264 /* Products */;
 			projectDirPath = "";
@@ -288,7 +296,36 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		014AAC2A2DBCFE0C00841559 /* XCRemoteSwiftPackageReference "skip-device" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/skiptools/skip-device";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.0;
+			};
+		};
+		014AAC2D2DBCFF7E00841559 /* XCRemoteSwiftPackageReference "skip-kit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/skiptools/skip-kit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		014AAC2B2DBCFE0C00841559 /* SkipDevice */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 014AAC2A2DBCFE0C00841559 /* XCRemoteSwiftPackageReference "skip-device" */;
+			productName = SkipDevice;
+		};
+		014AAC2E2DBCFF7E00841559 /* SkipKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 014AAC2D2DBCFF7E00841559 /* XCRemoteSwiftPackageReference "skip-kit" */;
+			productName = SkipKit;
+		};
 		491F27812DA55B72004926EE /* E_Eum */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = E_Eum;
