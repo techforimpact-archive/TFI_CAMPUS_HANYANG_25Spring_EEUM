@@ -140,3 +140,4 @@ xcuserdata
 *.xcuserstate
 *.xcconfig
 *.env
+secrets.properties

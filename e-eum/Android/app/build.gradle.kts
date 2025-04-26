@@ -29,6 +29,14 @@ android {
         }
     }
 
+    val localProperties = Properties()
+    val localPropertiesFile = File(rootDir, "secrets.properties")
+    if (localPropertiesFile.exists() && localPropertiesFile.isFile) {
+        localPropertiesFile.inputStream().use {
+            localProperties.load(it)
+        }
+    }
+
     defaultConfig {
         minSdk = libs.versions.android.sdk.min.get().toInt()
         targetSdk = libs.versions.android.sdk.compile.get().toInt()
@@ -68,6 +76,14 @@ android {
             isShrinkResources = true
             isDebuggable = false // can be set to true for debugging release build, but needs to be false when uploading to store
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            getByName("debug") {
+                val googleMapsApiKey = localProperties.getProperty("GOOGLE_MAP_API_KEY") ?: ""
+                resValue("string", "google_maps_key", googleMapsApiKey)
+            }
+            getByName("release") {
+                val googleMapsApiKey = localProperties.getProperty("GOOGLE_MAP_API_KEY") ?: ""
+                resValue("string", "google_maps_key", googleMapsApiKey)
+            }
         }
     }
 }
