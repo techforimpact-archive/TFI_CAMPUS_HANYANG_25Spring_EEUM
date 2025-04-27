@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PlaceListView: View {
     @State private var places: [PlaceUIO] = PlaceUIO.samples
+    @State private var showDetail: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -15,13 +16,16 @@ struct PlaceListView: View {
                 
                 ScrollView {
                     ForEach(places) { place in
-                        NavigationLink {
-                            PlaceDetailView()
+                        Button {
+                            showDetail = true
                         } label: {
                             PlaceListCell(place: place)
                         }
                     }
                 }
+            }
+            .sheet(isPresented: $showDetail) {
+                PlaceDetailView()
             }
         }
     }
