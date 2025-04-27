@@ -19,9 +19,9 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
     
     var host: String { return AppEnvironment.serverIPAddress }
     
-    var port: Int? { return 8080 }
+    var port: Int { return 8080 }
     
-    var path: [String]? {
+    var path: [String] {
         switch self {
         case .getAllPlaces:
             return ["v1", "places"]
