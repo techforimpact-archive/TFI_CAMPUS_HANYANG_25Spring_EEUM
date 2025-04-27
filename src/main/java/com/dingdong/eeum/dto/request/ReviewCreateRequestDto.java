@@ -15,7 +15,7 @@ public class ReviewCreateRequestDto {
     @Size(max = 500, message = "리뷰 내용은 500자 이내로 작성해주세요.")
     private String content;
 
-    @Schema(description = "평점 목록 (질문ID:평점)", example = "{\"id1\":5, \"id2\":4, \"id3\":4}")
+    @Schema(description = "평점 목록 (질문ID:평점)", example = "{\"680df9895e643770c31e8dfa\":5, \"680df9895e643770c31e8dfb\":4, \"680df9895e643770c31e8dfc\":4, \"680df9895e643770c31e8dfd\":4, \"680df9895e643770c31e8dfe\":4}")
     @NotEmpty(message = "최소 하나 이상의 평점이 필요합니다.")
     private Map<String, Integer> ratings;
 
