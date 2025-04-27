@@ -5,7 +5,7 @@ import SkipDevice
 struct PlaceMapView: View {
     @State private var latitude: Double? = nil
     @State private var longitude: Double? = nil
-    @State private var places: [PlaceResponseDTO] = []
+    @State private var places: [PlaceUIO] = PlaceUIO.samples
     
     var body: some View {
         VStack {

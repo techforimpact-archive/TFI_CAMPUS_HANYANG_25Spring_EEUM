@@ -5,7 +5,7 @@ import MapKit
 struct MapiOSView: View {
     let latitude: Double
     let longitude: Double
-    let places: [PlaceResponseDTO]
+    let places: [PlaceUIO]
     
     var body: some View {
         if #available(iOS 17.0, macOS 14.0, *) {

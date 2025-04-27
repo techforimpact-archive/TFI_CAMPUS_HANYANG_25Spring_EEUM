@@ -1,6 +1,6 @@
 import Foundation
 
-struct PlaceResponseDTO: Decodable, Identifiable {
+struct PlaceResponseDTO: Decodable {
     let id: String
     let name: String
     let longitude: Double

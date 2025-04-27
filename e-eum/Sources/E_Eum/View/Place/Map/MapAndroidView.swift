@@ -7,7 +7,7 @@ import com.google.android.gms.maps.model.LatLng
 struct MapAndroidView: View {
     let latitude: Double
     let longitude: Double
-    let places: [PlaceResponseDTO]
+    let places: [PlaceUIO]
     
     var body: some View {
         ComposeView { ctx in
