@@ -2,6 +2,7 @@ package com.dingdong.eeum.model;
 
 import com.dingdong.eeum.constant.PlaceCategory;
 import com.dingdong.eeum.constant.PlaceStatus;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -62,8 +63,9 @@ public class Place {
     }
 
     @Getter
+    @AllArgsConstructor
     public static class ReviewStats {
-        private int count;
+        private long count;
         private double temperature;
     }
 }
