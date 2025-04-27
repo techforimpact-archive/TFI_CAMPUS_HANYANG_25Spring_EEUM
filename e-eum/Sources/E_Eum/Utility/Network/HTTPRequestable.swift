@@ -9,7 +9,7 @@ protocol HTTPRequestable: URLComposable {
 }
 
 extension HTTPRequestable {
-    var scheme: String { "http" }
+    var scheme: String { "https" }
     
     func asURLRequest() throws -> URLRequest {
         let url = try configureURL()

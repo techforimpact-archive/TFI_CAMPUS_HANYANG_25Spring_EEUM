@@ -3,7 +3,7 @@ import Foundation
 protocol URLComposable {
     var scheme: String { get }
     var host: String { get }
-    var port: Int { get }
+    var port: Int? { get }
     var path: [String] { get }
     var queryItems: [URLQueryItem]? { get }
     
@@ -16,7 +16,9 @@ extension URLComposable {
         
         components.scheme = scheme
         components.host = host
-        components.port = port
+        if let port = port {
+            components.port = port
+        }
         components.path = "/\(path.joined(separator: "/"))"
         components.queryItems = queryItems
         

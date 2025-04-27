@@ -19,7 +19,7 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
     
     var host: String { return AppEnvironment.serverIPAddress }
     
-    var port: Int { return 8080 }
+    var port: Int? { return nil }
     
     var path: [String] {
         switch self {
