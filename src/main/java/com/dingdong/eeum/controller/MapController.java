@@ -7,11 +7,16 @@ import com.dingdong.eeum.constant.PlaceCategory;
 import com.dingdong.eeum.constant.PlaceSearch;
 import com.dingdong.eeum.constant.PlaceStatus;
 import com.dingdong.eeum.dto.request.PlaceSearchDto;
+import com.dingdong.eeum.dto.request.ReviewCreateRequestDto;
 import com.dingdong.eeum.dto.response.PlaceDetailResponseDto;
+import com.dingdong.eeum.dto.response.ReviewResponseDto;
+import com.dingdong.eeum.dto.response.ScrollResponseDto;
 import com.dingdong.eeum.dto.response.SearchResult;
 import com.dingdong.eeum.dto.response.swagger.ListSearchResultDto;
 import com.dingdong.eeum.dto.response.swagger.MapSearchResultDto;
+import com.dingdong.eeum.dto.response.swagger.ReviewGetResultDto;
 import com.dingdong.eeum.service.MapService;
+import com.dingdong.eeum.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,6 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
@@ -27,10 +33,11 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1")
+@RequestMapping("/v1/places")
 @Tag(name = "장소 API", description = "장소 조회 관련 API")
 public class MapController {
     private final MapService mapService;
+    private final ReviewService reviewService;
 
     @Operation(
             summary = "장소 검색",
@@ -67,7 +74,7 @@ public class MapController {
                     )
             )
     })
-    @GetMapping("/places")
+    @GetMapping("/")
     public Response<?> getPlaces(
             @Parameter(description = "검색 모드 (MAP: 지도 모드, LIST: 목록 모드)", example = "MAP", required = true)
             @RequestParam PlaceSearch mode,
@@ -166,9 +173,62 @@ public class MapController {
                     )
             )
     })
-    @GetMapping("/places/{placeId}")
+    @GetMapping("/{placeId}")
     public Response<PlaceDetailResponseDto> getPlaceById(@PathVariable String placeId) {
         PlaceDetailResponseDto place = mapService.findPlaceById(placeId);
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), place);
+    }
+
+    @Operation(
+            summary = "모든 리뷰 조회",
+            description = "장소 리뷰를 무한 스크롤로 조회합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "리뷰 목록 조회 성공",
+                    content = @Content(
+                            schema = @Schema(implementation = ReviewGetResultDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "장소를 찾을 수 없음",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "서버 오류",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            )
+    })
+    @GetMapping("/{placeId}/reviews")
+    public Response<ScrollResponseDto<ReviewResponseDto>> getReviews(
+            @Parameter(description = "장소 id", example = "60a7b1e7c0b6a82e9c1f2a3b")
+            @PathVariable String placeId,
+            @Parameter(description = "마지막 아이템 ID", example = "60a7b1e7c0b6a82e9c1f2a3b")
+            @RequestParam(required = false) String lastId,
+            @Parameter(description = "페이지 크기", example = "10")
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @Parameter(description = "정렬 기준", example = "reviewStats.temperature")
+            @RequestParam(required = false) String sortBy,
+            @Parameter(description = "정렬 방향", example = "DESC")
+            @RequestParam(required = false) Sort.Direction sortDirection
+    ) {
+        ScrollResponseDto<ReviewResponseDto> reviews = reviewService.getReviewsByPlaceId(placeId, lastId, size, sortBy, sortDirection);
+        return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), reviews);
+    }
+
+    @Operation(summary = "리뷰 생성", description = "장소에 대한 리뷰를 생성합니다.")
+    @PostMapping("/{placeId}/reviews")
+    public Response<ReviewResponseDto> createReview(
+            @PathVariable String placeId,
+            @RequestBody  @Valid ReviewCreateRequestDto requestDto) {
+        ReviewResponseDto review = reviewService.createReview(placeId, requestDto);
+        return new Response<>(true, SuccessStatus._CREATED.getCode(), SuccessStatus._CREATED.getMessage(), review);
     }
 }

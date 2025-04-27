@@ -24,7 +24,7 @@ public class PlaceDetailResponseDto {
     private String email;
     private String website;
     private double temperature;
-    private int reviewCount;
+    private long reviewCount;
     private PlaceStatus status;
     private boolean isVerified;
 
