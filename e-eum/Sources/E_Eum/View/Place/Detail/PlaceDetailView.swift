@@ -85,7 +85,3 @@ struct PlaceDetailView: View {
         }
     }
 }
-
-#Preview {
-    PlaceDetailView()
-}
