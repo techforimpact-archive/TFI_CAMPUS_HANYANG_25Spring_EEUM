@@ -66,7 +66,7 @@ extension PlaceDetailUIO {
         province: "서울특별시",
         city: "종로구",
         district: "종로1가",
-        categories: ["SHELTER"],
+        categories: ["SHELTER", "COUNSELING"],
         description: "위기 상황에 처한 여성과 아동을 위한 안전한 쉼터입니다. 심리 상담과 함께 법률 지원 서비스도 제공합니다.",
         phone: "02-345-6789",
         email: "help@shelter.example.com",
