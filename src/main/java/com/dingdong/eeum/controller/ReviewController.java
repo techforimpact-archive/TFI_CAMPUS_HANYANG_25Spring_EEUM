@@ -6,7 +6,7 @@ import com.dingdong.eeum.apiPayload.exception.response.Response;
 import com.dingdong.eeum.dto.request.ReviewUpdateRequestDto;
 import com.dingdong.eeum.dto.response.QuestionResponseDto;
 import com.dingdong.eeum.dto.response.ReviewResponseDto;
-import com.dingdong.eeum.dto.response.swagger.QuestionResultDto;
+import com.dingdong.eeum.dto.response.swagger.QuestionListResponseDto;
 import com.dingdong.eeum.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -148,7 +148,7 @@ public class ReviewController {
                     responseCode = "200",
                     description = "질문 조회 성공",
                     content = @Content(
-                            schema = @Schema(implementation = QuestionResultDto.class)
+                            schema = @Schema(implementation = QuestionListResponseDto.class)
                     )
             ),
             @ApiResponse(
@@ -161,7 +161,7 @@ public class ReviewController {
     })
     @GetMapping("/questions")
     public Response<List<QuestionResponseDto>> getDefaultQuestions() {
-        List<QuestionResponseDto> review = reviewService.findDefaultQuestions();
-        return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), review);
+        List<QuestionResponseDto> questions = reviewService.findDefaultQuestions();
+        return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), questions);
     }
 }

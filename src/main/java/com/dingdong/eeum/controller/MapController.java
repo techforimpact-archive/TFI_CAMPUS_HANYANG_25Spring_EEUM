@@ -12,9 +12,9 @@ import com.dingdong.eeum.dto.response.PlaceDetailResponseDto;
 import com.dingdong.eeum.dto.response.ReviewResponseDto;
 import com.dingdong.eeum.dto.response.ScrollResponseDto;
 import com.dingdong.eeum.dto.response.SearchResult;
-import com.dingdong.eeum.dto.response.swagger.ListSearchResultDto;
-import com.dingdong.eeum.dto.response.swagger.MapSearchResultDto;
-import com.dingdong.eeum.dto.response.swagger.ReviewGetResultDto;
+import com.dingdong.eeum.dto.response.swagger.ListSearchResponseDto;
+import com.dingdong.eeum.dto.response.swagger.MapSearchResponseDto;
+import com.dingdong.eeum.dto.response.swagger.ReviewGetResponseDto;
 import com.dingdong.eeum.service.MapService;
 import com.dingdong.eeum.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,8 +52,8 @@ public class MapController {
                                     mediaType = "application/json",
                                     schema = @Schema(
                                             oneOf = {
-                                                    MapSearchResultDto.class,
-                                                    ListSearchResultDto.class
+                                                    MapSearchResponseDto.class,
+                                                    ListSearchResponseDto.class
                                             }
                                     )
                             )
@@ -188,7 +188,7 @@ public class MapController {
                     responseCode = "200",
                     description = "리뷰 목록 조회 성공",
                     content = @Content(
-                            schema = @Schema(implementation = ReviewGetResultDto.class)
+                            schema = @Schema(implementation = ReviewGetResponseDto.class)
                     )
             ),
             @ApiResponse(
