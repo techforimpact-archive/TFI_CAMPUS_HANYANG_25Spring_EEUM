@@ -37,7 +37,7 @@ struct PlaceDetailUIO {
         self.verified = verified
     }
     
-    init(placeDetailDTO: PlaceDetailResponseDTO) {
+    init(placeDetailDTO: PlaceDetailDTO) {
         self.id = placeDetailDTO.id
         self.name = placeDetailDTO.name
         self.longitude = placeDetailDTO.longitude

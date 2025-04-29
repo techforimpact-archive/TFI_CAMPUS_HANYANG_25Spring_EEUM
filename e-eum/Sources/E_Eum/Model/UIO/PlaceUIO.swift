@@ -27,7 +27,7 @@ struct PlaceUIO: Identifiable {
         self.verified = verified
     }
     
-    init(placeDTO: PlaceResponseDTO) {
+    init(placeDTO: PlaceDTO) {
         self.id = placeDTO.id
         self.name = placeDTO.name
         self.longitude = placeDTO.longitude
