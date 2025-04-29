@@ -1,14 +1,13 @@
 import Foundation
 
 enum PlaceHTTPRequestRouter {
-    case getAllPlaces(mode: String, categories: [String])
     case getPlaceDetails(placeID: String)
 }
 
 extension PlaceHTTPRequestRouter: HTTPRequestable {
     var method: HTTPMethod {
         switch self {
-        case .getAllPlaces, .getPlaceDetails:
+        case .getPlaceDetails:
                 return .get
         }
     }
@@ -17,14 +16,12 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
     
     var body: Data? { return nil }
     
-    var host: String { return AppEnvironment.serverIPAddress }
+    var host: String { return AppEnvironment.serverAddress }
     
     var port: Int? { return nil }
     
     var path: [String] {
         switch self {
-        case .getAllPlaces:
-            return ["v1", "places"]
         case .getPlaceDetails(let placeID):
             return ["v1", "places", "\(placeID)"]
         }
@@ -32,8 +29,6 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
     
     var queryItems: [URLQueryItem]? {
         switch self {
-        case .getAllPlaces:
-            return nil
         case .getPlaceDetails:
             return nil
         }
