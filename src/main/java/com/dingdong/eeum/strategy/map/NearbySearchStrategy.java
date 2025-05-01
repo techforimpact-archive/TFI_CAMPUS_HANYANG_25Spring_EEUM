@@ -1,4 +1,4 @@
-package com.dingdong.eeum.strategy.search;
+package com.dingdong.eeum.strategy.map;
 
 
 import com.dingdong.eeum.apiPayload.code.status.ErrorStatus;
@@ -7,7 +7,6 @@ import com.dingdong.eeum.constant.PlaceStatus;
 import com.dingdong.eeum.dto.request.PlaceSearchDto;
 import com.dingdong.eeum.model.Place;
 import com.dingdong.eeum.repository.PlaceRepository;
-import com.dingdong.eeum.strategy.map.MapSearchSubStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
