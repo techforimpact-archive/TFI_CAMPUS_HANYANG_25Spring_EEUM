@@ -29,7 +29,11 @@ extension ReviewHTTPRequestRouter: HTTPRequestable {
     
     var path: [String] {
         switch self {
-        case .getReview(let reviewID), .modifyReview(let reviewID), .deleteReview(let reviewID):
+        case .getReview(let reviewID):
+            return ["v1", "reviews", "\(reviewID)"]
+        case .modifyReview(let reviewID):
+            return ["v1", "reviews", "\(reviewID)"]
+        case .deleteReview(let reviewID):
             return ["v1", "reviews", "\(reviewID)"]
         case .getQuestions:
             return ["v1", "reviews", "questions"]

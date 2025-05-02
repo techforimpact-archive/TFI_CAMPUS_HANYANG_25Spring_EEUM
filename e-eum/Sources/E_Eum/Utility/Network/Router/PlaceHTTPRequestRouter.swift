@@ -28,7 +28,9 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
         switch self {
         case .getPlaceDetails(let placeID):
             return ["v1", "places", "\(placeID)"]
-        case .getPlaceReviews(let placeID, _, _, _, _), .createPlaceReview(let placeID):
+        case .getPlaceReviews(let placeID, _, _, _, _):
+            return ["v1", "places", "\(placeID)", "reviews"]
+        case .createPlaceReview(let placeID):
             return ["v1", "places", "\(placeID)", "reviews"]
         }
     }
@@ -38,7 +40,7 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
         case .getPlaceDetails, .createPlaceReview:
             return nil
         case .getPlaceReviews(_, let lastID, let size, let sortBy, let sortDirection):
-            var queryItems = [
+            let queryItems = [
                 URLQueryItem(name: "lastID", value: lastID),
                 URLQueryItem(name: "size", value: "\(size)"),
                 URLQueryItem(name: "sortBy", value: sortBy),
