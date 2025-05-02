@@ -3,7 +3,7 @@ import Foundation
 enum PlaceHTTPRequestRouter {
     case getPlaceDetails(placeID: String)
     case getPlaceReviews(placeID: String, lastId: String, size: Int, sortBy: String, sortDirection: String)
-    case createPlaceReview(placeID: String)
+    case createPlaceReview(placeID: String, reviewBody: Data)
 }
 
 extension PlaceHTTPRequestRouter: HTTPRequestable {
@@ -18,7 +18,14 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
     
     var headers: [String : String]? { return nil }
     
-    var body: Data? { return nil }
+    var body: Data? {
+        switch self {
+        case .getPlaceDetails, .getPlaceReviews:
+            return nil
+        case .createPlaceReview(_, let reviewBody):
+            return reviewBody
+        }
+    }
     
     var host: String { return AppEnvironment.serverAddress }
     
@@ -30,7 +37,7 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
             return ["v1", "places", "\(placeID)"]
         case .getPlaceReviews(let placeID, _, _, _, _):
             return ["v1", "places", "\(placeID)", "reviews"]
-        case .createPlaceReview(let placeID):
+        case .createPlaceReview(let placeID, _):
             return ["v1", "places", "\(placeID)", "reviews"]
         }
     }

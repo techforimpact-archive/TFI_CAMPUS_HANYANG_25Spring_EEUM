@@ -2,7 +2,7 @@ import Foundation
 
 enum ReviewHTTPRequestRouter {
     case getReview(reviewID: String)
-    case modifyReview(reviewID: String)
+    case modifyReview(reviewID: String, reviewBody: Data)
     case deleteReview(reviewID: String)
     case getQuestions
 }
@@ -21,7 +21,14 @@ extension ReviewHTTPRequestRouter: HTTPRequestable {
     
     var headers: [String : String]? { return nil }
     
-    var body: Data? { return nil }
+    var body: Data? {
+        switch self {
+        case .getReview, .deleteReview, .getQuestions:
+            return nil
+        case .modifyReview(_, let reviewBody):
+            return reviewBody
+        }
+    }
     
     var host: String { return AppEnvironment.serverAddress }
     
@@ -31,7 +38,7 @@ extension ReviewHTTPRequestRouter: HTTPRequestable {
         switch self {
         case .getReview(let reviewID):
             return ["v1", "reviews", "\(reviewID)"]
-        case .modifyReview(let reviewID):
+        case .modifyReview(_, let reviewID):
             return ["v1", "reviews", "\(reviewID)"]
         case .deleteReview(let reviewID):
             return ["v1", "reviews", "\(reviewID)"]
