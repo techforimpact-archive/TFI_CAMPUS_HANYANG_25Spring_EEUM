@@ -1,9 +1,9 @@
 import Foundation
 
-struct PlaceResponseDTO: Decodable {
+struct PlaceListResponseDTO: Decodable {
     let httpStatus: String?
     let isSuccess: Bool
     let code: String
     let message: String
-    let result: [PlaceDTO]?
+    let result: [PlaceListDTO]?
 }
