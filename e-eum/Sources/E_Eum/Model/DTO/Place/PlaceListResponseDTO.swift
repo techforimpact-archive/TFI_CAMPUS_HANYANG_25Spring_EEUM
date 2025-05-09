@@ -5,5 +5,11 @@ struct PlaceListResponseDTO: Decodable {
     let isSuccess: Bool
     let code: String
     let message: String
-    let result: [PlaceListDTO]?
+    let result: PlaceListDTOContainer?
+}
+
+struct PlaceListDTOContainer: Decodable {
+    let places: [PlaceDTO]
+    let hasNext: Bool
+    let nextCursor: String
 }

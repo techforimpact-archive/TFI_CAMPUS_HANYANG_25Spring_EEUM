@@ -5,5 +5,9 @@ struct PlaceMapResponseDTO: Decodable {
     let isSuccess: Bool
     let code: String
     let message: String
-    let result: [PlaceDTO]?
+    let result: PlaceDTOContainer?
+}
+
+struct PlaceDTOContainer: Decodable {
+    let places: [PlaceDTO]
 }

@@ -3,11 +3,13 @@ import SwiftUI
 import MapKit
 
 struct MapiOSView: View {
+    @State private var placeService = PlaceService()
+    @State private var showDetail: Bool = false
+    @State private var selectedPlaceID: String = ""
+    
     let latitude: Double
     let longitude: Double
-    let places: [PlaceUIO]
-    
-    @State private var showDetail: Bool = false
+    @Binding var places: [PlaceUIO]
     
     var body: some View {
         if #available(iOS 17.0, macOS 14.0, *) {
@@ -23,6 +25,7 @@ struct MapiOSView: View {
                             .foregroundStyle(.red)
                             .font(.title)
                             .onTapGesture {
+                                selectedPlaceID = place.id
                                 showDetail = true
                             }
                     }
@@ -33,7 +36,7 @@ struct MapiOSView: View {
             }
             .mapStyle(.standard(pointsOfInterest: .excludingAll))
             .sheet(isPresented: $showDetail) {
-                PlaceDetailView()
+                PlaceDetailView(placeID: $selectedPlaceID)
             }
         } else {
             Text("지도는 iOS 17 이상에서만 지원됩니다.")

@@ -20,7 +20,10 @@ extension URLComposable {
             components.port = port
         }
         components.path = "/\(path.joined(separator: "/"))"
-        components.queryItems = queryItems
+        if let queryItems = queryItems {
+            components.path += "/"
+            components.queryItems = queryItems
+        }
         
         guard let url = components.url else {
             throw NetworkError.invalidURL

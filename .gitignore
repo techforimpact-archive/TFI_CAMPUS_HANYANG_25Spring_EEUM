@@ -141,3 +141,4 @@ xcuserdata
 *.xcconfig
 *.env
 secrets.properties
+ServerConfig.kt
