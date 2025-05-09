@@ -1,6 +1,6 @@
 import Foundation
 
-struct PlaceDetailUIO {
+struct PlaceDetailUIO: Identifiable {
     let id: String
     let name: String
     let longitude: Double

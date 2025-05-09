@@ -5,26 +5,32 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 
 struct MapAndroidView: View {
+    @State private var placeService = PlaceService()
+    @State private var showDetail: Bool = false
+    @State private var selectedPlaceID: String = ""
+    
     let latitude: Double
     let longitude: Double
-    let places: [PlaceUIO]
+    @Binding var places: [PlaceUIO]
     
     var body: some View {
         ComposeView { ctx in
             GoogleMap(
                 cameraPositionState: rememberCameraPositionState {
-                    position = CameraPosition.fromLatLngZoom(LatLng(latitude, longitude), Float(10.0))
+                    position = CameraPosition.fromLatLngZoom(LatLng(latitude, longitude), Float(13.0))
                 },
                 properties = MapProperties(isMyLocationEnabled = true)
             ) {
                 for place in places {
                     Marker(
                         state: rememberMarkerState(position = LatLng(place.latitude, place.longitude)),
-                        title = place.name,
-                        snippet = place.description
+                        title = place.name
                     )
                 }
             }
+        }
+        .sheet(isPresented: $showDetail) {
+            PlaceDetailView(placeID: $selectedPlaceID)
         }
     }
 }

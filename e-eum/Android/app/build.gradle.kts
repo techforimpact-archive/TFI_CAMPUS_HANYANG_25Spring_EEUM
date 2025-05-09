@@ -33,7 +33,7 @@ android {
     val localPropertiesFile = File(rootDir, "secrets.properties")
     if (localPropertiesFile.exists() && localPropertiesFile.isFile) {
         localPropertiesFile.inputStream().use {
-            localProperties.load(it)
+           localProperties.load(it)
         }
     }
 
