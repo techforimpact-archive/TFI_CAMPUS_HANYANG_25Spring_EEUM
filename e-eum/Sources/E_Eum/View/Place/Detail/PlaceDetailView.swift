@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct PlaceDetailView: View {
-    @Environment(\.dismiss) private var dismiss
-    
     @Binding var placeID: String
     
     @State private var placeService = PlaceService()
@@ -10,18 +8,7 @@ struct PlaceDetailView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack(alignment: .top) {
-                Spacer()
-                
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "xmark.circle")
-                        .font(.title)
-                        .bold()
-                        .foregroundStyle(Color.pink)
-                }
-            }
+            PlaceDetailHeader()
             
             if let place = place {
                 Image("sample")
