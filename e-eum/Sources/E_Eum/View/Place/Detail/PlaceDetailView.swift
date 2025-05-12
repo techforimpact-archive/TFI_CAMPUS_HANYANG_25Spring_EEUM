@@ -47,12 +47,7 @@ struct PlaceDetailView: View {
                 
                 HStack {
                     ForEach(place.categories, id: \.self) { category in
-                        Text(category)
-                            .foregroundStyle(Color.white)
-                            .background {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .foregroundStyle(Color.pink)
-                            }
+                        PlaceCategoryTag(category: category)
                     }
                 }
                 

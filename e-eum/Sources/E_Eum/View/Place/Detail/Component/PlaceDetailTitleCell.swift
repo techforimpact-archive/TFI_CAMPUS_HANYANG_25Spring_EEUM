@@ -5,12 +5,7 @@ struct PlaceDetailTitleCell: View {
     
     var body: some View {
         HStack {
-            Text(place.categories[0])
-                .foregroundStyle(Color.white)
-                .background {
-                    RoundedRectangle(cornerRadius: 8)
-                        .foregroundStyle(Color.pink)
-                }
+            PlaceCategoryTag(category: place.categories[0])
             
             Text(place.name)
                 .font(.title)
