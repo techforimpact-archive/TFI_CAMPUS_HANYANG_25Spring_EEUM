@@ -7,45 +7,19 @@ struct PlaceDetailView: View {
     @State private var place: PlaceDetailUIO?
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .center, spacing: 16) {
             PlaceDetailHeader()
             
             if let place = place {
                 ScrollView {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 16) {
                         Image("sample")
                             .resizable()
                             .scaledToFit()
                         
                         PlaceDetailTitleCell(place: place)
                         
-                        HStack(spacing: 0) {
-                            Text("주소 : ")
-                                .bold()
-                            
-                            Text("\(place.province) \(place.city) \(place.district)")
-                        }
-                        
-                        HStack(spacing: 0) {
-                            Text("연락처 : ")
-                                .bold()
-                            
-                            Text("\(place.phone)")
-                        }
-                        
-                        HStack(spacing: 0) {
-                            Text("이메일 : ")
-                                .bold()
-                            
-                            Text("\(place.email)")
-                        }
-                        
-                        HStack(spacing: 0) {
-                            Text("홈페이지 : ")
-                                .bold()
-                            
-                            Text("[\(place.name)](\(place.website))")
-                        }
+                        PlaceDetailInfoCell(place: place)
                         
                         HStack {
                             ForEach(place.categories, id: \.self) { category in
@@ -62,23 +36,11 @@ struct PlaceDetailView: View {
                         .disabled(true)
                         .tint(Color.pink)
                         
-                        Text(place.description)
-                            .multilineTextAlignment(.leading)
-                            .background {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(style: StrokeStyle(lineWidth: 1))
-                                    .foregroundStyle(Color.pink)
-                            }
+                        PlaceDetailDescriptionCell(place: place)
                     }
                 }
             } else {
-                VStack(alignment: .center) {
-                    Spacer()
-                    
-                    ProgressView()
-                    
-                    Spacer()
-                }
+                ProgressView()
             }
         }
         .padding()
