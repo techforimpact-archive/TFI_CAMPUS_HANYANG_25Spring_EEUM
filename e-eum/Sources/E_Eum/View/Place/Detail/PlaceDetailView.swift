@@ -27,14 +27,7 @@ struct PlaceDetailView: View {
                             }
                         }
                         
-                        Text("퀴어 온도")
-                            .bold()
-                        
-                        Slider(value: .constant(place.temperature), in: 0...10) {
-                            Text("dd")
-                        }
-                        .disabled(true)
-                        .tint(Color.pink)
+                        PlaceDetailTemperatureCell(place: place)
                         
                         PlaceDetailDescriptionCell(place: place)
                     }
