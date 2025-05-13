@@ -19,9 +19,15 @@ struct PlaceDetailView: View {
                         
                         PlaceDetailTitleCell(place: place)
                         
+                        Divider()
+                        
                         PlaceDetailInfoCell(place: place)
                         
+                        Divider()
+                        
                         PlaceDetailTemperatureCell(place: place)
+                        
+                        Divider()
                         
                         PlaceDetailDescriptionCell(place: place)
                     }

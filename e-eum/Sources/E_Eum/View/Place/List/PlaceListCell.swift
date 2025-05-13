@@ -27,7 +27,10 @@ struct PlaceListCell: View {
                 
                 Spacer()
             }
+            
+            Divider()
+                .padding(.vertical, 8)
         }
-        .padding(16)
+        .padding(.horizontal, 16)
     }
 }
