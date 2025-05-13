@@ -5,13 +5,11 @@ struct PlaceDetailTitleCell: View {
     
     var body: some View {
         HStack {
+            RainbowColorTitle(text: place.name, font: .title)
+            
             PlaceCategoryTag(category: place.categories[0])
             
-            Text(place.name)
-                .font(.title)
-                .fontDesign(.rounded)
-                .bold()
-                .foregroundStyle(Color.pink)
+            Spacer()
         }
     }
 }

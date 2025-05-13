@@ -4,29 +4,29 @@ struct PlaceListCell: View {
     let place: PlaceUIO
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
                 Text(place.name)
                     .font(.title)
                     .fontDesign(.rounded)
                     .bold()
                     .foregroundStyle(Color.pink)
                 
-                HStack(spacing: 0) {
-                    Text("주소 : ")
-                        .bold()
-                    
-                    Text("\(place.province) \(place.city) \(place.district)")
+                ForEach(place.categories, id: \.self) { category in
+                    PlaceCategoryTag(category: category)
                 }
                 
-                HStack {
-                    ForEach(place.categories, id: \.self) { category in
-                        PlaceCategoryTag(category: category)
-                    }
-                }
+                Spacer()
             }
             
-            Spacer()
+            HStack(spacing: 0) {
+                Text("주소 : ")
+                    .bold()
+                
+                Text("\(place.province) \(place.city) \(place.district)")
+                
+                Spacer()
+            }
         }
         .padding(16)
     }
