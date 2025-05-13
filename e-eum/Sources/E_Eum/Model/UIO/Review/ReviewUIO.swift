@@ -32,3 +32,40 @@ struct ReviewUIO: Identifiable {
         self.recommended = reviewDTO.recommended
     }
 }
+
+extension ReviewUIO {
+    static let sample0: ReviewUIO = .init(
+        id: "sampleReview0",
+        placeId: "6808f62a8b1ef1775814ebd9",
+        userId: "user0",
+        userNickname: "user0",
+        content: "아주 좋아요",
+        rating: 10,
+        createdAt: "2025-05-13T14:01:18.925Z",
+        recommended: true
+    )
+    
+    static let sample1: ReviewUIO = .init(
+        id: "sampleReview1",
+        placeId: "6808f62a8b1ef1775814ebd9",
+        userId: "user1",
+        userNickname: "user1",
+        content: "최악이에요",
+        rating: 0,
+        createdAt: "2025-05-13T14:01:18.925Z",
+        recommended: false
+    )
+    
+    static let sample2: ReviewUIO = .init(
+        id: "sampleReview2",
+        placeId: "6808f62a8b1ef1775814ebd9",
+        userId: "user2",
+        userNickname: "user2",
+        content: "좋아요",
+        rating: 7,
+        createdAt: "2025-05-13T14:01:18.925Z",
+        recommended: true
+    )
+    
+    static let samples: [ReviewUIO] = [sample0, sample1, sample2]
+}
