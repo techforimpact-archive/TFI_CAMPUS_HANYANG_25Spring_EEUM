@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct PlaceDetailHeader: View {
+struct SheetHeader: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {

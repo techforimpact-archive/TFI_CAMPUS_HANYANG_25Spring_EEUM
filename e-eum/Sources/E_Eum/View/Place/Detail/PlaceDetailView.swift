@@ -8,7 +8,7 @@ struct PlaceDetailView: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 16) {
-            PlaceDetailHeader()
+            SheetHeader()
             
             if let place = place {
                 ScrollView {
