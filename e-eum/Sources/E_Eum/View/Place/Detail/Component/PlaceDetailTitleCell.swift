@@ -7,7 +7,9 @@ struct PlaceDetailTitleCell: View {
         HStack {
             RainbowColorTitle(text: place.name, font: .title)
             
-            PlaceCategoryTag(category: place.categories[0])
+            ForEach(place.categories, id: \.self) { category in
+                PlaceCategoryTag(category: category)
+            }
             
             Spacer()
         }

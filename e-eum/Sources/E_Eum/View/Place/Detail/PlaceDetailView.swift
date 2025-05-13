@@ -21,12 +21,6 @@ struct PlaceDetailView: View {
                         
                         PlaceDetailInfoCell(place: place)
                         
-                        HStack {
-                            ForEach(place.categories, id: \.self) { category in
-                                PlaceCategoryTag(category: category)
-                            }
-                        }
-                        
                         PlaceDetailTemperatureCell(place: place)
                         
                         PlaceDetailDescriptionCell(place: place)
