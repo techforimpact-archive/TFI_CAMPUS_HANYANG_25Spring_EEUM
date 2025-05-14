@@ -7,7 +7,7 @@ struct PlaceListCell: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text(place.name)
-                    .font(.title)
+                    .font(.title2)
                     .fontDesign(.rounded)
                     .bold()
                     .foregroundStyle(Color.pink)
@@ -19,9 +19,8 @@ struct PlaceListCell: View {
                 Spacer()
             }
             
-            HStack(spacing: 0) {
-                Text("주소 : ")
-                    .bold()
+            HStack {
+                Image(systemName: "location.fill")
                 
                 Text("\(place.province) \(place.city) \(place.district)")
                 
@@ -32,5 +31,6 @@ struct PlaceListCell: View {
                 .padding(.vertical, 8)
         }
         .padding(.horizontal, 16)
+        .background(Color.white)
     }
 }
