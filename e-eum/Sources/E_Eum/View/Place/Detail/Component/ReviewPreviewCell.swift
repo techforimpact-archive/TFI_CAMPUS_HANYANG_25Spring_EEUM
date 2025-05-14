@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct ReviewPreviewCell: View {
+    let placeID: String
     let reviews: [ReviewUIO]
+    @State private var navigationToReviewList: Bool = false
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -22,9 +24,12 @@ struct ReviewPreviewCell: View {
             .padding(.vertical, 8)
             
             BasicButton(title: "한줄평 모두 보기") {
-                
+                navigationToReviewList = true
             }
             .padding(.bottom, 8)
+            .navigationDestination(isPresented: $navigationToReviewList) {
+                ReviewListView(placeID: placeID)
+            }
         }
     }
 }
