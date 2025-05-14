@@ -9,12 +9,8 @@ struct PlaceListView: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading) {
-                Text("장소 목록")
-                    .font(.title)
-                    .fontDesign(.rounded)
-                    .bold()
-                    .foregroundStyle(Color.pink)
-                    .padding()
+                RainbowColorTitle(text: "장소 목록", font: .title)
+                    .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                 
                 ScrollView {
                     ForEach(places) { place in

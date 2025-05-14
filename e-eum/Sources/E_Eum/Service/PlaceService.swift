@@ -104,19 +104,29 @@ class PlaceService: PlaceServiceProtocol {
         return placeDetails
     }
     
-    func getPlaceReviews(placeID: String, lastID: String, size: Int, sortBy: String, sortDirection: String) async throws -> ReviewListResponseDTO {
+    func getPlaceReviews(placeID: String, lastID: String, size: Int, sortBy: String, sortDirection: String) async throws -> ReviewListUIO {
         let router = PlaceHTTPRequestRouter.getPlaceReviews(placeID: placeID, lastID: lastID, size: size, sortBy: sortBy, sortDirection: sortDirection)
         let data = try await networkUtility.request(router: router)
         let reviewListResponse = try jsonDecoder.decode(ReviewListResponseDTO.self, from: data)
-        return reviewListResponse
+        var reviewsList: ReviewListUIO
+        guard let reviewListDTO = reviewListResponse.result else {
+            throw PlaceServiceError.noData
+        }
+        reviewsList = ReviewListUIO(reviews: reviewListDTO.reviews, hasNext: reviewListDTO.hasNext, nextCursor: reviewListDTO.nextCursor)
+        return reviewsList
     }
     
-    func createPlaceReview(placeID: String, reviewBody: ReviewBodyDTO) async throws -> ReviewResponseDTO {
+    func createPlaceReview(placeID: String, reviewBody: ReviewBodyDTO) async throws -> ReviewUIO {
         let reviewBodyData = try jsonEncoder.encode(reviewBody)
         let router = PlaceHTTPRequestRouter.createPlaceReview(placeID: placeID, reviewBody: reviewBodyData)
         let data = try await networkUtility.request(router: router)
         let reviewResponse = try jsonDecoder.decode(ReviewResponseDTO.self, from: data)
-        return reviewResponse
+        var review: ReviewUIO
+        guard let reviewDTO = reviewResponse.result else {
+            throw PlaceServiceError.noData
+        }
+        review = ReviewUIO(reviewDTO: reviewDTO)
+        return review
     }
 }
 

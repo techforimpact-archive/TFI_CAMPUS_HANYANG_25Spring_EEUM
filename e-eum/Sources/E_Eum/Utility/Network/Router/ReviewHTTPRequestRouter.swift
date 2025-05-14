@@ -30,7 +30,13 @@ extension ReviewHTTPRequestRouter: HTTPRequestable {
         }
     }
     
-    var host: String { return AppEnvironment.serverAddress }
+    var host: String {
+        #if os(iOS)
+        return AppEnvironment.serverAddress
+        #elseif os(Android)
+        return ServerConfig.getServerAddress()
+        #endif
+    }
     
     var port: Int? { return nil }
     
