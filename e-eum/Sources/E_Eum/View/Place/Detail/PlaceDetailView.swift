@@ -40,6 +40,7 @@ struct PlaceDetailView: View {
                             BasicButton(title: "한줄평 작성하기") {
                                 
                             }
+                            .padding(.bottom, 8)
                         }
                     }
                 }

@@ -19,10 +19,12 @@ struct ReviewPreviewCell: View {
                     }
                 }
             }
+            .padding(.vertical, 8)
             
             BasicButton(title: "한줄평 모두 보기") {
                 
             }
+            .padding(.bottom, 8)
         }
     }
 }
