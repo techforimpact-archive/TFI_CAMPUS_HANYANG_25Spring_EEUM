@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Document(collection = "reviews")
@@ -17,6 +18,7 @@ public class Review {
     private String placeId;
     private String userId;
     private String content;
+    private List<String> imageUrls;
     private int rating;
     private boolean isRecommended;
     private LocalDateTime createdAt;
