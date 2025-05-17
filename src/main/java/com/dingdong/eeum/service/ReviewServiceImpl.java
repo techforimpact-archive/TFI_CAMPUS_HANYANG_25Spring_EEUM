@@ -1,6 +1,7 @@
 package com.dingdong.eeum.service;
 
 import com.dingdong.eeum.apiPayload.exception.handler.ExceptionHandler;
+import com.dingdong.eeum.aws.S3Service;
 import com.dingdong.eeum.dto.request.ReviewCreateRequestDto;
 import com.dingdong.eeum.dto.request.ReviewUpdateRequestDto;
 import com.dingdong.eeum.dto.response.QuestionResponseDto;
@@ -19,8 +20,10 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,6 +36,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final QuestionRepository questionRepository;
     private final PlaceRepository placeRepository;
+    private final S3Service s3Service;
     private final MongoTemplate mongoTemplate;
     /* TODO 유저 로직 생성 후에 반영하기
         private final UserService userService;
@@ -48,11 +52,18 @@ public class ReviewServiceImpl implements ReviewService {
 
         int averageRating = calculateWeightedAverageRating(requestDto.getRatings());
 
+        List<String> imageUrls = new ArrayList<>();
+        if (requestDto.getImages() != null && !requestDto.getImages().isEmpty()) {
+            List<MultipartFile> filesToUpload = requestDto.getImages();
+            imageUrls = s3Service.uploadFiles(filesToUpload);
+        }
+
         Review review = Review.builder()
                 .placeId(placeId)
                 .userId(userId)
                 .content(requestDto.getContent())
                 .rating(averageRating)
+                .imageUrls(imageUrls)
                 .isRecommended(requestDto.isRecommended())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())

@@ -27,6 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -214,7 +215,7 @@ public class MapController {
             @RequestParam(required = false) String lastId,
             @Parameter(description = "페이지 크기", example = "10")
             @RequestParam(required = false, defaultValue = "10") int size,
-            @Parameter(description = "정렬 기준", example = "reviewStats.temperature")
+            @Parameter(description = "정렬 기준", example = "temperature")
             @RequestParam(required = false) String sortBy,
             @Parameter(description = "정렬 방향", example = "DESC")
             @RequestParam(required = false) Sort.Direction sortDirection
@@ -223,11 +224,14 @@ public class MapController {
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), reviews);
     }
 
-    @Operation(summary = "리뷰 생성", description = "장소에 대한 리뷰를 생성합니다.")
-    @PostMapping("/{placeId}/reviews")
+    @Operation(
+            summary = "리뷰 생성",
+            description = "장소에 대한 리뷰를 생성합니다."
+    )
+    @PostMapping(value = "/{placeId}/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<ReviewResponseDto> createReview(
             @PathVariable String placeId,
-            @RequestBody  @Valid ReviewCreateRequestDto requestDto) {
+            @Valid @ModelAttribute ReviewCreateRequestDto requestDto) {
         ReviewResponseDto review = reviewService.createReview(placeId, requestDto);
         return new Response<>(true, SuccessStatus._CREATED.getCode(), SuccessStatus._CREATED.getMessage(), review);
     }
