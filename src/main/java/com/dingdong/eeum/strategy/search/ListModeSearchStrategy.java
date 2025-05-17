@@ -30,11 +30,7 @@ public class ListModeSearchStrategy implements PlaceSearchStrategy {
 
     @Override
     public SearchResult execute(PlaceSearchDto criteria) {
-        if (criteria.getKeyword() != null && !criteria.getKeyword().trim().isEmpty()) {
-            return executeKeywordSearch(criteria);
-        } else {
-            return executeStandardSearch(criteria);
-        }
+        return executeStandardSearch(criteria);
     }
 
     private ScrollResponseDto<PlaceResponseDto> executeStandardSearch(PlaceSearchDto criteria) {
@@ -44,6 +40,7 @@ public class ListModeSearchStrategy implements PlaceSearchStrategy {
         PlaceStatus status = criteria.getStatus() != null ? criteria.getStatus() : PlaceStatus.ACTIVE;
 
         Query query = new Query();
+        buildNameCriteria(query, criteria);
         buildLocationCriteria(query, criteria);
         buildCategoryCriteria(query, criteria);
         buildTemperatureCriteria(query, criteria);
@@ -93,6 +90,12 @@ public class ListModeSearchStrategy implements PlaceSearchStrategy {
         String nextCursor = places.isEmpty() ? null : places.get(places.size() - 1).getId();
 
         return new ScrollResponseDto<>(responseList, hasNext, nextCursor);
+    }
+
+    private void buildNameCriteria(Query query, PlaceSearchDto criteria) {
+        if (criteria.getName() != null && !criteria.getName().isEmpty()) {
+            query.addCriteria(Criteria.where("name").regex(criteria.getName(), "i"));
+        }
     }
 
     private void buildLocationCriteria(Query query, PlaceSearchDto criteria) {
