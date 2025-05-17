@@ -18,6 +18,7 @@ public class PlaceResponseDto {
     private String province;
     private String city;
     private String district;
+    private String fullAddress;
     private List<PlaceCategory> categories;
     private double temperature;
     private PlaceStatus status;
@@ -32,6 +33,7 @@ public class PlaceResponseDto {
                 .province(place.getAddress().getProvince())
                 .city(place.getAddress().getCity())
                 .district(place.getAddress().getDistrict())
+                .fullAddress(place.getAddress().getFullAddress())
                 .categories(place.getCategories())
                 .temperature(place.getReviewStats().getTemperature())
                 .status(place.getStatus())
