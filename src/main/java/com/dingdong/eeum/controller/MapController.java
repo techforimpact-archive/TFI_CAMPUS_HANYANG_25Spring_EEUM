@@ -80,6 +80,9 @@ public class MapController {
             @Parameter(description = "검색 모드 (MAP: 지도 모드, LIST: 목록 모드)", example = "MAP", required = true)
             @RequestParam PlaceSearch mode,
 
+            @Parameter(description = "장소 이름 검색어", example = "마음")
+            @RequestParam(required = false) String name,
+
             @Parameter(description = "지도 경계 최소 경도값 (경계 검색 전용)", example = "126.9850")
             @RequestParam(required = false) Double minLongitude,
             @Parameter(description = "지도 경계 최소 위도값 (경계 검색 전용)", example = "37.4500")
@@ -114,7 +117,7 @@ public class MapController {
             @Parameter(description = "마지막 아이템 ID (LIST 모드 전용)", example = "60a7b1e7c0b6a82e9c1f2a3b")
             @RequestParam(required = false) String lastId,
             @Parameter(description = "페이지 크기 (LIST 모드 전용)", example = "10")
-            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "0") int size,
             @Parameter(description = "정렬 기준 (LIST 모드 전용)", example = "reviewStats.temperature")
             @RequestParam(required = false) String sortBy,
             @Parameter(description = "정렬 방향 (LIST 모드 전용)", example = "DESC")
@@ -122,6 +125,7 @@ public class MapController {
 
         PlaceSearchDto criteria = PlaceSearchDto.builder()
                 .mode(mode)
+                .name(name)
                 .minLongitude(minLongitude)
                 .minLatitude(minLatitude)
                 .maxLongitude(maxLongitude)
