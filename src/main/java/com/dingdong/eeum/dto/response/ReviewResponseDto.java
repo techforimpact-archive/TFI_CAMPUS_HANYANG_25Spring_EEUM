@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 @Getter
@@ -15,6 +16,7 @@ public class ReviewResponseDto {
     private String userNickname;
     private String content;
     private int rating;
+    private List<String> imageUrls;
     private boolean isRecommended;
     private LocalDateTime createdAt;
 
@@ -25,6 +27,7 @@ public class ReviewResponseDto {
                 .userId(review.getUserId())
                 .userNickname(userNickname)
                 .content(review.getContent())
+                .imageUrls(review.getImageUrls())
                 .rating(review.getRating())
                 .isRecommended(review.isRecommended())
                 .createdAt(review.getCreatedAt())
