@@ -8,5 +8,5 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class MapResponseDto<T> implements SearchResult<T> {
-    private final List<T> places;
+    private final List<T> contents;
 }
