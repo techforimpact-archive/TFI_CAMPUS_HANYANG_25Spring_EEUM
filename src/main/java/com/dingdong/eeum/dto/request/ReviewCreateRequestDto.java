@@ -28,11 +28,11 @@ public class ReviewCreateRequestDto {
     private String content;
 
     @Schema(description = "평점 목록 (질문ID:평점) - JSON 문자열", example = "{\"680df9895e643770c31e8dfa\":5, \"680df9895e643770c31e8dfb\":4}")
-    private String ratingsJson;
+    private String ratings;
 
     @JsonIgnore
     @Schema(hidden = true)
-    private Map<String, Integer> ratings;
+    private Map<String, Integer> ratingsJson;
 
     @Schema(description = "리뷰 이미지 (최대 5개)")
     @Size(max = 5, message = "이미지는 최대 5개까지 업로드할 수 있습니다")
@@ -42,13 +42,13 @@ public class ReviewCreateRequestDto {
     private boolean isRecommended;
 
     public Map<String, Integer> getRatings() {
-        if (this.ratings == null && this.ratingsJson != null && !this.ratingsJson.isEmpty()) {
+        if (this.ratingsJson == null && this.ratings != null && !this.ratings.isEmpty()) {
             try {
-                this.ratings = objectMapper.readValue(this.ratingsJson, new TypeReference<Map<String, Integer>>() {});
+                this.ratingsJson = objectMapper.readValue(this.ratings, new TypeReference<Map<String, Integer>>() {});
             } catch (JsonProcessingException e) {
-                this.ratings = new HashMap<>();
+                this.ratingsJson = new HashMap<>();
             }
         }
-        return this.ratings;
+        return this.ratingsJson;
     }
 }
