@@ -9,6 +9,6 @@ protocol PlaceServiceProtocol {
     func getPlacesOnListByCategories(categories: [String], lastID: String, size: Int, sortBy: String, sortDirection: String) async throws -> PlaceListUIO
     func getPlacesOnListByKeyword(keyword: String, lastID: String, size: Int, sortBy: String, sortDirection: String) async throws -> PlaceListUIO
     func getPlaceDetails(placeID: String) async throws -> PlaceDetailUIO
-    func getPlaceReviews(placeID: String, lastID: String, size: Int, sortBy: String, sortDirection: String) async throws -> ReviewListUIO
+    func getPlaceReviews(placeID: String, lastID: String?, size: Int?, sortBy: String?, sortDirection: String?) async throws -> ReviewListUIO
     func createPlaceReview(placeID: String, reviewBody: ReviewBodyDTO) async throws -> ReviewUIO
 }
