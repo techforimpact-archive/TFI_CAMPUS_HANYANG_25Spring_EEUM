@@ -5,6 +5,7 @@ struct ReviewListView: View {
     
     @State private var placeService = PlaceService()
     @State private var reviews: [ReviewUIO]?
+    @State private var navigationToReviewCreate: Bool = false
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -19,10 +20,13 @@ struct ReviewListView: View {
             
             Spacer()
             
-            BasicButton(title: "한줄평 작성하기") {
-                
+            BasicButton(title: "한줄평 작성하기", disabled: .constant(false)) {
+                navigationToReviewCreate = true
             }
             .padding(16)
+            .navigationDestination(isPresented: $navigationToReviewCreate) {
+                ReviewCreateView(placeId: placeID)
+            }
         }
         .navigationTitle(Text("이용자 한줄평"))
         .navigationBarTitleDisplayMode(.inline)

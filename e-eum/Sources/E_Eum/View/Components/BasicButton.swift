@@ -2,6 +2,7 @@ import SwiftUI
 
 struct BasicButton: View {
     let title: String
+    @Binding var disabled: Bool
     let action: () -> Void
     
     var body: some View {
@@ -16,8 +17,9 @@ struct BasicButton: View {
                 .foregroundStyle(Color.white)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
-                        .foregroundStyle(Color.pink)
+                        .foregroundStyle(disabled ? Color.gray : Color.pink)
                 )
         }
+        .disabled(disabled)
     }
 }

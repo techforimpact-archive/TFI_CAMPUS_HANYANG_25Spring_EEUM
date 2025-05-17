@@ -1,6 +1,6 @@
 import Foundation
 
-class ReviewSevice: ReviewServiceProtocol {
+class ReviewService: ReviewServiceProtocol {
     private let networkUtility: NetworkUtility = NetworkUtility()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     private let jsonEncoder: JSONEncoder = JSONEncoder()
