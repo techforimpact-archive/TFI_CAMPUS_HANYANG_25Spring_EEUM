@@ -23,7 +23,7 @@ struct ReviewPreviewCell: View {
             }
             .padding(.vertical, 8)
             
-            BasicButton(title: "한줄평 모두 보기") {
+            BasicButton(title: "한줄평 모두 보기", disabled: .constant(false)) {
                 navigationToReviewList = true
             }
             .padding(.bottom, 8)

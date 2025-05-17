@@ -8,6 +8,7 @@ struct PlaceDetailView: View {
     @State private var placeService = PlaceService()
     @State private var place: PlaceDetailUIO?
     @State private var reviews: [ReviewUIO]?
+    @State private var navigationToReviewCreate: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -40,10 +41,13 @@ struct PlaceDetailView: View {
                             if let reviews = reviews {
                                 ReviewPreviewCell(placeID: placeID, reviews: reviews)
                             } else {
-                                BasicButton(title: "한줄평 작성하기") {
-                                    
+                                BasicButton(title: "한줄평 작성하기", disabled: .constant(false)) {
+                                    navigationToReviewCreate = true
                                 }
                                 .padding(.bottom, 8)
+                                .navigationDestination(isPresented: $navigationToReviewCreate) {
+                                    ReviewCreateView(placeId: placeID)
+                                }
                             }
                         }
                     }

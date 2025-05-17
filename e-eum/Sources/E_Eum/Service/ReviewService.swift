@@ -1,6 +1,6 @@
 import Foundation
 
-class ReviewSevice: ReviewServiceProtocol {
+class ReviewService: ReviewServiceProtocol {
     private let networkUtility: NetworkUtility = NetworkUtility()
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     private let jsonEncoder: JSONEncoder = JSONEncoder()
@@ -42,11 +42,17 @@ class ReviewSevice: ReviewServiceProtocol {
         return review
     }
     
-    func getQuestions() async throws -> QuestionResponseDTO {
+    func getQuestions() async throws -> [QuestionUIO] {
         let router = ReviewHTTPRequestRouter.getQuestions
         let data = try await networkUtility.request(router: router)
         let questionResponse = try jsonDecoder.decode(QuestionResponseDTO.self, from: data)
-        return questionResponse
+        var questions: [QuestionUIO] = []
+        if let questionDTOs = questionResponse.result {
+            for question in questionDTOs {
+                questions.append(QuestionUIO(questionDTO: question))
+            }
+        }
+        return questions
     }
 }
 
