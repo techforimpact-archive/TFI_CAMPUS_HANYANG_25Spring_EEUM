@@ -38,6 +38,7 @@ public class Place {
         private String district;
         private String town;
         private String detail;
+        private String fullAddress;
         private String zipCode;
     }
 
