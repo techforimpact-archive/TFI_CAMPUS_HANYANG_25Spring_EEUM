@@ -29,6 +29,7 @@ public enum ErrorStatus implements BaseErrorCode {
     PLACE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "PLACE403_1", "해당 장소에 접근 권한이 없습니다."),
     PLACE_ALREADY_EXISTS(HttpStatus.CONFLICT, "PLACE409_1", "이미 존재하는 장소입니다."),
     PLACE_REVIEW_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "PLACE400_5", "해당 장소에 리뷰를 작성할 권한이 없습니다."),
+    PLACE_SEARCH_NAME_EMPTY(HttpStatus.BAD_REQUEST, "PLACE400_6", "해당 장소 이름이 없습니다."),
     INVALID_SEARCH_MODE(HttpStatus.BAD_REQUEST, "PLACE400_6", "유효하지 않은 검색 모드입니다."),
     INVALID_PARAMETERS(HttpStatus.BAD_REQUEST, "PLACE400_7", "검색에 필요한 필수 파라미터가 누락되었습니다."),
 
@@ -45,7 +46,12 @@ public enum ErrorStatus implements BaseErrorCode {
     REVIEW_DELETE_NOT_ALLOWED(HttpStatus.FORBIDDEN, "REVIEW403_3", "리뷰를 삭제할 권한이 없습니다."),
 
     // QUESTION Error
-    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "QUESTION404_1", "존재하지 않는 질문입니다.");
+    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "QUESTION404_1", "존재하지 않는 질문입니다."),
+
+    // IMAGE Error
+    IMAGE_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "IMAGE_001", "이미지는 최대 5개까지 업로드할 수 있습니다."),
+    IMAGE_FORMAT_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "IMAGE_002", "지원되지 않는 이미지 형식입니다."),
+    IMAGE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "IMAGE_003", "이미지 크기가 너무 큽니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
