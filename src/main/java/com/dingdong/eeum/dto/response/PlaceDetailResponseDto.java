@@ -18,6 +18,7 @@ public class PlaceDetailResponseDto {
     private String province;
     private String city;
     private String district;
+    private String fullAddress;
     private List<PlaceCategory> categories;
     private String description;
     private String phone;
@@ -37,6 +38,7 @@ public class PlaceDetailResponseDto {
                 .province(place.getAddress().getProvince())
                 .city(place.getAddress().getCity())
                 .district(place.getAddress().getDistrict())
+                .fullAddress(place.getAddress().getFullAddress())
                 .categories(place.getCategories())
                 .description(place.getDescription())
                 .phone(place.getContact().getPhone())
