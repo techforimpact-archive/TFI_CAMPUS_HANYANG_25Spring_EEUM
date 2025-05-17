@@ -3,11 +3,7 @@ package com.dingdong.eeum.dto.request;
 import com.dingdong.eeum.constant.PlaceCategory;
 import com.dingdong.eeum.constant.PlaceSearch;
 import com.dingdong.eeum.constant.PlaceStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
@@ -28,6 +24,7 @@ public class PlaceSearchDto {
     private Double maxLongitude;
     private Double maxLatitude;
 
+    private String name;
     private String province;
     private String city;
     private String district;
