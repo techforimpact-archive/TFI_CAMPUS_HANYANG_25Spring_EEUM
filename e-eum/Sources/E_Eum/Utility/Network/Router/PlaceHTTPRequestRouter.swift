@@ -23,7 +23,14 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
         }
     }
     
-    var headers: [String : String]? { return nil }
+    var headers: [String : String]? {
+        switch self {
+        case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getPlaceReviews:
+            return nil
+        case .createPlaceReview:
+            return ["content-type": "application/json"]
+        }
+    }
     
     var body: Data? {
         switch self {
