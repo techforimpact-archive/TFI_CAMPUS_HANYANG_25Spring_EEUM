@@ -22,7 +22,7 @@ struct PlaceListCell: View {
             HStack {
                 Image(systemName: "location.fill")
                 
-                Text("\(place.province) \(place.city) \(place.district)")
+                Text(place.fullAddress)
                 
                 Spacer()
             }

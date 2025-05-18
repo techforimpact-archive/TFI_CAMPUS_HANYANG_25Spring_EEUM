@@ -8,6 +8,7 @@ struct PlaceDetailDTO: Decodable {
     let province: String
     let city: String
     let district: String
+    let fullAddress: String
     let categories: [String]
     let description: String
     let phone: String

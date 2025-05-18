@@ -9,21 +9,21 @@ struct PlaceDetailInfoCell: View {
                 Text("주소 : ")
                     .bold()
                 
-                Text("\(place.province) \(place.city) \(place.district)")
+                Text(place.fullAddress)
             }
             
             HStack(spacing: 0) {
                 Text("연락처 : ")
                     .bold()
                 
-                Text("\(place.phone)")
+                Text(place.phone)
             }
             
             HStack(spacing: 0) {
                 Text("이메일 : ")
                     .bold()
                 
-                Text("\(place.email)")
+                Text(place.email)
             }
             
             HStack(spacing: 0) {

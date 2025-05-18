@@ -8,6 +8,7 @@ struct PlaceDetailUIO: Identifiable {
     let province: String
     let city: String
     let district: String
+    let fullAddress: String
     let categories: [String]
     let description: String
     let phone: String
@@ -18,7 +19,7 @@ struct PlaceDetailUIO: Identifiable {
     let status: String
     let verified: Bool
     
-    init(id: String, name: String, longitude: Double, latitude: Double, province: String, city: String, district: String, categories: [String], description: String, phone: String, email: String, website: String, temperature: Double, reviewCount: Int, status: String, verified: Bool) {
+    init(id: String, name: String, longitude: Double, latitude: Double, province: String, city: String, district: String, fullAddress: String, categories: [String], description: String, phone: String, email: String, website: String, temperature: Double, reviewCount: Int, status: String, verified: Bool) {
         self.id = id
         self.name = name
         self.longitude = longitude
@@ -26,6 +27,7 @@ struct PlaceDetailUIO: Identifiable {
         self.province = province
         self.city = city
         self.district = district
+        self.fullAddress = fullAddress
         self.categories = categories
         self.description = description
         self.phone = phone
@@ -45,6 +47,7 @@ struct PlaceDetailUIO: Identifiable {
         self.province = placeDetailDTO.province
         self.city = placeDetailDTO.city
         self.district = placeDetailDTO.district
+        self.fullAddress = placeDetailDTO.fullAddress
         self.categories = placeDetailDTO.categories
         self.description = placeDetailDTO.description
         self.phone = placeDetailDTO.phone
@@ -66,6 +69,7 @@ extension PlaceDetailUIO {
         province: "서울특별시",
         city: "종로구",
         district: "종로1가",
+        fullAddress: "서울특별시 종로구 종로1가",
         categories: ["SHELTER", "COUNSELING"],
         description: "위기 상황에 처한 여성과 아동을 위한 안전한 쉼터입니다. 심리 상담과 함께 법률 지원 서비스도 제공합니다.",
         phone: "02-345-6789",
