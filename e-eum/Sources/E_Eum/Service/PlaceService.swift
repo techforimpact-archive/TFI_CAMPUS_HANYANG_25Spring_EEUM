@@ -10,7 +10,7 @@ class PlaceService: PlaceServiceProtocol {
         let data = try await networkUtility.request(router: router)
         let placeMapResponse = try jsonDecoder.decode(PlaceMapResponseDTO.self, from: data)
         var places: [PlaceUIO] = []
-        if let placeDTOs = placeMapResponse.result?.places {
+        if let placeDTOs = placeMapResponse.result?.contents {
             for place in placeDTOs {
                 places.append(PlaceUIO(placeDTO: place))
             }
@@ -23,7 +23,7 @@ class PlaceService: PlaceServiceProtocol {
         let data = try await networkUtility.request(router: router)
         let placeMapResponse = try jsonDecoder.decode(PlaceMapResponseDTO.self, from: data)
         var places: [PlaceUIO] = []
-        if let placeDTOs = placeMapResponse.result?.places {
+        if let placeDTOs = placeMapResponse.result?.contents {
             for place in placeDTOs {
                 places.append(PlaceUIO(placeDTO: place))
             }
@@ -36,7 +36,7 @@ class PlaceService: PlaceServiceProtocol {
         let data = try await networkUtility.request(router: router)
         let placeMapResponse = try jsonDecoder.decode(PlaceMapResponseDTO.self, from: data)
         var places: [PlaceUIO] = []
-        if let placeDTOs = placeMapResponse.result?.places {
+        if let placeDTOs = placeMapResponse.result?.contents {
             for place in placeDTOs {
                 places.append(PlaceUIO(placeDTO: place))
             }
@@ -52,7 +52,7 @@ class PlaceService: PlaceServiceProtocol {
         guard let placeListDTO = placeListResponse.result else {
             throw PlaceServiceError.noData
         }
-        placesList = PlaceListUIO(places: placeListDTO.places, hasNext: placeListDTO.hasNext, nextCursor: placeListDTO.nextCursor)
+        placesList = PlaceListUIO(places: placeListDTO.contents, hasNext: placeListDTO.hasNext, nextCursor: placeListDTO.nextCursor)
         return placesList
     }
     
@@ -64,7 +64,7 @@ class PlaceService: PlaceServiceProtocol {
         guard let placeListDTO = placeListResponse.result else {
             throw PlaceServiceError.noData
         }
-        placesList = PlaceListUIO(places: placeListDTO.places, hasNext: placeListDTO.hasNext, nextCursor: placeListDTO.nextCursor)
+        placesList = PlaceListUIO(places: placeListDTO.contents, hasNext: placeListDTO.hasNext, nextCursor: placeListDTO.nextCursor)
         return placesList
     }
     
@@ -76,7 +76,7 @@ class PlaceService: PlaceServiceProtocol {
         guard let placeListDTO = placeListResponse.result else {
             throw PlaceServiceError.noData
         }
-        placesList = PlaceListUIO(places: placeListDTO.places, hasNext: placeListDTO.hasNext, nextCursor: placeListDTO.nextCursor)
+        placesList = PlaceListUIO(places: placeListDTO.contents, hasNext: placeListDTO.hasNext, nextCursor: placeListDTO.nextCursor)
         return placesList
     }
     
@@ -88,7 +88,7 @@ class PlaceService: PlaceServiceProtocol {
         guard let placeListDTO = placeListResponse.result else {
             throw PlaceServiceError.noData
         }
-        placesList = PlaceListUIO(places: placeListDTO.places, hasNext: placeListDTO.hasNext, nextCursor: placeListDTO.nextCursor)
+        placesList = PlaceListUIO(places: placeListDTO.contents, hasNext: placeListDTO.hasNext, nextCursor: placeListDTO.nextCursor)
         return placesList
     }
     
@@ -117,7 +117,7 @@ class PlaceService: PlaceServiceProtocol {
         guard let reviewListDTO = reviewListResponse.result else {
             throw PlaceServiceError.noData
         }
-        reviewsList = ReviewListUIO(reviews: reviewListDTO.places, hasNext: reviewListDTO.hasNext, nextCursor: reviewListDTO.nextCursor)
+        reviewsList = ReviewListUIO(reviews: reviewListDTO.contents, hasNext: reviewListDTO.hasNext, nextCursor: reviewListDTO.nextCursor)
         return reviewsList
     }
     

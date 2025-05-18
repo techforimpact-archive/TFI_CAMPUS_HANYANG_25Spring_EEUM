@@ -9,7 +9,7 @@ struct ReviewListResponseDTO: Decodable {
 }
 
 struct ReviewListDTOContainer: Decodable {
-    let places: [ReviewDTO]
+    let contents: [ReviewDTO]
     let hasNext: Bool
     let nextCursor: String?
 }
