@@ -7,6 +7,7 @@ struct ReviewDTO: Decodable {
     let userNickname: String
     let content: String
     let rating: Int
+    let imageUrls: [String]
     let createdAt: String
     let recommended: Bool
 }
