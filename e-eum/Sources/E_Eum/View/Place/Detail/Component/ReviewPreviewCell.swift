@@ -42,7 +42,9 @@ private extension ReviewPreviewCell {
                     .font(.title3)
                     .bold()
                 
-                Text(review.content)
+                if let content = review.content {
+                    Text(content)
+                }
                 
                 Text("\(review.rating)")
             }

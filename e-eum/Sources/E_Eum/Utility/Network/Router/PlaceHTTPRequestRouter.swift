@@ -11,7 +11,7 @@ enum PlaceHTTPRequestRouter {
     case getPlaceDetails(placeID: String)
     case getInitialPlaceReviews(placeID: String)
     case getPlaceReviews(placeID: String, lastID: String, size: Int, sortBy: String, sortDirection: String)
-    case createPlaceReview(placeID: String, reviewBody: Data)
+    case createPlaceReview(placeID: String, data: Data)
 }
 
 extension PlaceHTTPRequestRouter: HTTPRequestable {
@@ -37,8 +37,8 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
         switch self {
         case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getInitialPlaceReviews, .getPlaceReviews:
             return nil
-        case .createPlaceReview(_, let reviewBody):
-            return reviewBody
+        case .createPlaceReview(_, let data):
+            return data
         }
     }
     

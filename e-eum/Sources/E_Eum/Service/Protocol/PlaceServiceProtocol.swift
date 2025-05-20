@@ -1,4 +1,5 @@
 import Foundation
+import SkipUI
 
 protocol PlaceServiceProtocol {
     func getAllPlacesOnMap(latitude: Double, longitude: Double, radius: Double) async throws -> [PlaceUIO]
@@ -10,5 +11,5 @@ protocol PlaceServiceProtocol {
     func getPlacesOnListByKeyword(keyword: String, lastID: String, size: Int, sortBy: String, sortDirection: String) async throws -> PlaceListUIO
     func getPlaceDetails(placeID: String) async throws -> PlaceDetailUIO
     func getPlaceReviews(placeID: String, lastID: String?, size: Int?, sortBy: String?, sortDirection: String?) async throws -> ReviewListUIO
-    func createPlaceReview(placeID: String, reviewBody: ReviewBodyDTO) async throws -> ReviewUIO
+    func createPlaceReview(placeID: String, content: String, ratings: Dictionary<String, Int>, recommended: Bool, images: [UIImage]) async throws -> ReviewUIO
 }

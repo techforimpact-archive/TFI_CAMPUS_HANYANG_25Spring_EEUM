@@ -32,8 +32,7 @@ struct ReviewCreateView: View {
             BasicButton(title: "한줄평 작성하기", disabled: $buttonDisabled) {
                 Task {
                     do {
-                        let reviewBody = ReviewBodyDTO(content: content, ratings: ratings, recommended: recommended)
-                        _ = try await placeService.createPlaceReview(placeID: placeId, reviewBody: reviewBody)
+                        _ = try await placeService.createPlaceReview(placeID: placeId, content: content, ratings: ratings, recommended: recommended, images: [])
                         showReviewCreatedAlert = true
                     } catch {
                         print(error.localizedDescription)

@@ -14,6 +14,14 @@ struct NetworkUtility {
         return data
     }
     
+    func requestWithMultipartForm(router: HTTPRequestable, boundary: String) async throws -> Data {
+        var request = try router.asURLRequest()
+        request.setValue("multipart/form-data; boundary=\"\(boundary)\"", forHTTPHeaderField: "Content-Type")
+        let (data, _) = try await session.data(for: request)
+        
+        return data
+    }
+    
     func requestWithStatusCode(router: any HTTPRequestable) async throws -> (Int, Data) {
         let request = try router.asURLRequest()
         let (data, response) = try await session.data(for: request)

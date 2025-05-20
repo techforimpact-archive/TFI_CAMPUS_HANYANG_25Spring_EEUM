@@ -23,8 +23,10 @@ struct ReviewListCell: View {
                 Text("\(review.rating)")
             }
             
-            Text(review.content)
-                .multilineTextAlignment(.leading)
+            if let content = review.content {
+                Text(content)
+                    .multilineTextAlignment(.leading)
+            }
             
             Divider()
                 .padding(.top, 8)

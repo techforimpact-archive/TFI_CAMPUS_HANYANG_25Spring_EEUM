@@ -5,13 +5,13 @@ struct ReviewUIO: Identifiable {
     let placeId: String
     let userId: String
     let userNickname: String
-    let content: String
+    let content: String?
     let rating: Int
     let imageUrls: [String]
     let createdAt: String
     let recommended: Bool
     
-    init(id: String, placeId: String, userId: String, userNickname: String, content: String, rating: Int, imageUrls: [String], createdAt: String, recommended: Bool) {
+    init(id: String, placeId: String, userId: String, userNickname: String, content: String?, rating: Int, imageUrls: [String], createdAt: String, recommended: Bool) {
         self.id = id
         self.placeId = placeId
         self.userId = userId
