@@ -1,5 +1,5 @@
 import Foundation
-import SkipUI
+import UIKit
 
 class PlaceService: PlaceServiceProtocol {
     private let networkUtility: NetworkUtility = NetworkUtility()
@@ -113,7 +113,6 @@ class PlaceService: PlaceServiceProtocol {
             router = PlaceHTTPRequestRouter.getInitialPlaceReviews(placeID: placeID)
         }
         let data = try await networkUtility.request(router: router)
-        print(String(data: data, encoding: .utf8) ?? "")
         let reviewListResponse = try jsonDecoder.decode(ReviewListResponseDTO.self, from: data)
         var reviewsList: ReviewListUIO
         guard let reviewListDTO = reviewListResponse.result else {
@@ -123,7 +122,7 @@ class PlaceService: PlaceServiceProtocol {
         return reviewsList
     }
     
-    func createPlaceReview(placeID: String, content: String, ratings: Dictionary<String, Int>, recommended: Bool, images: [UIImage]) async throws -> ReviewUIO {
+    func createPlaceReview(placeID: String, content: String, ratings: Dictionary<String, Int>, recommended: Bool, image: UIImage) async throws -> ReviewUIO {
         var builder = MultipartForm()
         let inputData = try JSONSerialization.data(withJSONObject: [
             "content": content,
@@ -131,14 +130,12 @@ class PlaceService: PlaceServiceProtocol {
             "recommended": recommended
         ])
         builder.append(name: "reviewData", content: .json(data: inputData))
-        for index in 0..<images.count {
-            if let jpegData = images[index].jpegData(compressionQuality: 0.7) {
-                builder.append(
-                    name: "reviewImages",
-                    fileName: "\(placeID)_\(UUID().uuidString)_\(index).jpeg",
-                    content: .jpeg(data: jpegData)
-                )
-            }
+        if let jpegData = image.jpegData(compressionQuality: 0.6) {
+            builder.append(
+                name: "reviewImages",
+                fileName: "\(placeID)_\(UUID().uuidString).jpeg",
+                content: .jpeg(data: jpegData)
+            )
         }
         guard let (boundary, data) = builder.build() else {
             throw PlaceServiceError.multipartFormBuilderError

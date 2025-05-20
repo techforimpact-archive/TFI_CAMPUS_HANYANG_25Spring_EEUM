@@ -11,8 +11,13 @@ struct ReviewListView: View {
         VStack(alignment: .leading) {
             ScrollView {
                 ForEach(reviews) { review in
-                    ReviewListCell(review: review)
-                        .padding(.top, 8)
+                    VStack {
+                        ReviewListCell(review: review)
+                        
+                        Divider()
+                            .padding(.top, 8)
+                    }
+                    .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                 }
             }
             

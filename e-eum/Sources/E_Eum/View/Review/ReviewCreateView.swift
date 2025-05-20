@@ -1,9 +1,13 @@
 import SwiftUI
+import SkipKit
+import UIKit
 
 struct ReviewCreateView: View {
     @Environment(\.dismiss) private var dismiss
     
     let placeId: String
+    
+    let type: MediaPickerType = .library
     
     @State private var placeService = PlaceService()
     @State private var reviewService = ReviewService()
@@ -13,6 +17,9 @@ struct ReviewCreateView: View {
     @State private var content: String = ""
     @State private var ratings: Dictionary<String, Int> = [:]
     @State private var recommended: Bool = false
+    @State private var showImagePicker = false
+    @State private var selectedImageURL: URL?
+    @State private var selectedUIImage: UIImage?
     @State private var showReviewCreatedAlert: Bool = false
     
     @FocusState private var isFocused: Bool
@@ -32,7 +39,9 @@ struct ReviewCreateView: View {
             BasicButton(title: "한줄평 작성하기", disabled: $buttonDisabled) {
                 Task {
                     do {
-                        _ = try await placeService.createPlaceReview(placeID: placeId, content: content, ratings: ratings, recommended: recommended, images: [])
+                        if let selectedUIImage = selectedUIImage {
+                            _ = try await placeService.createPlaceReview(placeID: placeId, content: content, ratings: ratings, recommended: recommended, image: selectedUIImage)
+                        }
                         showReviewCreatedAlert = true
                     } catch {
                         print(error.localizedDescription)
@@ -113,22 +122,51 @@ extension ReviewCreateView {
                     }
                 }
             case "last":
-                TextField("500자 이내", text: $content)
-                    .focused($isFocused)
-                    .onAppear(perform: {
-                        isFocused = true
-                    })
-                    .onChange(of: content, { oldValue, newValue in
-                        if currentQuestionIndex == questions.count - 1 {
-                            if newValue == "" {
-                                buttonDisabled = true
+                VStack {
+                    TextField("500자 이내", text: $content)
+                        .focused($isFocused)
+                        .onAppear(perform: {
+                            isFocused = true
+                        })
+                        .onChange(of: content, { oldValue, newValue in
+                            if currentQuestionIndex == questions.count - 1 {
+                                if newValue == "" {
+                                    buttonDisabled = true
+                                } else {
+                                    buttonDisabled = false
+                                }
                             } else {
-                                buttonDisabled = false
+                                buttonDisabled = true
                             }
+                        })
+                    
+                    Button {
+                        showImagePicker = true
+                    } label: {
+                        if let selectedUIImage = selectedUIImage {
+                            Image(uiImage: selectedUIImage)
+                                .resizable()
+                                .frame(width: 200, height: 200)
+                                .aspectRatio(contentMode: .fill)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                         } else {
-                            buttonDisabled = true
+                            RoundedRectangle(cornerRadius: 8)
+                                .frame(width: 200, height: 200)
+                                .foregroundStyle(Color.gray)
+                                .overlay {
+                                    Text("사진 추가하기")
+                                        .bold()
+                                        .foregroundStyle(Color.white)
+                                }
                         }
-                    })
+                    }
+                    .withMediaPicker(type: .library, isPresented: $showImagePicker, selectedImageURL: $selectedImageURL)
+                    .onChange(of: selectedImageURL) {
+                        if let selectedImageURL = selectedImageURL {
+                            loadUIImage(from: selectedImageURL)
+                        }
+                    }
+                }
             default:
                 HStack(alignment: .top) {
                     VStack {
@@ -173,5 +211,13 @@ extension ReviewCreateView {
             }
         }
         .padding(16)
+    }
+}
+
+private extension ReviewCreateView {
+    func loadUIImage(from url: URL) {
+        if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+            self.selectedUIImage = image
+        }
     }
 }
