@@ -2,7 +2,9 @@ import SwiftUI
 
 enum ContentTab: String {
     case info
-    case place
+    case placeMap
+    case placeList
+    case user
 }
 
 struct ContentView: View {
@@ -16,7 +18,7 @@ struct ContentView: View {
                 }
                 .tag(ContentTab.info)
             
-            PlaceView()
+            PlaceMapView()
                 .tabItem {
                     #if SKIP
                     Label("장소", systemImage: "Icons.Outlined.Place")
@@ -24,7 +26,19 @@ struct ContentView: View {
                     Label("장소", systemImage: "mappin.and.ellipse")
                     #endif
                 }
-                .tag(ContentTab.place)
+                .tag(ContentTab.placeMap)
+            
+            PlaceListView()
+                .tabItem {
+                    Label("목록", systemImage: "list.bullet")
+                }
+                .tag(ContentTab.placeList)
+            
+            UserView()
+                .tabItem {
+                    Label("유저", systemImage: "person.crop.circle")
+                }
+                .tag(ContentTab.user)
         }
         .preferredColorScheme(.light)
     }

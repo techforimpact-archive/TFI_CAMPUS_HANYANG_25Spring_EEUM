@@ -9,16 +9,15 @@ struct PlaceListView: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading) {
-                RainbowColorTitle(text: "장소 목록", font: .title)
-                    .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                header
                 
                 ScrollView {
                     ForEach(places) { place in
-                        PlaceListCell(place: place)
-                            .onTapGesture {
-                                selectedPlaceID = place.id
-                                showDetail = true
-                            }
+                        NavigationLink {
+                            PlaceDetailView(placeID: place.id, isNavigation: true)
+                        } label: {
+                            PlaceListCell(place: place)
+                        }
                     }
                 }
             }
@@ -29,9 +28,37 @@ struct PlaceListView: View {
                     print(error.localizedDescription)
                 }
             }
-            .sheet(isPresented: $showDetail) {
-                PlaceDetailView(placeID: $selectedPlaceID)
+        }
+    }
+}
+
+private extension PlaceListView {
+    var header: some View {
+        HStack {
+            RainbowColorTitle(text: "장소 목록", font: .title)
+            
+            Spacer()
+            
+            Button {
+                
+            } label: {
+                Circle()
+                    .frame(width: 34, height: 34)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.red, .orange, .yellow, .green, .blue, .indigo, .purple],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .overlay {
+                        Image(systemName: "magnifyingglass")
+                            .font(.title2)
+                            .bold()
+                            .foregroundStyle(Color.white)
+                    }
             }
         }
+        .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
     }
 }

@@ -23,6 +23,7 @@ struct PlaceListCell: View {
                 Image(systemName: "location.fill")
                 
                 Text(place.fullAddress)
+                    .foregroundStyle(Color.black)
                 
                 Spacer()
             }

@@ -24,14 +24,21 @@ struct MapAndroidView: View {
                 for place in places {
                     Marker(
                         state: rememberMarkerState(position = LatLng(place.latitude, place.longitude)),
-                        title = place.name
+                        title = place.name,
+                        onClick = { marker in
+                            withAnimation {
+                                selectedPlaceID = place.id
+                                showDetail = true
+                            }
+                            true
+                        }
                     )
                 }
             }
         }
-        .sheet(isPresented: $showDetail) {
-            PlaceDetailView(placeID: $selectedPlaceID)
-        }
+        .fullScreenCover(isPresented: $showDetail, content: {
+            PlaceDetailView(placeID: selectedPlaceID, isNavigation: false)
+        })
     }
 }
 #endif

@@ -35,9 +35,9 @@ struct MapiOSView: View {
                 MapUserLocationButton()
             }
             .mapStyle(.standard(pointsOfInterest: .excludingAll))
-            .sheet(isPresented: $showDetail) {
-                PlaceDetailView(placeID: $selectedPlaceID)
-            }
+            .fullScreenCover(isPresented: $showDetail, content: {
+                PlaceDetailView(placeID: selectedPlaceID, isNavigation: false)
+            })
         } else {
             Text("지도는 iOS 17 이상에서만 지원됩니다.")
                 .font(.title)
