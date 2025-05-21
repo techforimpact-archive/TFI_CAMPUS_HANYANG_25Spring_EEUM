@@ -4,17 +4,20 @@ struct ReviewListView: View {
     let placeID: String
     
     @State private var placeService = PlaceService()
-    @State private var reviews: [ReviewUIO]?
+    @State private var reviews: [ReviewUIO] = []
     @State private var navigationToReviewCreate: Bool = false
     
     var body: some View {
         VStack(alignment: .leading) {
-            if let reviews = reviews {
-                ScrollView {
-                    ForEach(reviews) { review in
+            ScrollView {
+                ForEach(reviews) { review in
+                    VStack {
                         ReviewListCell(review: review)
+                        
+                        Divider()
                             .padding(.top, 8)
                     }
+                    .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                 }
             }
             
@@ -32,8 +35,7 @@ struct ReviewListView: View {
         .navigationBarTitleDisplayMode(.inline)
         .task {
             do {
-//                reviews = try await placeService.getPlaceReviews(placeID: placeID, lastID: placeID, size: 10, sortBy: "reviewStats.temperature", sortDirection: "DESC").reviews
-                reviews = ReviewUIO.samples
+                reviews = try await placeService.getPlaceReviews(placeID: placeID, lastID: nil, size: nil, sortBy: nil, sortDirection: nil).reviews
             } catch {
                 print(error.localizedDescription)
             }

@@ -4,31 +4,45 @@ struct ReviewListCell: View {
     let review: ReviewUIO
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                if review.recommended {
-                    Image(systemName: "hand.thumbsup.fill")
-                        .foregroundStyle(Color.pink)
-                } else {
-                    Image(systemName: "hand.thumbsup")
-                        .foregroundStyle(Color.gray)
+        HStack(alignment: .top, spacing: 16) {
+            VStack(alignment: .leading) {
+                HStack(spacing: 8) {
+                    if review.recommended {
+                        Image(systemName: "hand.thumbsup.fill")
+                            .foregroundStyle(Color.pink)
+                    } else {
+                        Image(systemName: "hand.thumbsup")
+                            .foregroundStyle(Color.gray)
+                    }
+                    
+                    Text(review.userNickname)
+                        .font(.title3)
+                        .bold()
+                    
+                    Text("\(review.rating)")
                 }
                 
-                Text(review.userNickname)
-                    .font(.title3)
-                    .bold()
-                
-                Spacer()
-                
-                Text("\(review.rating)")
+                if let content = review.content {
+                    Text(content)
+                        .multilineTextAlignment(.leading)
+                }
             }
             
-            Text(review.content)
-                .multilineTextAlignment(.leading)
+            Spacer()
             
-            Divider()
-                .padding(.top, 8)
+            if let imageUrl = review.imageUrls.first {
+                AsyncImage(url: URL(string: imageUrl)!) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 80, height: 80)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                } placeholder: {
+                    ProgressView()
+                        .frame(width: 80, height: 80)
+                        .foregroundStyle(Color.pink)
+                }
+            }
         }
-        .padding(.horizontal, 16)
     }
 }

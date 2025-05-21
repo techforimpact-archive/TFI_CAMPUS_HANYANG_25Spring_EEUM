@@ -9,7 +9,7 @@ struct PlaceListResponseDTO: Decodable {
 }
 
 struct PlaceListDTOContainer: Decodable {
-    let places: [PlaceDTO]
+    let contents: [PlaceDTO]
     let hasNext: Bool
     let nextCursor: String
 }

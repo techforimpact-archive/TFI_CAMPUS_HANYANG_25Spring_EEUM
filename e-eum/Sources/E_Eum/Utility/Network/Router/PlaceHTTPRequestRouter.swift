@@ -9,28 +9,36 @@ enum PlaceHTTPRequestRouter {
     case getPlacesOnListByCategories(categories: [String], lastID: String, size: Int, sortBy: String, sortDirection: String)
     case getPlacesOnListByKeyword(keyword: String, lastID: String, size: Int, sortBy: String, sortDirection: String)
     case getPlaceDetails(placeID: String)
+    case getInitialPlaceReviews(placeID: String)
     case getPlaceReviews(placeID: String, lastID: String, size: Int, sortBy: String, sortDirection: String)
-    case createPlaceReview(placeID: String, reviewBody: Data)
+    case createPlaceReview(placeID: String, data: Data)
 }
 
 extension PlaceHTTPRequestRouter: HTTPRequestable {
     var method: HTTPMethod {
         switch self {
-        case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getPlaceReviews:
+        case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getInitialPlaceReviews, .getPlaceReviews:
             return .get
         case .createPlaceReview:
             return .post
         }
     }
     
-    var headers: [String : String]? { return nil }
+    var headers: [String : String]? {
+        switch self {
+        case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getInitialPlaceReviews, .getPlaceReviews:
+            return nil
+        case .createPlaceReview:
+            return ["content-type": "multipart/form-data"]
+        }
+    }
     
     var body: Data? {
         switch self {
-        case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getPlaceReviews:
+        case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getInitialPlaceReviews, .getPlaceReviews:
             return nil
-        case .createPlaceReview(_, let reviewBody):
-            return reviewBody
+        case .createPlaceReview(_, let data):
+            return data
         }
     }
     
@@ -62,6 +70,8 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
             return ["v1", "places"]
         case .getPlaceDetails(let placeID):
             return ["v1", "places", "\(placeID)"]
+        case .getInitialPlaceReviews(let placeID):
+            return ["v1", "places", "\(placeID)", "reviews"]
         case .getPlaceReviews(let placeID, _, _, _, _):
             return ["v1", "places", "\(placeID)", "reviews"]
         case .createPlaceReview(let placeID, _):
@@ -71,7 +81,7 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
     
     var queryItems: [URLQueryItem]? {
         switch self {
-        case .getPlaceDetails, .createPlaceReview:
+        case .getPlaceDetails, .createPlaceReview, .getInitialPlaceReviews:
             return nil
         case .getAllPlacesOnMap(let latitude, let longitude, let radius):
             let queryItems = [

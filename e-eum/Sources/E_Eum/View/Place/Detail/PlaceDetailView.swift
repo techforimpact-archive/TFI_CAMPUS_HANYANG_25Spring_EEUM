@@ -7,7 +7,7 @@ struct PlaceDetailView: View {
     
     @State private var placeService = PlaceService()
     @State private var place: PlaceDetailUIO?
-    @State private var reviews: [ReviewUIO]?
+    @State private var reviews: [ReviewUIO] = []
     @State private var navigationToReviewCreate: Bool = false
     
     var body: some View {
@@ -18,9 +18,7 @@ struct PlaceDetailView: View {
                 if let place = place {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 16) {
-                            Image("sample")
-                                .resizable()
-                                .scaledToFit()
+                            PlaceDetailReviewImagesCell(imageUrls: place.imageUrls)
                             
                             PlaceDetailTitleCell(place: place)
                             
@@ -38,7 +36,7 @@ struct PlaceDetailView: View {
                             
                             Divider()
                             
-                            if let reviews = reviews {
+                            if !reviews.isEmpty {
                                 ReviewPreviewCell(placeID: placeID, reviews: reviews)
                             } else {
                                 BasicButton(title: "한줄평 작성하기", disabled: .constant(false)) {
@@ -59,8 +57,7 @@ struct PlaceDetailView: View {
             .task {
                 do {
                     place = try await placeService.getPlaceDetails(placeID: placeID)
-//                    reviews = try await placeService.getPlaceReviews(placeID: placeID, lastID: placeID, size: 3, sortBy: "reviewStats.temperature", sortDirection: "DESC").reviews
-                    reviews = ReviewUIO.samples
+                    reviews = try await placeService.getPlaceReviews(placeID: placeID, lastID: nil, size: nil, sortBy: nil, sortDirection: nil).reviews
                 } catch {
                     print(error.localizedDescription)
                 }

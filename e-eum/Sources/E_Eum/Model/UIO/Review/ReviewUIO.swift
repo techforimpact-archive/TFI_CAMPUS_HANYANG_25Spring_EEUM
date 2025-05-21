@@ -5,18 +5,20 @@ struct ReviewUIO: Identifiable {
     let placeId: String
     let userId: String
     let userNickname: String
-    let content: String
+    let content: String?
     let rating: Int
+    let imageUrls: [String]
     let createdAt: String
     let recommended: Bool
     
-    init(id: String, placeId: String, userId: String, userNickname: String, content: String, rating: Int, createdAt: String, recommended: Bool) {
+    init(id: String, placeId: String, userId: String, userNickname: String, content: String?, rating: Int, imageUrls: [String], createdAt: String, recommended: Bool) {
         self.id = id
         self.placeId = placeId
         self.userId = userId
         self.userNickname = userNickname
         self.content = content
         self.rating = rating
+        self.imageUrls = imageUrls
         self.createdAt = createdAt
         self.recommended = recommended
     }
@@ -28,6 +30,7 @@ struct ReviewUIO: Identifiable {
         self.userNickname = reviewDTO.userNickname
         self.content = reviewDTO.content
         self.rating = reviewDTO.rating
+        self.imageUrls = reviewDTO.imageUrls
         self.createdAt = reviewDTO.createdAt
         self.recommended = reviewDTO.recommended
     }
@@ -41,6 +44,7 @@ extension ReviewUIO {
         userNickname: "user0",
         content: "아주 좋아요",
         rating: 10,
+        imageUrls: [],
         createdAt: "2025-05-13T14:01:18.925Z",
         recommended: true
     )
@@ -52,6 +56,7 @@ extension ReviewUIO {
         userNickname: "user1",
         content: "최악이에요",
         rating: 0,
+        imageUrls: [],
         createdAt: "2025-05-13T14:01:18.925Z",
         recommended: false
     )
@@ -63,6 +68,7 @@ extension ReviewUIO {
         userNickname: "user2",
         content: "좋아요",
         rating: 7,
+        imageUrls: [],
         createdAt: "2025-05-13T14:01:18.925Z",
         recommended: true
     )

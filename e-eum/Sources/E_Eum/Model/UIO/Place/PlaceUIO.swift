@@ -8,12 +8,13 @@ struct PlaceUIO: Identifiable {
     let province: String
     let city: String
     let district: String
+    let fullAddress: String
     let categories: [String]
     let temperature: Double
     let status: String
     let verified: Bool
     
-    init(id: String, name: String, longitude: Double, latitude: Double, province: String, city: String, district: String, categories: [String], temperature: Double, status: String, verified: Bool) {
+    init(id: String, name: String, longitude: Double, latitude: Double, province: String, city: String, district: String, fullAddress: String, categories: [String], temperature: Double, status: String, verified: Bool) {
         self.id = id
         self.name = name
         self.longitude = longitude
@@ -21,6 +22,7 @@ struct PlaceUIO: Identifiable {
         self.province = province
         self.city = city
         self.district = district
+        self.fullAddress = fullAddress
         self.categories = categories
         self.temperature = temperature
         self.status = status
@@ -35,6 +37,7 @@ struct PlaceUIO: Identifiable {
         self.province = placeDTO.province
         self.city = placeDTO.city
         self.district = placeDTO.district
+        self.fullAddress = placeDTO.fullAddress
         self.categories = placeDTO.categories
         self.temperature = placeDTO.temperature
         self.status = placeDTO.status
@@ -51,6 +54,7 @@ extension PlaceUIO {
         province: "서울특별시",
         city: "서초구",
         district: "서초동",
+        fullAddress: "서울특별시 서초구 서초동",
         categories: ["COUNSELING"],
         temperature: 4.5,
         status: "ACTIVE",
@@ -65,6 +69,7 @@ extension PlaceUIO {
         province: "서울특별시",
         city: "강남구",
         district: "역삼동",
+        fullAddress: "서울특별시 강남구 역삼동",
         categories: ["HOSPITAL"],
         temperature: 4.7,
         status: "ACTIVE",
@@ -79,6 +84,7 @@ extension PlaceUIO {
         province: "서울특별시",
         city: "종로구",
         district: "종로1가",
+        fullAddress: "서울특별시 종로구 종로1가",
         categories: ["SHELTER"],
         temperature: 4.6,
         status: "ACTIVE",

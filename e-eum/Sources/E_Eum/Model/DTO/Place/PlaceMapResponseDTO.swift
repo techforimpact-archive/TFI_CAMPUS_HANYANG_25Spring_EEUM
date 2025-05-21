@@ -9,5 +9,5 @@ struct PlaceMapResponseDTO: Decodable {
 }
 
 struct PlaceDTOContainer: Decodable {
-    let places: [PlaceDTO]
+    let contents: [PlaceDTO]
 }
