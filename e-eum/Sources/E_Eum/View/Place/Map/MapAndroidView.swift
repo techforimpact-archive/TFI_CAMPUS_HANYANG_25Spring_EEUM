@@ -3,6 +3,7 @@ import SwiftUI
 import com.google.maps.android.compose.__
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 
 struct MapAndroidView: View {
     @State private var placeService = PlaceService()
@@ -24,13 +25,45 @@ struct MapAndroidView: View {
                 for place in places {
                     Marker(
                         state: rememberMarkerState(position = LatLng(place.latitude, place.longitude)),
-                        title = place.name
+                        title = place.name,
+                        icon = BitmapDescriptorFactory.defaultMarker(checkCategoryTagColor(category: place.categories[0])),
+                        onClick = { marker in
+                            withAnimation {
+                                selectedPlaceID = place.id
+                                showDetail = true
+                            }
+                            true
+                        }
                     )
                 }
             }
         }
-        .sheet(isPresented: $showDetail) {
-            PlaceDetailView(placeID: $selectedPlaceID)
+        .fullScreenCover(isPresented: $showDetail, content: {
+            PlaceDetailView(placeID: selectedPlaceID, isNavigation: false)
+        })
+    }
+}
+
+private extension MapAndroidView {
+    func checkCategoryTagColor(category: String) -> Float {
+        let categoryType = PlaceCategory(rawValue: category) ?? .etc
+        switch categoryType {
+        case .counseling:
+            return BitmapDescriptorFactory.HUE_RED
+        case .hospital:
+            return BitmapDescriptorFactory.HUE_ORANGE
+        case .shelter:
+            return BitmapDescriptorFactory.HUE_YELLOW
+        case .legal:
+            return BitmapDescriptorFactory.HUE_GREEN
+        case .cafe:
+            return BitmapDescriptorFactory.HUE_BLUE
+        case .bookstore:
+            return BitmapDescriptorFactory.HUE_VIOLET
+        case .exhibition:
+            return BitmapDescriptorFactory.HUE_MAGENTA
+        case .etc:
+            return BitmapDescriptorFactory.HUE_CYAN
         }
     }
 }

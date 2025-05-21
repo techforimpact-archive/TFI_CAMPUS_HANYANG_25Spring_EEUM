@@ -3,7 +3,8 @@ import SwiftUI
 struct PlaceDetailView: View {
     @Environment(\.dismiss) private var dismiss
     
-    @Binding var placeID: String
+    let placeID: String
+    let isNavigation: Bool
     
     @State private var placeService = PlaceService()
     @State private var place: PlaceDetailUIO?
@@ -13,7 +14,9 @@ struct PlaceDetailView: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .center, spacing: 16) {
-                SheetHeader()
+                if !isNavigation {
+                    SheetHeader()
+                }
                 
                 if let place = place {
                     ScrollView(showsIndicators: false) {

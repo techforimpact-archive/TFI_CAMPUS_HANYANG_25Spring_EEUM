@@ -7,15 +7,51 @@ struct PlaceMapView: View {
     @State private var latitude: Double? = nil
     @State private var longitude: Double? = nil
     @State private var places: [PlaceUIO] = []
+    @State private var searchText: String = ""
     
     var body: some View {
-        VStack {
+        ZStack {
             if let latitude = latitude, let longitude = longitude {
                 #if os(iOS)
                 MapiOSView(latitude: latitude, longitude: longitude, places: $places)
                 #elseif os(Android)
                 MapAndroidView(latitude: latitude, longitude: longitude, places: $places)
                 #endif
+            }
+            
+            VStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .frame(height: 50)
+                    .foregroundStyle(Color.white)
+                    .overlay {
+                        HStack(spacing: 8) {
+                            TextField("검색어를 입력하세요.", text: $searchText)
+                            
+                            Button {
+                                
+                            } label: {
+                                Circle()
+                                    .frame(width: 34, height: 34)
+                                    .foregroundStyle(
+                                        LinearGradient(
+                                            colors: [.red, .orange, .yellow, .green, .blue, .indigo, .purple],
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                    .overlay {
+                                        Image(systemName: "magnifyingglass")
+                                            .font(.title2)
+                                            .bold()
+                                            .foregroundStyle(Color.white)
+                                    }
+                            }
+                        }
+                        .padding(8)
+                    }
+                    .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                
+                Spacer()
             }
         }
         .task {
