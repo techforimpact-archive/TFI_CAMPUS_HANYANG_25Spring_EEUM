@@ -22,7 +22,7 @@ struct MapiOSView: View {
                         longitude: place.longitude
                     )) {
                         Image(systemName: "mappin.circle.fill")
-                            .foregroundStyle(.red)
+                            .foregroundStyle(checkCategoryTagColor(category: place.categories[0]))
                             .font(.title)
                             .onTapGesture {
                                 selectedPlaceID = place.id
@@ -41,6 +41,30 @@ struct MapiOSView: View {
         } else {
             Text("지도는 iOS 17 이상에서만 지원됩니다.")
                 .font(.title)
+        }
+    }
+}
+
+private extension MapiOSView {
+    func checkCategoryTagColor(category: String) -> Color {
+        let categoryType = PlaceCategory(rawValue: category) ?? .etc
+        switch categoryType {
+        case .counseling:
+            return .red
+        case .hospital:
+            return .orange
+        case .shelter:
+            return .yellow
+        case .legal:
+            return .green
+        case .cafe:
+            return .blue
+        case .bookstore:
+            return .indigo
+        case .exhibition:
+            return .purple
+        case .etc:
+            return .gray
         }
     }
 }
