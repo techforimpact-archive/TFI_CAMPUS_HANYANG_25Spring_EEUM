@@ -20,6 +20,7 @@ public class PlaceDetailResponseDto {
     private String district;
     private String fullAddress;
     private List<PlaceCategory> categories;
+    private List<String> imageUrls;
     private String description;
     private String phone;
     private String email;
@@ -29,7 +30,7 @@ public class PlaceDetailResponseDto {
     private PlaceStatus status;
     private boolean isVerified;
 
-    public static PlaceDetailResponseDto toPlaceDetailResponseDto(Place place) {
+    public static PlaceDetailResponseDto toPlaceDetailResponseDto(Place place, List<String> imageUrls) {
         return PlaceDetailResponseDto.builder()
                 .id(place.getId())
                 .name(place.getName())
@@ -43,6 +44,7 @@ public class PlaceDetailResponseDto {
                 .description(place.getDescription())
                 .phone(place.getContact().getPhone())
                 .email(place.getContact().getEmail())
+                .imageUrls(imageUrls)
                 .website(place.getContact().getWebsite())
                 .temperature(place.getReviewStats().getTemperature())
                 .reviewCount(place.getReviewStats().getCount())
