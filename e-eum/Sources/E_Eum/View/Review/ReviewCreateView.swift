@@ -7,11 +7,11 @@ struct ReviewCreateView: View {
     
     let placeId: String
     
-    let type: MediaPickerType = .library
+    private let type: MediaPickerType = .library
     
     @State private var placeService = PlaceService()
     @State private var reviewService = ReviewService()
-    @State private var questions: [QuestionUIO] = [QuestionUIO(id: "first", question: "해당 장소는 어떠셨나요?")]
+    @State private var questions: [QuestionUIO] = [QuestionUIO(id: "recommend", question: "해당 장소는 어떠셨나요?")]
     @State private var currentQuestionIndex: Int = 0
     @State private var buttonDisabled: Bool = true
     @State private var content: String = ""
@@ -25,7 +25,7 @@ struct ReviewCreateView: View {
     @FocusState private var isFocused: Bool
     
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 8) {
             Spacer()
             
             Text("\(currentQuestionIndex + 1) / \(questions.count)")
@@ -50,12 +50,12 @@ struct ReviewCreateView: View {
                     }
                 }
             }
-            .padding(16)
+            .padding(EdgeInsets(top: 0, leading: 16, bottom: 16, trailing: 16))
         }
         .task {
             do {
                 questions.append(contentsOf: try await reviewService.getQuestions())
-                questions.append(QuestionUIO(id: "last", question: "추가로 남기고 싶은 이야기나 느낀 점이 있다면 자유롭게 작성해주세요."))
+                questions.append(QuestionUIO(id: "content", question: "추가로 남기고 싶은 이야기나 느낀 점이 있다면 자유롭게 작성해주세요."))
             } catch {
                 print(error.localizedDescription)
             }
@@ -90,7 +90,7 @@ extension ReviewCreateView {
             }
             
             switch question.id {
-            case "first":
+            case "recommend":
                 HStack(spacing: 16) {
                     Button {
                         recommended = true
@@ -123,9 +123,10 @@ extension ReviewCreateView {
                             )
                     }
                 }
-            case "last":
+            case "content":
                 VStack {
                     TextField("500자 이내", text: $content)
+                        .multilineTextAlignment(.leading)
                         .focused($isFocused)
                         .onAppear(perform: {
                             isFocused = true
@@ -148,12 +149,12 @@ extension ReviewCreateView {
                         if let selectedUIImage = selectedUIImage {
                             Image(uiImage: selectedUIImage)
                                 .resizable()
-                                .frame(width: 200, height: 200)
                                 .aspectRatio(contentMode: .fill)
+                                .frame(width: 120, height: 120)
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                         } else {
                             RoundedRectangle(cornerRadius: 8)
-                                .frame(width: 200, height: 200)
+                                .frame(width: 120, height: 120)
                                 .foregroundStyle(Color.gray)
                                 .overlay {
                                     Text("사진 추가하기")
@@ -212,7 +213,7 @@ extension ReviewCreateView {
                 .padding(.horizontal, 16)
             }
         }
-        .padding(16)
+        .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
     }
 }
 
