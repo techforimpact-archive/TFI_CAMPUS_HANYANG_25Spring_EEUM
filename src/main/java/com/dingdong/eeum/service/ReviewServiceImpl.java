@@ -50,7 +50,7 @@ public class ReviewServiceImpl implements ReviewService {
         String userId = "680debb4dad30a632439e914";
         String userNickname = "에온";
 
-        int averageRating = calculateWeightedAverageRating(requestDto.getRatingsJson());
+        int averageRating = calculateWeightedAverageRating(requestDto.getRatings());
 
         List<String> imageUrls = new ArrayList<>();
         if (requestDto.getImages() != null && !requestDto.getImages().isEmpty()) {
