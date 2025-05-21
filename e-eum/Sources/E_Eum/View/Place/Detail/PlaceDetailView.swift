@@ -18,9 +18,7 @@ struct PlaceDetailView: View {
                 if let place = place {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 16) {
-                            Image("sample")
-                                .resizable()
-                                .scaledToFit()
+                            PlaceDetailReviewImagesCell(imageUrls: place.imageUrls)
                             
                             PlaceDetailTitleCell(place: place)
                             

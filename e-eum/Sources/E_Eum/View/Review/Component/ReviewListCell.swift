@@ -33,10 +33,14 @@ struct ReviewListCell: View {
             if let imageUrl = review.imageUrls.first {
                 AsyncImage(url: URL(string: imageUrl)!) { image in
                     image
-                        .image?.resizable()
-                        .frame(width: 80, height: 80)
+                        .resizable()
                         .aspectRatio(contentMode: .fill)
+                        .frame(width: 80, height: 80)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
+                } placeholder: {
+                    ProgressView()
+                        .frame(width: 80, height: 80)
+                        .foregroundStyle(Color.pink)
                 }
             }
         }
