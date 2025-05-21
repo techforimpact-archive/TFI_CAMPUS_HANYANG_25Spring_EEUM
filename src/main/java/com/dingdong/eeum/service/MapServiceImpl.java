@@ -8,17 +8,20 @@ import com.dingdong.eeum.dto.response.PlaceDetailResponseDto;
 import com.dingdong.eeum.dto.response.SearchResult;
 import com.dingdong.eeum.model.Place;
 import com.dingdong.eeum.repository.PlaceRepository;
+import com.dingdong.eeum.repository.ReviewRepository;
 import com.dingdong.eeum.strategy.search.PlaceSearchStrategy;
 import com.dingdong.eeum.strategy.search.PlaceSearchStrategyFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class MapServiceImpl implements MapService {
     private final PlaceRepository placeRepository;
+    private final ReviewRepository reviewRepository;
     private final PlaceSearchStrategyFactory searchStrategyFactory;
 
     @Override
@@ -34,6 +37,8 @@ public class MapServiceImpl implements MapService {
         Place place = optionalPlace.orElseThrow(() ->
                 new ExceptionHandler(ErrorStatus.PLACE_NOT_FOUND));
 
-        return PlaceDetailResponseDto.toPlaceDetailResponseDto(place);
+        List<String> imageUrls = reviewRepository.findImageUrlsByPlaceId(placeId);
+
+        return PlaceDetailResponseDto.toPlaceDetailResponseDto(place,imageUrls);
     }
 }
