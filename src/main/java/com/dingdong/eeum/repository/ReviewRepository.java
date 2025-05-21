@@ -22,6 +22,8 @@ interface ReviewRepositoryCustom {
             String sortBy,
             Sort.Direction sortDirection
     );
+
+    List<String> findImageUrlsByPlaceId(String placeId);
 }
 
 
