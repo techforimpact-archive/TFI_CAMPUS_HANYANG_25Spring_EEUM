@@ -29,7 +29,7 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
         case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getInitialPlaceReviews, .getPlaceReviews:
             return nil
         case .createPlaceReview:
-            return ["content-type": "application/json"]
+            return ["content-type": "multipart/form-data"]
         }
     }
     

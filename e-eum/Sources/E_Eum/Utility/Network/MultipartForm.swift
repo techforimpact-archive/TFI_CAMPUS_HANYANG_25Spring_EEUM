@@ -39,11 +39,13 @@ struct MultipartForm: Sendable {
 
 extension MultipartForm {
     enum Content: CustomStringConvertible {
+        case text(data: Data)
         case json(data: Data)
         case jpeg(data: Data)
         
         var contentData: Data {
             switch self {
+            case .text(let data): return data
             case .json(let data): return data
             case .jpeg(let data): return data
             }
@@ -51,6 +53,7 @@ extension MultipartForm {
         
         var description: String {
             switch self {
+            case .text: "text/plain"
             case .json: "application/json"
             case .jpeg: "image/jpeg"
             }

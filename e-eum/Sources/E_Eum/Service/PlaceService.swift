@@ -124,16 +124,18 @@ class PlaceService: PlaceServiceProtocol {
     
     func createPlaceReview(placeID: String, content: String, ratings: Dictionary<String, Int>, recommended: Bool, images: [UIImage]) async throws -> ReviewUIO {
         var builder = MultipartForm()
-        let inputData = try JSONSerialization.data(withJSONObject: [
-            "content": content,
-            "ratings": ratings,
-            "recommended": recommended
-        ])
-        builder.append(name: "reviewData", content: .json(data: inputData))
-        if !images.isEmpty {
-            if let jpegData = images[0].jpegData(compressionQuality: 0.6) {
+        if let contentData = content.data(using: .utf8) {
+            builder.append(name: "content", content: .text(data: contentData))
+        }
+        let ratingsData = try jsonEncoder.encode(ratings)
+        builder.append(name: "ratings", content: .json(data: ratingsData))
+        if let recommendedData = String(recommended).data(using: .utf8) {
+            builder.append(name: "recommended", content: .text(data: recommendedData))
+        }
+        for image in images {
+            if let jpegData = image.jpegData(compressionQuality: 0.6) {
                 builder.append(
-                    name: "reviewImages",
+                    name: "images",
                     fileName: "\(placeID)_\(UUID().uuidString).jpeg",
                     content: .jpeg(data: jpegData)
                 )
