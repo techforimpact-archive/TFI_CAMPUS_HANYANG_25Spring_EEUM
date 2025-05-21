@@ -122,7 +122,7 @@ class PlaceService: PlaceServiceProtocol {
         return reviewsList
     }
     
-    func createPlaceReview(placeID: String, content: String, ratings: Dictionary<String, Int>, recommended: Bool, image: UIImage) async throws -> ReviewUIO {
+    func createPlaceReview(placeID: String, content: String, ratings: Dictionary<String, Int>, recommended: Bool, images: [UIImage]) async throws -> ReviewUIO {
         var builder = MultipartForm()
         let inputData = try JSONSerialization.data(withJSONObject: [
             "content": content,
@@ -130,12 +130,14 @@ class PlaceService: PlaceServiceProtocol {
             "recommended": recommended
         ])
         builder.append(name: "reviewData", content: .json(data: inputData))
-        if let jpegData = image.jpegData(compressionQuality: 0.6) {
-            builder.append(
-                name: "reviewImages",
-                fileName: "\(placeID)_\(UUID().uuidString).jpeg",
-                content: .jpeg(data: jpegData)
-            )
+        if !images.isEmpty {
+            if let jpegData = images[0].jpegData(compressionQuality: 0.6) {
+                builder.append(
+                    name: "reviewImages",
+                    fileName: "\(placeID)_\(UUID().uuidString).jpeg",
+                    content: .jpeg(data: jpegData)
+                )
+            }
         }
         guard let (boundary, data) = builder.build() else {
             throw PlaceServiceError.multipartFormBuilderError

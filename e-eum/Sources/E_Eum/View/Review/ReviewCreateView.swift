@@ -40,7 +40,9 @@ struct ReviewCreateView: View {
                 Task {
                     do {
                         if let selectedUIImage = selectedUIImage {
-                            _ = try await placeService.createPlaceReview(placeID: placeId, content: content, ratings: ratings, recommended: recommended, image: selectedUIImage)
+                            _ = try await placeService.createPlaceReview(placeID: placeId, content: content, ratings: ratings, recommended: recommended, images: [selectedUIImage])
+                        } else {
+                            _ = try await placeService.createPlaceReview(placeID: placeId, content: content, ratings: ratings, recommended: recommended, images: [])
                         }
                         showReviewCreatedAlert = true
                     } catch {
