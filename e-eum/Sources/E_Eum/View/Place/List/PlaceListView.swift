@@ -3,8 +3,8 @@ import SwiftUI
 struct PlaceListView: View {
     @State private var placeService = PlaceService()
     @State private var places: [PlaceUIO] = []
-    @State private var showDetail: Bool = false
-    @State private var selectedPlaceID: String = ""
+    @State private var hasNext: Bool = false
+    @State private var nextCursor: String? = nil
     
     var body: some View {
         NavigationStack {
@@ -12,21 +12,22 @@ struct PlaceListView: View {
                 header
                 
                 ScrollView {
-                    ForEach(places) { place in
-                        NavigationLink {
-                            PlaceDetailView(placeID: place.id, isNavigation: true)
-                        } label: {
-                            PlaceListCell(place: place)
+                    LazyVStack {
+                        ForEach(places) { place in
+                            NavigationLink {
+                                PlaceDetailView(placeID: place.id, isNavigation: true)
+                            } label: {
+                                PlaceListCell(place: place)
+                                    .onAppear {
+                                        loadMorePlaces(placeID: place.id)
+                                    }
+                            }
                         }
                     }
                 }
             }
-            .task {
-                do {
-                    places = try await placeService.getAllPlacesOnList(lastID: "", size: 10, sortBy: "reviewStats.temperature", sortDirection: "DESC").places
-                } catch {
-                    print(error.localizedDescription)
-                }
+            .onAppear {
+                loadInitialPlaces()
             }
         }
     }
@@ -60,5 +61,45 @@ private extension PlaceListView {
             }
         }
         .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+    }
+}
+
+private extension PlaceListView {
+    func loadInitialPlaces() {
+        Task {
+            do {
+                let placeList = try await placeService.getAllPlacesOnList(lastID: "", size: 10, sortBy: "reviewStats.temperature", sortDirection: "DESC")
+                self.places = placeList.places
+                self.hasNext = placeList.hasNext
+                if let nextCursor = placeList.nextCursor {
+                    self.nextCursor = nextCursor
+                } else {
+                    self.nextCursor = nil
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func loadMorePlaces(placeID: String) {
+        Task {
+            do {
+                if let lastID = places.last?.id {
+                    if placeID == lastID {
+                        let additionalPlaceList = try await placeService.getAllPlacesOnList(lastID: placeID, size: 10, sortBy: "reviewStats.temperature", sortDirection: "DESC")
+                        self.places.append(contentsOf: additionalPlaceList.places)
+                        self.hasNext = additionalPlaceList.hasNext
+                        if let nextCursor = additionalPlaceList.nextCursor {
+                            self.nextCursor = nextCursor
+                        } else {
+                            self.nextCursor = nil
+                        }
+                    }
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
     }
 }

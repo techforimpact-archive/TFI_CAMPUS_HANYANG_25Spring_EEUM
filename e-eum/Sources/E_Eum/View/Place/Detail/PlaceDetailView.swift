@@ -60,7 +60,7 @@ struct PlaceDetailView: View {
             .task {
                 do {
                     place = try await placeService.getPlaceDetails(placeID: placeID)
-                    reviews = try await placeService.getPlaceReviews(placeID: placeID, lastID: nil, size: nil, sortBy: nil, sortDirection: nil).reviews
+                    reviews = try await placeService.getPlaceReviews(placeID: placeID, lastID: "", size: 5, sortBy: "rating", sortDirection: "DESC").reviews
                 } catch {
                     print(error.localizedDescription)
                 }

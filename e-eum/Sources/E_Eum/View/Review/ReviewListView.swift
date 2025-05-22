@@ -5,19 +5,26 @@ struct ReviewListView: View {
     
     @State private var placeService = PlaceService()
     @State private var reviews: [ReviewUIO] = []
+    @State private var hasNext: Bool = false
+    @State private var nextCursor: String? = nil
     @State private var navigationToReviewCreate: Bool = false
     
     var body: some View {
         VStack(alignment: .leading) {
             ScrollView {
-                ForEach(reviews) { review in
-                    VStack {
-                        ReviewListCell(review: review)
-                        
-                        Divider()
-                            .padding(.top, 8)
+                LazyVStack {
+                    ForEach(reviews) { review in
+                        VStack {
+                            ReviewListCell(review: review)
+                            
+                            Divider()
+                                .padding(.top, 8)
+                        }
+                        .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                        .onAppear {
+                            loadMoreReviews(reviewID: review.id)
+                        }
                     }
-                    .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                 }
             }
             
@@ -33,9 +40,45 @@ struct ReviewListView: View {
         }
         .navigationTitle(Text("이용자 한줄평"))
         .navigationBarTitleDisplayMode(.inline)
-        .task {
+        .onAppear {
+            loadInitialReviews()
+        }
+    }
+}
+
+private extension ReviewListView {
+    func loadInitialReviews() {
+        Task {
             do {
-                reviews = try await placeService.getPlaceReviews(placeID: placeID, lastID: nil, size: nil, sortBy: nil, sortDirection: nil).reviews
+                let reviewList = try await placeService.getPlaceReviews(placeID: placeID, lastID: "", size: 10, sortBy: "rating", sortDirection: "DESC")
+                self.reviews = reviewList.reviews
+                self.hasNext = reviewList.hasNext
+                if let nextCursor = reviewList.nextCursor {
+                    self.nextCursor = nextCursor
+                } else {
+                    self.nextCursor = nil
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func loadMoreReviews(reviewID: String) {
+        Task {
+            do {
+                if let lastID = reviews.last?.id {
+                    if reviewID == lastID {
+                        let additionalReviewList = try await placeService.getPlaceReviews(placeID: placeID, lastID: reviewID, size: 10, sortBy: "rating", sortDirection: "DESC")
+                        self.reviews.append(contentsOf: additionalReviewList.reviews)
+                        self.hasNext = additionalReviewList.hasNext
+                        if let nextCursor = additionalReviewList.nextCursor {
+                            self.nextCursor = nextCursor
+                        } else {
+                            self.nextCursor = nil
+                        }
+                    }
+                }
             } catch {
                 print(error.localizedDescription)
             }

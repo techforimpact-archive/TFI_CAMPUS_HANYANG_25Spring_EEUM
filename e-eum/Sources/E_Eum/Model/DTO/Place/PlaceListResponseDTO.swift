@@ -11,5 +11,5 @@ struct PlaceListResponseDTO: Decodable {
 struct PlaceListDTOContainer: Decodable {
     let contents: [PlaceDTO]
     let hasNext: Bool
-    let nextCursor: String
+    let nextCursor: String?
 }
