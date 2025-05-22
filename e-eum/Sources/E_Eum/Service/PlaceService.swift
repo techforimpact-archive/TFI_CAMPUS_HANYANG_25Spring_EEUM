@@ -19,8 +19,8 @@ class PlaceService: PlaceServiceProtocol {
         return places
     }
     
-    func getPlacesOnMapByCategories(latitude: Double, longitude: Double, radius: Double, categories: [String]) async throws -> [PlaceUIO] {
-        let router = PlaceHTTPRequestRouter.getPlacesOnMapByCategories(latitude: latitude, longitude: longitude, radius: radius, categories: categories)
+    func getPlacesOnMapByCategories(categories: [String]) async throws -> [PlaceUIO] {
+        let router = PlaceHTTPRequestRouter.getPlacesOnMapByCategories(categories: categories)
         let data = try await networkUtility.request(router: router)
         let placeMapResponse = try jsonDecoder.decode(PlaceMapResponseDTO.self, from: data)
         var places: [PlaceUIO] = []
@@ -32,8 +32,8 @@ class PlaceService: PlaceServiceProtocol {
         return places
     }
     
-    func getPlacesOnMapByKeyword(latitude: Double, longitude: Double, radius: Double, keyword: String) async throws -> [PlaceUIO] {
-        let router = PlaceHTTPRequestRouter.getPlacesOnMapByKeyword(latitude: latitude, longitude: longitude, radius: radius, keyword: keyword)
+    func getPlacesOnMapByKeyword(keyword: String) async throws -> [PlaceUIO] {
+        let router = PlaceHTTPRequestRouter.getPlacesOnMapByKeyword(keyword: keyword)
         let data = try await networkUtility.request(router: router)
         let placeMapResponse = try jsonDecoder.decode(PlaceMapResponseDTO.self, from: data)
         var places: [PlaceUIO] = []
