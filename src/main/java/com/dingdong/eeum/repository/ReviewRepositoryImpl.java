@@ -2,6 +2,7 @@ package com.dingdong.eeum.repository;
 
 import com.dingdong.eeum.model.Review;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -32,33 +33,30 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
         Query query = new Query(Criteria.where("placeId").is(placeId));
 
-        if (cursor != null) {
+        if (cursor != null && !cursor.isEmpty()) {
             Review lastReview = mongoTemplate.findById(cursor, Review.class);
             if (lastReview != null) {
-                Object cursorValue;
-
-                switch (sortBy) {
-                    case "createdAt":
-                        cursorValue = lastReview.getCreatedAt();
-                        break;
-                    case "rating":
-                        cursorValue = lastReview.getRating();
-                        break;
-                    default:
-                        cursorValue = lastReview.getId();
-                        sortBy = "_id";
-                        break;
-                }
+                Object cursorValue = getSortValue(lastReview, sortBy);
 
                 if (sortDirection == Sort.Direction.DESC) {
-                    query.addCriteria(Criteria.where(sortBy).lt(cursorValue));
+                    query.addCriteria(new Criteria().orOperator(
+                            Criteria.where(sortBy).lt(cursorValue),
+                            Criteria.where(sortBy).is(cursorValue).and("_id").lt(new ObjectId(cursor))
+                    ));
                 } else {
-                    query.addCriteria(Criteria.where(sortBy).gt(cursorValue));
+                    query.addCriteria(new Criteria().orOperator(
+                            Criteria.where(sortBy).gt(cursorValue),
+                            Criteria.where(sortBy).is(cursorValue).and("_id").gt(new ObjectId(cursor))
+                    ));
                 }
             }
         }
 
-        query.with(Sort.by(sortDirection, sortBy));
+        Sort sort = Sort.by(sortDirection, sortBy);
+        if (!sortBy.equals("_id")) {
+            sort = sort.and(Sort.by(sortDirection, "_id"));
+        }
+        query.with(sort);
         query.limit(size);
 
         return mongoTemplate.find(query, Review.class);
@@ -85,5 +83,14 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                 .map(doc -> doc.getString("imageUrls"))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    private Object getSortValue(Review review, String sortBy) {
+        return switch (sortBy) {
+            case "createdAt" -> review.getCreatedAt();
+            case "rating" -> review.getRating();
+            case "updatedAt" -> review.getUpdatedAt();
+            default -> review.getId();
+        };
     }
 }

@@ -46,8 +46,11 @@ public class ListModeSearchStrategy implements PlaceSearchStrategy {
         buildTemperatureCriteria(query, criteria);
         buildStatusCriteria(query, status);
         buildCursorPagination(query, criteria, sortBy, direction);
-
-        query.with(Sort.by(direction, sortBy));
+        Sort sort = Sort.by(direction, sortBy);
+        if (!sortBy.equals("_id") && !sortBy.equals("id")) {
+            sort = sort.and(Sort.by(direction, "_id"));
+        }
+        query.with(sort);
         query.limit(size + 1);
 
         return executeQuery(query, size);
@@ -87,7 +90,8 @@ public class ListModeSearchStrategy implements PlaceSearchStrategy {
                 .map(PlaceResponseDto::toPlaceResponseDto)
                 .collect(Collectors.toList());
 
-        String nextCursor = places.isEmpty() ? null : places.get(places.size() - 1).getId();
+        String nextCursor = hasNext && !places.isEmpty() ?
+                places.get(places.size() - 1).getId() : null;
 
         return new ScrollResponseDto<>(responseList, hasNext, nextCursor);
     }
@@ -144,17 +148,21 @@ public class ListModeSearchStrategy implements PlaceSearchStrategy {
 
                 if (lastValue != null) {
                     if (direction == Sort.Direction.DESC) {
-                        query.addCriteria(Criteria.where(sortBy).lt(lastValue));
+                        query.addCriteria(new Criteria().orOperator(
+                                Criteria.where(sortBy).lt(lastValue),
+                                Criteria.where(sortBy).is(lastValue).and("_id").lt(new ObjectId(criteria.getLastId()))
+                        ));
                     } else {
-                        query.addCriteria(Criteria.where(sortBy).gt(lastValue));
+                        query.addCriteria(new Criteria().orOperator(
+                                Criteria.where(sortBy).gt(lastValue),
+                                Criteria.where(sortBy).is(lastValue).and("_id").gt(new ObjectId(criteria.getLastId()))
+                        ));
                     }
                 } else {
-                    if (sortBy.equals("id") || sortBy.equals("_id")) {
-                        if (direction == Sort.Direction.DESC) {
-                            query.addCriteria(Criteria.where("_id").lt(new ObjectId(criteria.getLastId())));
-                        } else {
-                            query.addCriteria(Criteria.where("_id").gt(new ObjectId(criteria.getLastId())));
-                        }
+                    if (direction == Sort.Direction.DESC) {
+                        query.addCriteria(Criteria.where("_id").lt(new ObjectId(criteria.getLastId())));
+                    } else {
+                        query.addCriteria(Criteria.where("_id").gt(new ObjectId(criteria.getLastId())));
                     }
                 }
             }
