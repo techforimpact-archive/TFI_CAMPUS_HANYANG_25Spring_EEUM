@@ -2,8 +2,8 @@ import Foundation
 
 enum PlaceHTTPRequestRouter {
     case getAllPlacesOnMap(latitude: Double, longitude: Double, radius: Double)
-    case getPlacesOnMapByCategories(latitude: Double, longitude: Double, radius: Double, categories: [String])
-    case getPlacesOnMapByKeyword(latitude: Double, longitude: Double, radius: Double, keyword: String)
+    case getPlacesOnMapByCategories(categories: [String])
+    case getPlacesOnMapByKeyword(keyword: String)
     case getAllPlacesOnList(lastID: String, size: Int, sortBy: String, sortDirection: String)
     case getPlacesOnListByLocation(latitude: Double, longitude: Double, radius: Double, lastID: String, size: Int, sortBy: String, sortDirection: String)
     case getPlacesOnListByCategories(categories: [String], lastID: String, size: Int, sortBy: String, sortDirection: String)
@@ -88,24 +88,18 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
                 URLQueryItem(name: "radius", value: "\(radius)")
             ]
             return queryItems
-        case .getPlacesOnMapByCategories(let latitude, let longitude, let radius, let categories):
+        case .getPlacesOnMapByCategories(let categories):
             var queryItems = [
-                URLQueryItem(name: "mode", value: "MAP"),
-                URLQueryItem(name: "latitude", value: "\(latitude)"),
-                URLQueryItem(name: "longitude", value: "\(longitude)"),
-                URLQueryItem(name: "radius", value: "\(radius)")
+                URLQueryItem(name: "mode", value: "MAP")
             ]
             for category in categories {
                 queryItems.append(URLQueryItem(name: "categories", value: category))
             }
             return queryItems
-        case .getPlacesOnMapByKeyword(let latitude, let longitude, let radius, let keyword):
+        case .getPlacesOnMapByKeyword(let keyword):
             let queryItems = [
                 URLQueryItem(name: "mode", value: "MAP"),
-                URLQueryItem(name: "latitude", value: "\(latitude)"),
-                URLQueryItem(name: "longitude", value: "\(longitude)"),
-                URLQueryItem(name: "radius", value: "\(radius)"),
-                URLQueryItem(name: "keyword", value: keyword)
+                URLQueryItem(name: "name", value: keyword)
             ]
             return queryItems
         case .getAllPlacesOnList(let lastID, let size, let sortBy, let sortDirection):
@@ -144,7 +138,7 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
         case .getPlacesOnListByKeyword(let keyword, let lastID, let size, let sortBy, let sortDirection):
             let queryItems = [
                 URLQueryItem(name: "mode", value: "LIST"),
-                URLQueryItem(name: "keyword", value: keyword),
+                URLQueryItem(name: "name", value: keyword),
                 URLQueryItem(name: "lastId", value: lastID),
                 URLQueryItem(name: "size", value: "\(size)"),
                 URLQueryItem(name: "sortBy", value: sortBy),

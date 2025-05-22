@@ -60,7 +60,7 @@ extension PlaceCategoryTag {
     }
 }
 
-enum PlaceCategory: String {
+enum PlaceCategory: String, CaseIterable {
     case counseling = "COUNSELING"
     case hospital = "HOSPITAL"
     case shelter = "SHELTER"
