@@ -105,13 +105,8 @@ class PlaceService: PlaceServiceProtocol {
         return placeDetails
     }
     
-    func getPlaceReviews(placeID: String, lastID: String?, size: Int?, sortBy: String?, sortDirection: String?) async throws -> ReviewListUIO {
-        let router: PlaceHTTPRequestRouter
-        if let lastID = lastID, let size = size, let sortBy = sortBy, let sortDirection = sortDirection {
-            router = PlaceHTTPRequestRouter.getPlaceReviews(placeID: placeID, lastID: lastID, size: size, sortBy: sortBy, sortDirection: sortDirection)
-        } else {
-            router = PlaceHTTPRequestRouter.getInitialPlaceReviews(placeID: placeID)
-        }
+    func getPlaceReviews(placeID: String, lastID: String, size: Int, sortBy: String, sortDirection: String) async throws -> ReviewListUIO {
+        let router = PlaceHTTPRequestRouter.getPlaceReviews(placeID: placeID, lastID: lastID, size: size, sortBy: sortBy, sortDirection: sortDirection)
         let data = try await networkUtility.request(router: router)
         let reviewListResponse = try jsonDecoder.decode(ReviewListResponseDTO.self, from: data)
         var reviewsList: ReviewListUIO

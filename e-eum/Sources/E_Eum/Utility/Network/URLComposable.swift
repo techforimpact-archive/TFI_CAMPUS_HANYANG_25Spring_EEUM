@@ -21,7 +21,9 @@ extension URLComposable {
         }
         components.path = "/\(path.joined(separator: "/"))"
         if let queryItems = queryItems {
-            components.path += "/"
+            if components.path.hasSuffix("places") {
+                components.path += "/"
+            }
             components.queryItems = queryItems
         }
         
