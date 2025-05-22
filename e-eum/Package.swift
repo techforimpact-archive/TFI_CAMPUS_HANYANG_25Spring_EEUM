@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "e-eum",
     defaultLocalization: "en",
-    platforms: [.iOS(.v17), .macOS(.v14), .tvOS(.v17), .watchOS(.v10), .macCatalyst(.v17)],
+    platforms: [.iOS(.v17)],
     products: [
         .library(name: "E_Eum", type: .dynamic, targets: ["E_Eum"]),
     ],
