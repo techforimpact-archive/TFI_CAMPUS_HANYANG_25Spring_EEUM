@@ -4,12 +4,12 @@ struct PlaceDetailTemperatureCell: View {
     let place: PlaceDetailUIO
     
     private let minTemperature: Double = 0.0
-    private let maxTemperature: Double = 40.0
+    private let maxTemperature: Double = 50.0
     
     var body: some View {
         VStack {
             HStack {
-                Text("퀴어 온도")
+                Text("이음 온도")
                     .bold()
                 
                 Spacer()
