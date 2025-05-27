@@ -12,9 +12,9 @@ import com.dingdong.eeum.dto.response.PlaceDetailResponseDto;
 import com.dingdong.eeum.dto.response.ReviewResponseDto;
 import com.dingdong.eeum.dto.response.ScrollResponseDto;
 import com.dingdong.eeum.dto.response.SearchResult;
-import com.dingdong.eeum.dto.response.swagger.ListSearchResponseDto;
-import com.dingdong.eeum.dto.response.swagger.MapSearchResponseDto;
-import com.dingdong.eeum.dto.response.swagger.ReviewGetResponseDto;
+import com.dingdong.eeum.dto.response.swagger.ListSearchResponse;
+import com.dingdong.eeum.dto.response.swagger.MapSearchResponse;
+import com.dingdong.eeum.dto.response.swagger.ReviewGetResponse;
 import com.dingdong.eeum.service.MapService;
 import com.dingdong.eeum.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,12 +26,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/places")
@@ -53,8 +55,8 @@ public class MapController {
                                     mediaType = "application/json",
                                     schema = @Schema(
                                             oneOf = {
-                                                    MapSearchResponseDto.class,
-                                                    ListSearchResponseDto.class
+                                                    MapSearchResponse.class,
+                                                    ListSearchResponse.class
                                             }
                                     )
                             )
@@ -193,7 +195,7 @@ public class MapController {
                     responseCode = "200",
                     description = "리뷰 목록 조회 성공",
                     content = @Content(
-                            schema = @Schema(implementation = ReviewGetResponseDto.class)
+                            schema = @Schema(implementation = ReviewGetResponse.class)
                     )
             ),
             @ApiResponse(
