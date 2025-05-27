@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Schema(description = "리뷰 질분 조회 결과")
-public class QuestionListResponseDto extends Response<List<QuestionResponseDto>> {
-    public QuestionListResponseDto() {
+public class QuestionListResponse extends Response<List<QuestionResponseDto>> {
+    public QuestionListResponse() {
         super(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), new ArrayList<>());
     }
 }
