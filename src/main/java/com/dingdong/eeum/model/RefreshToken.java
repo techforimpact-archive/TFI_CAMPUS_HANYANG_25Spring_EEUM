@@ -8,20 +8,24 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import java.time.LocalDateTime;
 
 @Getter
-@Document(collection = "users")
+@Document(collection = "refresh_tokens")
 @Builder
-public class User {
+public class RefreshToken {
     @Id
     private String id;
 
-    private String nickname;
-
     @Indexed(unique = true)
-    private String email;
+    private String token;
 
-    private String password;
+    @Indexed
+    private String userId;
 
     private LocalDateTime createdAt;
 
-    private LocalDateTime updatedAt;
+    @Builder.Default
+    private LocalDateTime expiresAt = LocalDateTime.now().plusWeeks(2);
+
+    public boolean isExpired() {
+        return LocalDateTime.now().isAfter(expiresAt);
+    }
 }
