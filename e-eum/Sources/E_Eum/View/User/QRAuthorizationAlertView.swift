@@ -1,13 +1,13 @@
 import SwiftUI
 
-struct UserView: View {
+struct QRAuthorizationAlertView: View {
     @Environment(AuthService.self) private var authService
     
     @State private var qrAutorized: Bool = false
     
     var body: some View {
         VStack(spacing: 16) {
-            Text("유저 로그인 및 인증 정보, 설정 등이 들어갈 화면입니다.")
+            Text("QR 인증하세요.")
             
             Toggle(isOn: $qrAutorized, label: { Text("QR코드 인증") })
                 .onChange(of: qrAutorized) {
