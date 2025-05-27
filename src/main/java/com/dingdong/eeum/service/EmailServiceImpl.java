@@ -203,10 +203,8 @@ public class EmailServiceImpl implements EmailService {
         String email = request.getEmail();
         String inputCode = request.getVerificationCode();
 
-        log.info("비밀번호 재설정 인증번호 확인: {}", email);
-
         Optional<PasswordResetVerification> optionalVerification =
-                passwordResetRepository.findByEmail(email);
+                passwordResetRepository.findByEmailAndCode(email, inputCode);
 
         if (optionalVerification.isEmpty()) {
             throw new ExceptionHandler(ErrorStatus.AUTH_VERIFICATION_CODE_EXPIRED);

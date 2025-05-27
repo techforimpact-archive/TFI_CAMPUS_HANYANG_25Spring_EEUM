@@ -7,7 +7,7 @@ import java.util.Optional;
 
 @Repository
 public interface PasswordResetVerificationRepository extends MongoRepository<PasswordResetVerification, String> {
-    Optional<PasswordResetVerification> findByEmail(String email);
+    Optional<PasswordResetVerification> findByEmailAndCode(String email, String code);
     Optional<PasswordResetVerification> findByEmailAndResetToken(String email, String resetToken);
     void deleteByEmail(String email);
     boolean existsByEmailAndVerified(String email, boolean verified);
