@@ -25,7 +25,7 @@ public enum ErrorStatus implements BaseErrorCode {
     AUTH_NICKNAME_REQUIRED(HttpStatus.BAD_REQUEST, "AUTH400_3", "닉네임은 필수입니다."),
     AUTH_NICKNAME_TOO_LONG(HttpStatus.BAD_REQUEST, "AUTH400_4", "닉네임은 20자 이내로 입력해주세요."),
     AUTH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "AUTH401_2", "유효하지 않은 토큰입니다."),
-    AUTH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "AUTH401_3", "토큰이 만료되었습니다."),
+    AUTH_TOKEN_EXPIRED(HttpStatus.GONE, "AUTH401_3", "토큰이 만료되었습니다."),
     AUTH_TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "AUTH401_4", "토큰이 필요합니다."),
     AUTH_TOKEN_MALFORMED(HttpStatus.UNAUTHORIZED, "AUTH401_5", "토큰 형식이 올바르지 않습니다."),
     AUTH_TOKEN_UNSUPPORTED(HttpStatus.UNAUTHORIZED, "AUTH401_6", "지원되지 않는 토큰입니다."),

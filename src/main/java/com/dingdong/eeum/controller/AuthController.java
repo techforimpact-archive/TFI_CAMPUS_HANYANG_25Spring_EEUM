@@ -273,7 +273,7 @@ public class AuthController {
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
     }
 
-    @Operation(summary = "Access Token 재발급")
+    @Operation(summary = "Access Token 재발급", description = "410 GONE 응답 발생시 Refresh Token으로 Access Token을 재발급합니다")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
