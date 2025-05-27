@@ -74,19 +74,20 @@ public class EmailServiceImpl implements EmailService {
         String email = request.getEmail();
         String inputCode = request.getVerificationCode();
 
-        log.info("이메일 인증 확인: {}", email);
-
         Optional<EmailVerification> optionalVerification = verificationRepository.findByEmail(email);
 
+
         if (optionalVerification.isEmpty()) {
-            throw new GeneralException(ErrorStatus.AUTH_VERIFICATION_CODE_EXPIRED);
+            throw new ExceptionHandler(ErrorStatus.AUTH_VERIFICATION_CODE_EXPIRED);
         }
 
         EmailVerification verification = optionalVerification.get();
 
+        if (verification.isVerified()) throw new ExceptionHandler(ErrorStatus.VERIFICATION_ALREADY_COMPLETED);
+
         if (verification.getAttemptCount() >= MAX_ATTEMPTS) {
             verificationRepository.deleteByEmail(email);
-            throw new GeneralException(ErrorStatus.VERIFICATION_CODE_TOO_MANY_ATTEMPTS);
+            throw new ExceptionHandler(ErrorStatus.VERIFICATION_CODE_TOO_MANY_ATTEMPTS);
         }
 
         if (!verification.getCode().equals(inputCode)) {
@@ -101,7 +102,7 @@ public class EmailServiceImpl implements EmailService {
                     .build();
 
             verificationRepository.save(updatedVerification);
-            throw new GeneralException(ErrorStatus.AUTH_VERIFICATION_CODE_INVALID);
+            throw new ExceptionHandler(ErrorStatus.AUTH_VERIFICATION_CODE_INVALID);
         }
 
         EmailVerification verifiedVerification = EmailVerification.builder()
@@ -116,7 +117,6 @@ public class EmailServiceImpl implements EmailService {
 
         verificationRepository.save(verifiedVerification);
 
-        log.info("이메일 인증 성공: {}", email);
         return EmailVerifyResponseDto.builder().email(email).verified(true).build();
     }
 
@@ -175,12 +175,10 @@ public class EmailServiceImpl implements EmailService {
         String email = request.getEmail();
         log.info("비밀번호 재설정 인증번호 발송 요청: {}", email);
 
-        // 가입된 이메일인지 확인
         if (!userRepository.existsByEmail(email)) {
-            throw new GeneralException(ErrorStatus.AUTH_USER_NOT_FOUND);
+            throw new ExceptionHandler(ErrorStatus.AUTH_USER_NOT_FOUND);
         }
 
-        // 기존 인증번호 삭제
         passwordResetRepository.deleteByEmail(email);
 
         String verificationCode = generateVerificationCode();
@@ -211,24 +209,23 @@ public class EmailServiceImpl implements EmailService {
                 passwordResetRepository.findByEmail(email);
 
         if (optionalVerification.isEmpty()) {
-            throw new GeneralException(ErrorStatus.AUTH_VERIFICATION_CODE_EXPIRED);
+            throw new ExceptionHandler(ErrorStatus.AUTH_VERIFICATION_CODE_EXPIRED);
         }
 
         PasswordResetVerification verification = optionalVerification.get();
 
-        // 만료 확인
+        if (verification.isVerified()) throw new ExceptionHandler(ErrorStatus.VERIFICATION_ALREADY_COMPLETED);
+
         if (verification.getExpiresAt().isBefore(LocalDateTime.now())) {
             passwordResetRepository.deleteByEmail(email);
-            throw new GeneralException(ErrorStatus.AUTH_VERIFICATION_CODE_EXPIRED);
+            throw new ExceptionHandler(ErrorStatus.AUTH_VERIFICATION_CODE_EXPIRED);
         }
 
-        // 시도 횟수 확인
         if (verification.getAttemptCount() >= MAX_ATTEMPTS) {
             passwordResetRepository.deleteByEmail(email);
-            throw new GeneralException(ErrorStatus.VERIFICATION_CODE_TOO_MANY_ATTEMPTS);
+            throw new ExceptionHandler(ErrorStatus.VERIFICATION_CODE_TOO_MANY_ATTEMPTS);
         }
 
-        // 인증번호 확인
         if (!verification.getCode().equals(inputCode)) {
             PasswordResetVerification updatedVerification = PasswordResetVerification.builder()
                     .id(verification.getId())
@@ -242,10 +239,9 @@ public class EmailServiceImpl implements EmailService {
                     .build();
 
             passwordResetRepository.save(updatedVerification);
-            throw new GeneralException(ErrorStatus.AUTH_VERIFICATION_CODE_INVALID);
+            throw new ExceptionHandler(ErrorStatus.AUTH_VERIFICATION_CODE_INVALID);
         }
 
-        // 인증 성공 - 재설정 토큰 생성
         String resetToken = generateResetToken();
 
         PasswordResetVerification verifiedVerification = PasswordResetVerification.builder()
@@ -253,7 +249,7 @@ public class EmailServiceImpl implements EmailService {
                 .email(verification.getEmail())
                 .code(verification.getCode())
                 .createdAt(verification.getCreatedAt())
-                .expiresAt(LocalDateTime.now().plusMinutes(10)) // 비밀번호 재설정용 10분 연장
+                .expiresAt(LocalDateTime.now().plusMinutes(10))
                 .verified(true)
                 .attemptCount(verification.getAttemptCount())
                 .resetToken(resetToken)

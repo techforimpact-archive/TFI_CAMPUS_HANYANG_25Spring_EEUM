@@ -117,6 +117,11 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = Response.class))
             ),
             @ApiResponse(
+                    responseCode = "409",
+                    description = "이미 인증한 인증번호",
+                    content = @Content(schema = @Schema(implementation = Response.class))
+            ),
+            @ApiResponse(
                     responseCode = "410",
                     description = "만료된 인증번호",
                     content = @Content(schema = @Schema(implementation = Response.class))
@@ -225,6 +230,11 @@ public class AuthController {
             @ApiResponse(
                     responseCode = "400",
                     description = "잘못된 인증번호",
+                    content = @Content(schema = @Schema(implementation = Response.class))
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "이미 인증한 인증번호",
                     content = @Content(schema = @Schema(implementation = Response.class))
             ),
             @ApiResponse(
