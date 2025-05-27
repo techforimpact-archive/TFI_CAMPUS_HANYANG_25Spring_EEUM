@@ -207,7 +207,7 @@ public class EmailServiceImpl implements EmailService {
                 passwordResetRepository.findByEmailAndCode(email, inputCode);
 
         if (optionalVerification.isEmpty()) {
-            throw new ExceptionHandler(ErrorStatus.AUTH_VERIFICATION_CODE_EXPIRED);
+            throw new ExceptionHandler(ErrorStatus.AUTH_VERIFICATION_CODE_INVALID);
         }
 
         PasswordResetVerification verification = optionalVerification.get();
