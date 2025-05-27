@@ -98,7 +98,7 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = Response.class))
             )
     })
-    @PostMapping("/send-verification")
+    @PostMapping("/email/send-verification")
     public Response<EmailSendResponseDto> sendVerificationCode(@Valid @RequestBody EmailSendRequestDto request) {
         EmailSendResponseDto response = emailService.sendVerificationCode(request);
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
@@ -127,7 +127,7 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = Response.class))
             )
     })
-    @PostMapping("/verify-email")
+    @PostMapping("/email/verify")
     public Response<EmailVerifyResponseDto> verifyEmail(@Valid @RequestBody EmailVerifyRequestDto request) {
         EmailVerifyResponseDto response = emailService.verifyEmail(request);
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
