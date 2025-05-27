@@ -33,10 +33,24 @@ extension AuthHTTPRequestRouter: HTTPRequestable {
     
     var body: Data? {
         switch self {
-        case .signup(let data), .signin(let data), .refresh(let data), .passwordResetSendEmail(let data), .passwordResetVerify(let data), .passwordResetConfirm(let data), .sendEmailVerification(let data), .verifyEmail(let data):
-            return data
         case .signout, .checkNickname, .checkEmail:
             return nil
+        case .signup(let data):
+            return data
+        case .signin(let data):
+            return data
+        case .refresh(let data):
+            return data
+        case .passwordResetSendEmail(let data):
+            return data
+        case .passwordResetVerify(let data):
+            return data
+        case .passwordResetConfirm(let data):
+            return data
+        case .sendEmailVerification(let data):
+            return data
+        case .verifyEmail(let data):
+            return data
         }
     }
     
