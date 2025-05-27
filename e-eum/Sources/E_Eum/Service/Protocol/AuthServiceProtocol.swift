@@ -1,6 +1,15 @@
 import Foundation
 
 protocol AuthServiceProtocol {
-    func signUp(nickname: String, email: String, password: String) async throws -> Bool
-    func login(email: String, password: String) async throws -> Bool
+    func signup(nickname: String, email: String, password: String) async throws -> Bool
+    func signin(email: String, password: String) async throws -> Bool
+    func signout() async throws -> Bool
+    func refresh(refreshToken: String) async throws -> Bool
+    func passwordResetSendEmail(email: String) async throws -> Bool
+    func passwordResetVerify(email: String, verificationCode: String) async throws -> Bool
+    func passwordResetConfirm(email: String, resetToken: String, newPassword: String) async throws -> Bool
+    func sendEmailVerification(email: String) async throws -> Bool
+    func verifyEmail(email: String, verificationToken: String) async throws -> Bool
+    func checkNickname(nickname: String) async throws -> Bool
+    func checkEmail(email: String) async throws -> Bool
 }
