@@ -63,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
     public SigninResponseDto signinUser(SigninRequestDto request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ExceptionHandler(ErrorStatus.AUTH_INVALID_CREDENTIALS));
+                .orElseThrow(() -> new ExceptionHandler(ErrorStatus.AUTH_USER_NOT_FOUND));
 
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {

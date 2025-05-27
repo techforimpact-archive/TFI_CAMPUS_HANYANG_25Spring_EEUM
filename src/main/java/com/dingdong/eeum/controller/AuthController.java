@@ -177,7 +177,12 @@ public class AuthController {
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "인증 실패 - 이메일 또는 비밀번호 불일치",
+                    description = "비밀번호 불일치",
+                    content = @Content(schema = @Schema(implementation = Response.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "존재하지 않는 이메일",
                     content = @Content(schema = @Schema(implementation = Response.class))
             ),
             @ApiResponse(
