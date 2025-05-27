@@ -9,6 +9,8 @@ enum ContentTab: String {
 
 struct ContentView: View {
     @AppStorage("tab") var tab = ContentTab.info
+    
+    @State private var authService = AuthService()
 
     var body: some View {
         TabView(selection: $tab) {
@@ -18,21 +20,39 @@ struct ContentView: View {
                 }
                 .tag(ContentTab.info)
             
-            PlaceMapView()
-                .tabItem {
-                    #if SKIP
-                    Label("장소", systemImage: "Icons.Outlined.Place")
-                    #else
-                    Label("장소", systemImage: "mappin.and.ellipse")
-                    #endif
-                }
-                .tag(ContentTab.placeMap)
-            
-            PlaceListView()
-                .tabItem {
-                    Label("목록", systemImage: "list.bullet")
-                }
-                .tag(ContentTab.placeList)
+            if authService.qrAuthorized {
+                PlaceMapView()
+                    .tabItem {
+                        #if SKIP
+                        Label("장소", systemImage: "Icons.Outlined.Place")
+                        #else
+                        Label("장소", systemImage: "mappin.and.ellipse")
+                        #endif
+                    }
+                    .tag(ContentTab.placeMap)
+                
+                PlaceListView()
+                    .tabItem {
+                        Label("목록", systemImage: "list.bullet")
+                    }
+                    .tag(ContentTab.placeList)
+            } else {
+                QRAuthorizationAlertView()
+                    .tabItem {
+                        #if SKIP
+                        Label("장소", systemImage: "Icons.Outlined.Place")
+                        #else
+                        Label("장소", systemImage: "mappin.and.ellipse")
+                        #endif
+                    }
+                    .tag(ContentTab.placeMap)
+                
+                QRAuthorizationAlertView()
+                    .tabItem {
+                        Label("목록", systemImage: "list.bullet")
+                    }
+                    .tag(ContentTab.placeList)
+            }
             
             UserView()
                 .tabItem {
@@ -40,6 +60,7 @@ struct ContentView: View {
                 }
                 .tag(ContentTab.user)
         }
+        .environment(authService)
         .preferredColorScheme(.light)
     }
 }
