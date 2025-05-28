@@ -50,6 +50,9 @@ public enum ErrorStatus implements BaseErrorCode {
     AUTH_TOKEN_ERROR(HttpStatus.UNAUTHORIZED, "AUTH4005", "토큰 처리 중 오류가 발생했습니다"),
     AUTH_FILTER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH5001", "인증 필터에서 오류가 발생했습니다"),
 
+    // QR Authentication Error
+    QR_AUTH_ALREADY_AUTHORIZED(HttpStatus.CONFLICT, "QR409_1", "이미 인가된 사용자입니다. QR 인증이 필요하지 않습니다."),
+
     // Email Error
     EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL500_1", "이메일 발송에 실패했습니다."),
     EMAIL_TEMPLATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL500_2", "이메일 템플릿 처리 중 오류가 발생했습니다."),
