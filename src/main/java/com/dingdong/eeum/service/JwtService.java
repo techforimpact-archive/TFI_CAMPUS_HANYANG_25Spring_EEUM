@@ -1,5 +1,7 @@
 package com.dingdong.eeum.service;
 
+import com.dingdong.eeum.constant.UserRole;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -25,12 +27,13 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    public String createAccessToken(String userId) {
+    public String createAccessToken(String userId, UserRole userRole) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + accessTokenValidityInMilliseconds);
 
         return Jwts.builder()
                 .subject(userId)
+                .claim("role", userRole)
                 .issuedAt(now)
                 .expiration(validity)
                 .signWith(getSigningKey())
@@ -83,4 +86,19 @@ public class JwtService {
     public long getRefreshTokenValidityInSeconds() {
         return refreshTokenValidityInMilliseconds / 1000;
     }
+
+    private Claims getClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+
+    public String getUserRoleFromToken(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("role", String.class);
+    }
+
 }
