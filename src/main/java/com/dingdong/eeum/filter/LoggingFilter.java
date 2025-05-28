@@ -65,6 +65,10 @@ public class LoggingFilter implements Filter {
         String queryString = request.getQueryString();
         String clientIp = getClientIp(request);
 
+        if (uri.equals("/")) {
+            return;
+        }
+
         log.info("REQUEST [{}] {} {} {} - Client IP: {}",
                 requestId, method, uri,
                 StringUtils.hasText(queryString) ? "?" + queryString : "",
@@ -100,6 +104,10 @@ public class LoggingFilter implements Filter {
         String uri = request.getRequestURI();
 
         String statusLevel = getStatusLevel(status);
+
+        if (uri.equals("/")) {
+            return;
+        }
 
         log.info("RESPONSE [{}] {} {} - {} {} ({}ms)",
                 requestId, method, uri, status, statusLevel, duration);
