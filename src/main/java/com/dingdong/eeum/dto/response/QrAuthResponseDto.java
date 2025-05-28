@@ -17,12 +17,4 @@ public class QrAuthResponseDto {
     @Schema(description = "액세스 토큰", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
     private String accessToken;
 
-    @Schema(description = "사용자 ID", example = "user123")
-    private String userId;
-
-    @Schema(description = "사용자 권한", example = "USER")
-    private UserRole userRole;
-
-    @Schema(description = "사용자 닉네임", example = "홍길동")
-    private String nickname;
 }
