@@ -1,11 +1,13 @@
 package com.dingdong.eeum.controller;
 
+import com.dingdong.eeum.annotation.User;
 import com.dingdong.eeum.apiPayload.code.dto.ErrorReasonDTO;
 import com.dingdong.eeum.apiPayload.code.status.SuccessStatus;
 import com.dingdong.eeum.apiPayload.exception.response.Response;
 import com.dingdong.eeum.constant.PlaceCategory;
 import com.dingdong.eeum.constant.PlaceSearch;
 import com.dingdong.eeum.constant.PlaceStatus;
+import com.dingdong.eeum.dto.UserInfoDto;
 import com.dingdong.eeum.dto.request.PlaceSearchDto;
 import com.dingdong.eeum.dto.request.ReviewCreateRequestDto;
 import com.dingdong.eeum.dto.response.PlaceDetailResponseDto;
@@ -237,8 +239,8 @@ public class MapController {
     @PostMapping(value = "/{placeId}/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<ReviewResponseDto> createReview(
             @PathVariable String placeId,
-            @Valid @ModelAttribute ReviewCreateRequestDto requestDto) {
-        ReviewResponseDto review = reviewService.createReview(placeId, requestDto);
+            @Valid @ModelAttribute ReviewCreateRequestDto requestDto, @User UserInfoDto userInfoDto) {
+        ReviewResponseDto review = reviewService.createReview(placeId, requestDto, userInfoDto);
         return new Response<>(true, SuccessStatus._CREATED.getCode(), SuccessStatus._CREATED.getMessage(), review);
     }
 }

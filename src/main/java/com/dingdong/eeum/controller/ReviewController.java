@@ -1,8 +1,10 @@
 package com.dingdong.eeum.controller;
 
+import com.dingdong.eeum.annotation.User;
 import com.dingdong.eeum.apiPayload.code.dto.ErrorReasonDTO;
 import com.dingdong.eeum.apiPayload.code.status.SuccessStatus;
 import com.dingdong.eeum.apiPayload.exception.response.Response;
+import com.dingdong.eeum.dto.UserInfoDto;
 import com.dingdong.eeum.dto.request.ReviewUpdateRequestDto;
 import com.dingdong.eeum.dto.response.QuestionResponseDto;
 import com.dingdong.eeum.dto.response.ReviewResponseDto;
@@ -134,8 +136,8 @@ public class ReviewController {
             )
     })
     @DeleteMapping("/{reviewId}")
-    public Response<Void> deleteReview(@PathVariable String reviewId) {
-        reviewService.deleteReview(reviewId);
+    public Response<Void> deleteReview(@PathVariable String reviewId, @User UserInfoDto userInfoDto) {
+        reviewService.deleteReview(reviewId,userInfoDto);
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), null);
     }
 
