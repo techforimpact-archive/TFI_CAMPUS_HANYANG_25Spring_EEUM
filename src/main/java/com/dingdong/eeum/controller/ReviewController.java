@@ -61,49 +61,6 @@ public class ReviewController {
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), review);
     }
 
-
-    @Operation(
-            summary = "리뷰 수정",
-            description = "리뷰를 수정합니다."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "리뷰 수정 성공",
-                    content = @Content(
-                            schema = @Schema(implementation = ReviewResponseDto.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "잘못된 요청",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "리뷰를 찾을 수 없음",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "서버 오류",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
-                    )
-            )
-    })
-    @PutMapping("/{reviewId}")
-    public Response<ReviewResponseDto> updateReview(
-            @PathVariable String reviewId,
-            @RequestBody ReviewUpdateRequestDto requestDto) {
-        ReviewResponseDto review = reviewService.updateReview(reviewId, requestDto);
-        return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), review);
-    }
-
     @Operation(
             summary = "리뷰 삭제",
             description = "리뷰를 삭제합니다."

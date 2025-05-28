@@ -19,8 +19,6 @@ public interface ReviewService {
     ScrollResponseDto<ReviewResponseDto> getReviewsByPlaceId(
             String placeId, String cursor, int size, String sortBy, Sort.Direction sortDirection);
 
-    ReviewResponseDto updateReview(String reviewId, ReviewUpdateRequestDto requestDto);
-
     List<QuestionResponseDto> findDefaultQuestions();
 
     void deleteReview(String reviewId, UserInfoDto userInfoDto);
