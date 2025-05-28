@@ -1,5 +1,6 @@
 package com.dingdong.eeum.service;
 
+import com.dingdong.eeum.constant.UserRole;
 import com.dingdong.eeum.dto.request.PasswordResetRequestDto;
 import com.dingdong.eeum.dto.request.SignupRequestDto;
 import com.dingdong.eeum.dto.request.SigninRequestDto;
@@ -15,5 +16,5 @@ public interface AuthService {
     MutualResponseDto checkNickname(String nickname);
     MutualResponseDto checkEmail(String email);
     MutualResponseDto resetPassword(PasswordResetRequestDto request);
-    TokenRefreshResponseDto refreshAccessToken(TokenRefreshRequestDto request);
+    TokenRefreshResponseDto refreshAccessToken(TokenRefreshRequestDto request, UserRole role);
 }

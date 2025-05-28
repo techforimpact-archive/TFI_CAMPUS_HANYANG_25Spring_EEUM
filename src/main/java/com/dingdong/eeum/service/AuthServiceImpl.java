@@ -2,6 +2,7 @@ package com.dingdong.eeum.service;
 
 import com.dingdong.eeum.apiPayload.code.status.ErrorStatus;
 import com.dingdong.eeum.apiPayload.exception.handler.ExceptionHandler;
+import com.dingdong.eeum.constant.UserRole;
 import com.dingdong.eeum.dto.request.PasswordResetRequestDto;
 import com.dingdong.eeum.dto.request.SignupRequestDto;
 import com.dingdong.eeum.dto.request.SigninRequestDto;
@@ -43,9 +44,10 @@ public class AuthServiceImpl implements AuthService {
                 .nickname(request.getNickname())
                 .email(request.getEmail())
                 .password(encodedPassword)
+                .role(UserRole.GUEST)
                 .build();
 
-        User savedUser = userRepository.save(user);
+        userRepository.save(user);
 
         return MutualResponseDto.builder().status(true).build();
     }
@@ -70,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
             throw new ExceptionHandler(ErrorStatus.AUTH_INVALID_CREDENTIALS);
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(user.getId());
+        String accessToken = jwtTokenProvider.createAccessToken(user.getId(),user.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
 
         refreshTokenRepository.deleteByUserId(user.getId());
@@ -146,7 +148,7 @@ public class AuthServiceImpl implements AuthService {
         return MutualResponseDto.builder().status(true).build();
     }
 
-    public TokenRefreshResponseDto refreshAccessToken(TokenRefreshRequestDto request) {
+    public TokenRefreshResponseDto refreshAccessToken(TokenRefreshRequestDto request, UserRole role) {
         String refreshTokenValue = request.getRefreshToken();
 
         if (!jwtTokenProvider.validateToken(refreshTokenValue)) {
@@ -161,7 +163,7 @@ public class AuthServiceImpl implements AuthService {
             throw new ExceptionHandler(ErrorStatus.AUTH_EXPIRED_REFRESH_TOKEN);
         }
 
-        String newAccessToken = jwtTokenProvider.createAccessToken(refreshToken.getUserId());
+        String newAccessToken = jwtTokenProvider.createAccessToken(refreshToken.getUserId(),role);
         String newRefreshToken = jwtTokenProvider.createRefreshToken(refreshToken.getUserId());
 
         refreshTokenRepository.delete(refreshToken);
