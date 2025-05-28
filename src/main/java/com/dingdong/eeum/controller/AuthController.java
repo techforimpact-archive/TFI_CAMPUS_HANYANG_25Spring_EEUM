@@ -1,6 +1,5 @@
 package com.dingdong.eeum.controller;
 
-import com.dingdong.eeum.annotation.CurrentUser;
 import com.dingdong.eeum.apiPayload.code.status.SuccessStatus;
 import com.dingdong.eeum.apiPayload.exception.response.Response;
 import com.dingdong.eeum.constant.UserRole;
@@ -20,7 +19,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -347,7 +345,12 @@ public class AuthController {
             )
     })
     @PostMapping("/signout")
-    public Response<MutualResponseDto> signoutUser(HttpServletRequest request, @CurrentUser String id) {
+    public Response<MutualResponseDto> signoutUser(HttpServletRequest r) {
+
+        String authHeader = r.getHeader("Authorization");
+        String token = authHeader.replace("Bearer ", "");
+        String id = jwtService.getUserIdFromToken(token);
+
         MutualResponseDto response = authService.signoutUser(id);
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
     }
