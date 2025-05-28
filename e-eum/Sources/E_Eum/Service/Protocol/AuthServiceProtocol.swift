@@ -9,7 +9,7 @@ protocol AuthServiceProtocol {
     func passwordResetVerify(email: String, verificationCode: String) async throws -> (String, Bool, String)
     func passwordResetConfirm(email: String, resetToken: String, newPassword: String) async throws -> Bool
     func sendEmailVerification(email: String) async throws -> (String, Int)
-    func verifyEmail(email: String, verificationToken: String) async throws -> (String, Bool)
+    func verifyEmail(email: String, verificationCode: String) async throws -> (String, Bool)
     func checkNickname(nickname: String) async throws -> Bool
     func checkEmail(email: String) async throws -> Bool
 }
