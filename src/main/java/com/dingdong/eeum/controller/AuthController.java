@@ -1,13 +1,14 @@
 package com.dingdong.eeum.controller;
 
-import com.dingdong.eeum.annotation.CurrentUser;
 import com.dingdong.eeum.apiPayload.code.status.SuccessStatus;
 import com.dingdong.eeum.apiPayload.exception.response.Response;
+import com.dingdong.eeum.constant.UserRole;
 import com.dingdong.eeum.dto.request.*;
 import com.dingdong.eeum.dto.response.*;
 import com.dingdong.eeum.dto.response.swagger.*;
 import com.dingdong.eeum.service.AuthService;
 import com.dingdong.eeum.service.EmailService;
+import com.dingdong.eeum.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,8 +18,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/auth")
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
     private final EmailService emailService;
+    private final JwtService jwtService;
 
     @Operation(summary = "닉네임 중복 확인")
     @ApiResponses(value = {
@@ -312,8 +316,13 @@ public class AuthController {
             )
     })
     @PostMapping("/refresh")
-    public Response<TokenRefreshResponseDto> refreshToken(@Valid @RequestBody TokenRefreshRequestDto request) {
-        TokenRefreshResponseDto response = authService.refreshAccessToken(request);
+    public Response<TokenRefreshResponseDto> refreshToken(@Valid @RequestBody TokenRefreshRequestDto request, HttpServletRequest r) {
+
+        String authHeader = r.getHeader("Authorization");
+        String token = authHeader.replace("Bearer ", "");
+        String role = jwtService.getUserRoleFromToken(token);
+
+        TokenRefreshResponseDto response = authService.refreshAccessToken(request, UserRole.valueOf(role));
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
     }
 
@@ -336,7 +345,12 @@ public class AuthController {
             )
     })
     @PostMapping("/signout")
-    public Response<MutualResponseDto> signoutUser(HttpServletRequest request, @CurrentUser String id) {
+    public Response<MutualResponseDto> signoutUser(HttpServletRequest r) {
+
+        String authHeader = r.getHeader("Authorization");
+        String token = authHeader.replace("Bearer ", "");
+        String id = jwtService.getUserIdFromToken(token);
+
         MutualResponseDto response = authService.signoutUser(id);
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
     }

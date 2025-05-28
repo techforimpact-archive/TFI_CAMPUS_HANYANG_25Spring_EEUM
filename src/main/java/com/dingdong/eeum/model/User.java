@@ -1,5 +1,6 @@
 package com.dingdong.eeum.model;
 
+import com.dingdong.eeum.constant.UserRole;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
@@ -20,6 +21,8 @@ public class User {
     private String email;
 
     private String password;
+
+    private UserRole role;
 
     private LocalDateTime createdAt;
 
