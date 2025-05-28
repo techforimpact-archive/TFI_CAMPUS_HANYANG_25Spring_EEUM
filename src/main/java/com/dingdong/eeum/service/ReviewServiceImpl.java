@@ -2,6 +2,7 @@ package com.dingdong.eeum.service;
 
 import com.dingdong.eeum.apiPayload.exception.handler.ExceptionHandler;
 import com.dingdong.eeum.aws.S3Service;
+import com.dingdong.eeum.dto.UserInfoDto;
 import com.dingdong.eeum.dto.request.ReviewCreateRequestDto;
 import com.dingdong.eeum.dto.request.ReviewUpdateRequestDto;
 import com.dingdong.eeum.dto.response.QuestionResponseDto;
@@ -10,9 +11,11 @@ import com.dingdong.eeum.dto.response.ScrollResponseDto;
 import com.dingdong.eeum.model.Place;
 import com.dingdong.eeum.model.Question;
 import com.dingdong.eeum.model.Review;
+import com.dingdong.eeum.model.User;
 import com.dingdong.eeum.repository.PlaceRepository;
 import com.dingdong.eeum.repository.QuestionRepository;
 import com.dingdong.eeum.repository.ReviewRepository;
+import com.dingdong.eeum.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -23,9 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.dingdong.eeum.apiPayload.code.status.ErrorStatus.*;
@@ -38,17 +39,15 @@ public class ReviewServiceImpl implements ReviewService {
     private final PlaceRepository placeRepository;
     private final S3Service s3Service;
     private final MongoTemplate mongoTemplate;
-    /* TODO 유저 로직 생성 후에 반영하기
-        private final UserService userService;
-    */
+    private final UserRepository userRepository;
 
-    public ReviewResponseDto createReview(String placeId, ReviewCreateRequestDto requestDto) {
-        Place place = placeRepository.findById(placeId)
+    public ReviewResponseDto createReview(String placeId, ReviewCreateRequestDto requestDto, UserInfoDto userInfoDto) {
+
+        placeRepository.findById(placeId)
                 .orElseThrow(() -> new ExceptionHandler(PLACE_NOT_FOUND));
 
-        // TODO 추후 유저 로직 개발시 수정
-        String userId = "680debb4dad30a632439e914";
-        String userNickname = "에온";
+        User user = userRepository.findById(userInfoDto.getUserId())
+                .orElseThrow(() -> new ExceptionHandler(AUTH_USER_NOT_FOUND));
 
         int averageRating = calculateWeightedAverageRating(requestDto.getRatings());
 
@@ -60,7 +59,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         Review review = Review.builder()
                 .placeId(placeId)
-                .userId(userId)
+                .userId(userInfoDto.getUserId())
                 .content(requestDto.getContent())
                 .rating(averageRating)
                 .imageUrls(imageUrls)
@@ -73,17 +72,17 @@ public class ReviewServiceImpl implements ReviewService {
 
         updatePlaceTemperature(placeId);
 
-        return ReviewResponseDto.toReviewResponseDto(savedReview, userNickname);
+        return ReviewResponseDto.toReviewResponseDto(savedReview, user.getNickname());
     }
 
     public ReviewResponseDto getReviewById(String reviewId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ExceptionHandler(REVIEW_NOT_FOUND));
 
-        // TODO 추후 유저 로직 개발시 수정
-        String userNickname = "에온";
+        User user = userRepository.findById(review.getUserId())
+                .orElseThrow(() -> new ExceptionHandler(AUTH_USER_NOT_FOUND));
 
-        return ReviewResponseDto.toReviewResponseDto(review, userNickname);
+        return ReviewResponseDto.toReviewResponseDto(review,user.getNickname());
     }
 
     public ScrollResponseDto<ReviewResponseDto> getReviewsByPlaceId(
@@ -105,66 +104,51 @@ public class ReviewServiceImpl implements ReviewService {
             reviews = reviews.subList(0, size);
         }
 
-        // TODO 추후 유저 로직 개발시 수정
-        String userNickname = "에온";
+        if (reviews.isEmpty()) {
+            return new ScrollResponseDto<>(Collections.emptyList(), false, null);
+        }
+
+        Set<String> userIds = reviews.stream()
+                .map(Review::getUserId)
+                .collect(Collectors.toSet());
+
+        Map<String, String> userNicknameMap = getUserNicknameMap(userIds);
 
         List<ReviewResponseDto> reviewDtos = reviews.stream()
-                .map(review -> ReviewResponseDto.toReviewResponseDto(review, userNickname))
+                .map(review -> {
+                    String userNickname = userNicknameMap.get(review.getUserId());
+
+                    if (userNickname == null) {
+                        userNickname = "Unknown";
+                    }
+
+                    return ReviewResponseDto.toReviewResponseDto(review, userNickname);
+                })
                 .collect(Collectors.toList());
 
-        String nextCursor = hasNext && !reviews.isEmpty() ? reviews.get(reviews.size() - 1).getId() : null;
+        String nextCursor = hasNext && !reviews.isEmpty() ?
+                reviews.get(reviews.size() - 1).getId() : null;
 
         return new ScrollResponseDto<>(reviewDtos, hasNext, nextCursor);
     }
 
-    public ReviewResponseDto updateReview(String reviewId, ReviewUpdateRequestDto requestDto) {
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ExceptionHandler(REVIEW_NOT_FOUND));
+    private Map<String, String> getUserNicknameMap(Set<String> userIds) {
+        try {
+            List<User> users = userRepository.findAllById(userIds);
 
-        boolean previousRecommended = review.isRecommended();
+            return users.stream()
+                    .collect(Collectors.toMap(User::getId, User::getNickname));
 
-        Map<String, Integer> newRatings = requestDto.getRatings();
-        int averageRating = 0;
-        if (newRatings != null && !newRatings.isEmpty()) {
-            averageRating = (int) newRatings.values().stream()
-                    .mapToInt(Integer::intValue)
-                    .average()
-                    .orElse(0.0);
+        } catch (Exception e) {
+            return Collections.emptyMap();
         }
-
-        Review updatedReview = Review.builder()
-                .id(review.getId())
-                .placeId(review.getPlaceId())
-                .userId(review.getUserId())
-                .content(requestDto.getContent())
-                .rating(averageRating)
-                .isRecommended(requestDto.getIsRecommended())
-                .createdAt(review.getCreatedAt())
-                .updatedAt(LocalDateTime.now())
-                .build();
-
-        Review savedReview = reviewRepository.save(updatedReview);
-
-        if (previousRecommended != requestDto.getIsRecommended()) {
-            updatePlaceTemperature(review.getPlaceId());
-        }
-
-        // TODO 추후 유저 로직 개발시 수정
-        String userNickname = "에온";
-
-        return ReviewResponseDto.toReviewResponseDto(savedReview, userNickname);
     }
 
-    public void deleteReview(String reviewId) {
+    public void deleteReview(String reviewId, UserInfoDto userInfoDto) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ExceptionHandler(REVIEW_NOT_FOUND));
 
-        /* TODO 유저 로직 생성 후에 반영하기
-            String currentUserId = userService.getCurrentUserId();
-            if (!review.getUserId().equals(currentUserId)) {
-                throw new IllegalStateException("리뷰를 삭제할 권한이 없습니다.");
-            }
-        */
+        if(!review.getUserId().equals(userInfoDto.getUserId())) throw new ExceptionHandler(REVIEW_DELETE_NOT_ALLOWED);
 
         reviewRepository.delete(review);
 

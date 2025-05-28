@@ -1,5 +1,6 @@
 package com.dingdong.eeum.service;
 
+import com.dingdong.eeum.dto.UserInfoDto;
 import com.dingdong.eeum.dto.request.ReviewCreateRequestDto;
 import com.dingdong.eeum.dto.request.ReviewUpdateRequestDto;
 import com.dingdong.eeum.dto.response.QuestionResponseDto;
@@ -11,18 +12,16 @@ import java.util.List;
 
 public interface ReviewService {
 
-    ReviewResponseDto createReview(String placeId, ReviewCreateRequestDto requestDto);
+    ReviewResponseDto createReview(String placeId, ReviewCreateRequestDto requestDto, UserInfoDto userInfoDto);
 
     ReviewResponseDto getReviewById(String reviewId);
 
     ScrollResponseDto<ReviewResponseDto> getReviewsByPlaceId(
             String placeId, String cursor, int size, String sortBy, Sort.Direction sortDirection);
 
-    ReviewResponseDto updateReview(String reviewId, ReviewUpdateRequestDto requestDto);
-
     List<QuestionResponseDto> findDefaultQuestions();
 
-    void deleteReview(String reviewId);
+    void deleteReview(String reviewId, UserInfoDto userInfoDto);
 
     void updatePlaceTemperature(String placeId);
 
