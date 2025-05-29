@@ -7,6 +7,7 @@ class AuthService: AuthServiceProtocol {
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     private let jsonEncoder: JSONEncoder = JSONEncoder()
     
+    var userInfo: UserInfoUIO?
     var qrAuthorized: Bool = false
     
     func signup(nickname: String, email: String, password: String) async throws -> Bool {
@@ -15,31 +16,42 @@ class AuthService: AuthServiceProtocol {
         let router = AuthHTTPRequestRouter.signup(data: userInfoData)
         let data = try await networkUtility.request(router: router)
         let signupResponse = try jsonDecoder.decode(AuthStatusResponseDTO.self, from: data)
-        guard let status = signupResponse.result?.status else {
-            throw AuthServiceError.noData
+        if signupResponse.isSuccess {
+            guard let status = signupResponse.result?.status else {
+                throw AuthServiceError.noData
+            }
+            return status
         }
-        return status
+        return false
     }
     
-    func signin(email: String, password: String) async throws -> UserInfoUIO {
+    func signin(email: String, password: String) async throws -> Bool {
         let input = SigninBodyDTO(email: email, password: password)
         let inputData = try jsonEncoder.encode(input)
         let router = AuthHTTPRequestRouter.signin(data: inputData)
         let data = try await networkUtility.request(router: router)
         let signinResponse = try jsonDecoder.decode(SigninResponseDTO.self, from: data)
-        guard let userInfoDTO = signinResponse.result else {
-            throw AuthServiceError.noData
+        if signinResponse.isSuccess {
+            guard let userInfoDTO = signinResponse.result else {
+                throw AuthServiceError.noData
+            }
+            self.userInfo = UserInfoUIO(signinResult: userInfoDTO)
         }
-        let userInfo = UserInfoUIO(signinResult: userInfoDTO)
-        return userInfo
+        return signinResponse.isSuccess
     }
     
     func signout() async throws -> Bool {
-        let router = AuthHTTPRequestRouter.signout
+        guard let token = userInfo?.accessToken else {
+            throw AuthServiceError.tokenError
+        }
+        let router = AuthHTTPRequestRouter.signout(token: token)
         let data = try await networkUtility.request(router: router)
         let signoutResponse = try jsonDecoder.decode(AuthStatusResponseDTO.self, from: data)
         guard let status = signoutResponse.result?.status else {
             throw AuthServiceError.noData
+        }
+        if status {
+            self.userInfo = nil
         }
         return status
     }
@@ -104,39 +116,49 @@ class AuthService: AuthServiceProtocol {
         return (result.email, result.expirationMinutes)
     }
     
-    func verifyEmail(email: String, verificationCode: String) async throws -> (String, Bool) {
+    func verifyEmail(email: String, verificationCode: String) async throws -> Bool {
         let verificationInfo = VerifyBodyDTO(email: email, verificationCode: verificationCode)
         let verificationInfoData = try jsonEncoder.encode(verificationInfo)
         let router = AuthHTTPRequestRouter.verifyEmail(data: verificationInfoData)
         let data = try await networkUtility.request(router: router)
         let emailVerifyResponse = try jsonDecoder.decode(EmailVerifyResponseDTO.self, from: data)
-        guard let result = emailVerifyResponse.result else {
-            throw AuthServiceError.noData
+        if emailVerifyResponse.isSuccess {
+            guard let verified = emailVerifyResponse.result?.verified else {
+                throw AuthServiceError.noData
+            }
+            return verified
         }
-        return (result.email, result.verified)
+        return false
     }
     
     func checkNickname(nickname: String) async throws -> Bool {
         let router = AuthHTTPRequestRouter.checkNickname(nickname: nickname)
         let data = try await networkUtility.request(router: router)
         let checkNicknameResponse = try jsonDecoder.decode(AuthStatusResponseDTO.self, from: data)
-        guard let status = checkNicknameResponse.result?.status else {
-            throw AuthServiceError.noData
+        if checkNicknameResponse.isSuccess {
+            guard let status = checkNicknameResponse.result?.status else {
+                throw AuthServiceError.noData
+            }
+            return status
         }
-        return status
+        return false
     }
     
     func checkEmail(email: String) async throws -> Bool {
         let router = AuthHTTPRequestRouter.checkEmail(email: email)
         let data = try await networkUtility.request(router: router)
         let checkEmailResponse = try jsonDecoder.decode(AuthStatusResponseDTO.self, from: data)
-        guard let status = checkEmailResponse.result?.status else {
-            throw AuthServiceError.noData
+        if checkEmailResponse.isSuccess {
+            guard let status = checkEmailResponse.result?.status else {
+                throw AuthServiceError.noData
+            }
+            return status
         }
-        return status
+        return false
     }
 }
 
 enum AuthServiceError: Error {
     case noData
+    case tokenError
 }

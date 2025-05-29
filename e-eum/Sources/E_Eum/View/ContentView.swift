@@ -20,39 +20,21 @@ struct ContentView: View {
                 }
                 .tag(ContentTab.info)
             
-            if authService.qrAuthorized {
-                PlaceMapView()
-                    .tabItem {
-                        #if SKIP
-                        Label("장소", systemImage: "Icons.Outlined.Place")
-                        #else
-                        Label("장소", systemImage: "mappin.and.ellipse")
-                        #endif
-                    }
-                    .tag(ContentTab.placeMap)
-                
-                PlaceListView()
-                    .tabItem {
-                        Label("목록", systemImage: "list.bullet")
-                    }
-                    .tag(ContentTab.placeList)
-            } else {
-                QRAuthorizationAlertView()
-                    .tabItem {
-                        #if SKIP
-                        Label("장소", systemImage: "Icons.Outlined.Place")
-                        #else
-                        Label("장소", systemImage: "mappin.and.ellipse")
-                        #endif
-                    }
-                    .tag(ContentTab.placeMap)
-                
-                QRAuthorizationAlertView()
-                    .tabItem {
-                        Label("목록", systemImage: "list.bullet")
-                    }
-                    .tag(ContentTab.placeList)
-            }
+            placeMapViewTabItem
+                .tabItem {
+                    #if SKIP
+                    Label("장소", systemImage: "Icons.Outlined.Place")
+                    #else
+                    Label("장소", systemImage: "mappin.and.ellipse")
+                    #endif
+                }
+                .tag(ContentTab.placeMap)
+            
+            placeListViewTabItem
+                .tabItem {
+                    Label("목록", systemImage: "list.bullet")
+                }
+                .tag(ContentTab.placeList)
             
             UserView()
                 .tabItem {
@@ -62,5 +44,29 @@ struct ContentView: View {
         }
         .environment(authService)
         .preferredColorScheme(.light)
+    }
+}
+
+private extension ContentView {
+    @ViewBuilder
+    var placeMapViewTabItem: some View {
+        if authService.userInfo == nil {
+            AuthorizationView()
+        } else if !authService.qrAuthorized {
+            QRAuthorizationAlertView()
+        } else {
+            PlaceMapView()
+        }
+    }
+    
+    @ViewBuilder
+    var placeListViewTabItem: some View {
+        if authService.userInfo == nil {
+            AuthorizationView()
+        } else if !authService.qrAuthorized {
+            QRAuthorizationAlertView()
+        } else {
+            PlaceListView()
+        }
     }
 }

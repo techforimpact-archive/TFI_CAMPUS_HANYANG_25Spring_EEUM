@@ -13,10 +13,33 @@ struct UserView: View {
                 .onChange(of: qrAutorized) {
                     authService.qrAuthorized = qrAutorized
                 }
+            
+            if authService.userInfo != nil {
+                Button {
+                    signOut()
+                } label: {
+                    Text("로그아웃")
+                        .underline()
+                        .foregroundStyle(Color.gray)
+                }
+            }
         }
         .padding(.horizontal, 16)
         .onAppear {
             qrAutorized = authService.qrAuthorized
+        }
+    }
+}
+
+private extension UserView {
+    func signOut() {
+        Task {
+            do {
+                _ = try await authService.signout()
+                qrAutorized = false
+            } catch {
+                print(error.localizedDescription)
+            }
         }
     }
 }
