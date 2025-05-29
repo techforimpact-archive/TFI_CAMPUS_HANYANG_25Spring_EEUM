@@ -36,7 +36,7 @@ struct SignInView: View {
             }
         }
         .sheet(isPresented: $showPasswordResetSheet) {
-            Text("Password reset sheet")
+            PasswordResetView()
         }
     }
 }

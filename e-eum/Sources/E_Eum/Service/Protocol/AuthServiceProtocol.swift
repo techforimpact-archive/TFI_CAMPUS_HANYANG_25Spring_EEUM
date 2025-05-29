@@ -6,7 +6,7 @@ protocol AuthServiceProtocol {
     func signout() async throws -> Bool
     func refresh(refreshToken: String) async throws -> (String, String)
     func passwordResetSendEmail(email: String) async throws -> (String, Int)
-    func passwordResetVerify(email: String, verificationCode: String) async throws -> (String, Bool, String)
+    func passwordResetVerify(email: String, verificationCode: String) async throws -> String
     func passwordResetConfirm(email: String, resetToken: String, newPassword: String) async throws -> Bool
     func sendEmailVerification(email: String) async throws -> (String, Int)
     func verifyEmail(email: String, verificationCode: String) async throws -> Bool

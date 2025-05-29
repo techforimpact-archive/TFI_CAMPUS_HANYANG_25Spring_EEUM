@@ -80,16 +80,23 @@ class AuthService: AuthServiceProtocol {
         return (result.email, result.expirationMinutes)
     }
     
-    func passwordResetVerify(email: String, verificationCode: String) async throws -> (String, Bool, String) {
+    func passwordResetVerify(email: String, verificationCode: String) async throws -> String {
         let verificationInfo = VerifyBodyDTO(email: email, verificationCode: verificationCode)
         let verificationInfoData = try jsonEncoder.encode(verificationInfo)
         let router = AuthHTTPRequestRouter.passwordResetVerify(data: verificationInfoData)
         let data = try await networkUtility.request(router: router)
         let passwordResetResponse = try jsonDecoder.decode(PasswordResetVerifyResponseDTO.self, from: data)
-        guard let result = passwordResetResponse.result else {
-            throw AuthServiceError.noData
+        if passwordResetResponse.isSuccess {
+            guard let result = passwordResetResponse.result else {
+                throw AuthServiceError.noData
+            }
+            if result.verified {
+                return result.resetToken
+            } else {
+                return ""
+            }
         }
-        return (result.email, result.verified, result.resetToken)
+        return ""
     }
     
     func passwordResetConfirm(email: String, resetToken: String, newPassword: String) async throws -> Bool {
