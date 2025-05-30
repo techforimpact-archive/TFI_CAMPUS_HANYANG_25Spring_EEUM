@@ -3,6 +3,7 @@ package com.dingdong.eeum.repository;
 import com.dingdong.eeum.model.Review;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,6 +13,9 @@ public interface ReviewRepository extends MongoRepository<Review, String>, Revie
     List<Review> findByPlaceId(String placeId);
     long countByPlaceId(String placeId);
     long countByPlaceIdAndIsRecommended(String placeId, boolean isRecommended);
+
+    @Query("{'userId': ?0, $expr: {$cond: [{$ne: [?1, null]}, {$lt: ['$_id', {$toObjectId: ?1}]}, true]}}")
+    List<Review> findAllByUserId(String userId, String cursor, int limit, Sort sort);
 }
 
 interface ReviewRepositoryCustom {
