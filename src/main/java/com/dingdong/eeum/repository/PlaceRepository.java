@@ -22,6 +22,7 @@ public interface PlaceRepository extends MongoRepository<Place, String>, PlaceRe
             double minTemperature, PlaceStatus status, Pageable pageable);
     @Query("{ $text: { $search: ?0 }, 'status': ?1 }")
     Page<Place> findByTextSearch(String keyword, PlaceStatus status, Pageable pageable);
+    boolean existsById(String id);
 }
 
 interface PlaceRepositoryCustom {
