@@ -23,6 +23,11 @@ public class PlaceResponseDto {
     private double temperature;
     private PlaceStatus status;
     private boolean isVerified;
+    private boolean isFavorite;
+
+    public void setFavorite(boolean isFavorite){
+        this.isFavorite = isFavorite;
+    }
 
     public static PlaceResponseDto toPlaceResponseDto(Place place) {
         return PlaceResponseDto.builder()

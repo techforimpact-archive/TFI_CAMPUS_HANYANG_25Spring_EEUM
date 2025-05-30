@@ -116,7 +116,7 @@ public class SecurityConfig {
                         .requestMatchers("/v1/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/v1/user/qr").hasAnyRole("GUEST")
+                        .requestMatchers("/v1/user/qr").hasAnyRole("GUEST", "USER", "ADMIN")
                         .anyRequest().hasAnyRole("USER", "ADMIN")
                 )
 
