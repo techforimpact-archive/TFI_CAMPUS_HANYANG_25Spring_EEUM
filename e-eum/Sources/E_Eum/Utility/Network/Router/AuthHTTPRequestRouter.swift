@@ -12,15 +12,19 @@ enum AuthHTTPRequestRouter {
     case verifyEmail(data: Data)
     case checkNickname(nickname: String)
     case checkEmail(email: String)
+    case qrAuthorization(token: String, data: Data)
+    case deactivate(token: String)
 }
 
 extension AuthHTTPRequestRouter: HTTPRequestable {
     var method: HTTPMethod {
         switch self {
-        case .signup, .signin, .signout, .refresh, .passwordResetSendEmail, .passwordResetVerify, .passwordResetConfirm, .sendEmailVerification, .verifyEmail:
+        case .signup, .signin, .signout, .refresh, .passwordResetSendEmail, .passwordResetVerify, .passwordResetConfirm, .sendEmailVerification, .verifyEmail, .qrAuthorization:
             return .post
         case .checkNickname, .checkEmail:
             return .get
+        case .deactivate:
+            return .patch
         }
     }
     
@@ -29,6 +33,10 @@ extension AuthHTTPRequestRouter: HTTPRequestable {
         case .checkNickname, .checkEmail:
             return nil
         case .signout(let token):
+            return ["Authorization": "Bearer \(token)"]
+        case .qrAuthorization(let token, _):
+            return ["Authorization": "Bearer \(token)"]
+        case .deactivate(let token):
             return ["Authorization": "Bearer \(token)"]
         case .refresh(let token, _):
             return [
@@ -42,7 +50,7 @@ extension AuthHTTPRequestRouter: HTTPRequestable {
     
     var body: Data? {
         switch self {
-        case .signout, .checkNickname, .checkEmail:
+        case .signout, .checkNickname, .checkEmail, .deactivate:
             return nil
         case .signup(let data):
             return data
@@ -59,6 +67,8 @@ extension AuthHTTPRequestRouter: HTTPRequestable {
         case .sendEmailVerification(let data):
             return data
         case .verifyEmail(let data):
+            return data
+        case .qrAuthorization(_, let data):
             return data
         }
     }
@@ -97,12 +107,16 @@ extension AuthHTTPRequestRouter: HTTPRequestable {
             return ["v1", "auth", "check-nickname"]
         case .checkEmail:
             return ["v1", "auth", "check-email"]
+        case .qrAuthorization:
+            return ["v1", "user", "qr"]
+        case .deactivate:
+            return ["v1", "user", "deactivate"]
         }
     }
     
     var queryItems: [URLQueryItem]? {
         switch self {
-        case .signup, .signin, .signout, .refresh, .passwordResetSendEmail, .passwordResetVerify, .passwordResetConfirm, .sendEmailVerification, .verifyEmail:
+        case .signup, .signin, .signout, .refresh, .passwordResetSendEmail, .passwordResetVerify, .passwordResetConfirm, .sendEmailVerification, .verifyEmail, .qrAuthorization, .deactivate:
             return nil
         case .checkNickname(let nickname):
             let queryItems = [
