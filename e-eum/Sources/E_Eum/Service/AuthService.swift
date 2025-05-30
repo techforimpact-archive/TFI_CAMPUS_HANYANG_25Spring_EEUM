@@ -200,7 +200,12 @@ class AuthService: AuthServiceProtocol {
                 throw AuthServiceError.noData
             }
             KeychainUtility.shared.saveAuthToken(tokenType: .accessToken, token: token)
-            return true
+            qrAuthorized = KeychainUtility.shared.qrAuthorized()
+            return qrAuthorized
+        }
+        if qrAuthResponse.code == "QR409_1" {
+            qrAuthorized = true
+            return qrAuthorized
         }
         return false
     }

@@ -32,19 +32,22 @@ extension AuthHTTPRequestRouter: HTTPRequestable {
         switch self {
         case .checkNickname, .checkEmail:
             return nil
+        case .signup, .signin, .passwordResetSendEmail, .passwordResetVerify, .passwordResetConfirm, .sendEmailVerification, .verifyEmail:
+            return ["content-type": "application/json"]
         case .signout(let token):
-            return ["Authorization": "Bearer \(token)"]
-        case .qrAuthorization(let token, _):
-            return ["Authorization": "Bearer \(token)"]
-        case .deactivate(let token):
             return ["Authorization": "Bearer \(token)"]
         case .refresh(let token, _):
             return [
                 "Authorization": "Bearer \(token)",
                 "content-type": "application/json"
             ]
-        case .signup, .signin, .passwordResetSendEmail, .passwordResetVerify, .passwordResetConfirm, .sendEmailVerification, .verifyEmail:
-            return ["content-type": "application/json"]
+        case .qrAuthorization(let token, _):
+            return [
+                "Authorization": "Bearer \(token)",
+                "content-type": "application/json"
+            ]
+        case .deactivate(let token):
+            return ["Authorization": "Bearer \(token)"]
         }
     }
     

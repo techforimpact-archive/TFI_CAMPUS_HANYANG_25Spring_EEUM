@@ -30,6 +30,16 @@ struct KeychainUtility {
             print("토큰 삭제 실패: \(error.localizedDescription)")
         }
     }
+    
+    func qrAuthorized() -> Bool {
+        do {
+            try keychain.set(true, forKey: "qrAuthorized")
+            return true
+        } catch {
+            print("QR인증 저장 실패: \(error.localizedDescription)")
+            return false
+        }
+    }
 }
 
 enum TokenType: String {

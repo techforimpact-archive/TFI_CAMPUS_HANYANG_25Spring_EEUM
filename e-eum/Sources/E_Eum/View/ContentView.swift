@@ -9,6 +9,7 @@ enum ContentTab: String {
 
 struct ContentView: View {
     @AppStorage("tab") var tab = ContentTab.info
+    @AppStorage("qrAuthorized") var qrAuthorized: Bool = false
     
     @State private var authService = AuthService()
 
@@ -36,7 +37,7 @@ struct ContentView: View {
                 }
                 .tag(ContentTab.placeList)
             
-            UserView()
+            UserView(qrAuthorized: $qrAuthorized)
                 .tabItem {
                     Label("유저", systemImage: "person.crop.circle")
                 }
@@ -44,6 +45,9 @@ struct ContentView: View {
         }
         .environment(authService)
         .preferredColorScheme(.light)
+        .onAppear {
+            authService.qrAuthorized = qrAuthorized
+        }
     }
 }
 
@@ -53,7 +57,7 @@ private extension ContentView {
         if authService.userInfo == nil {
             AuthorizationView()
         } else if !authService.qrAuthorized {
-            QRAuthorizationAlertView()
+            QRAuthorizationAlertView(qrAuthorized: $qrAuthorized)
         } else {
             PlaceMapView()
         }
@@ -64,7 +68,7 @@ private extension ContentView {
         if authService.userInfo == nil {
             AuthorizationView()
         } else if !authService.qrAuthorized {
-            QRAuthorizationAlertView()
+            QRAuthorizationAlertView(qrAuthorized: $qrAuthorized)
         } else {
             PlaceListView()
         }
