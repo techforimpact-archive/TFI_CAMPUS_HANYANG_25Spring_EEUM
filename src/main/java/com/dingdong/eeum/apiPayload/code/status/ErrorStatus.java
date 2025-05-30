@@ -34,6 +34,7 @@ public enum ErrorStatus implements BaseErrorCode {
     AUTH_BEARER_PREFIX_MISSING(HttpStatus.UNAUTHORIZED, "AUTH401_9", "Authorization 헤더에 Bearer 접두사가 필요합니다."),
     AUTH_REFRESH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "AUTH401_10", "유효하지 않은 리프레시 토큰입니다."),
     AUTH_ACCESS_DENIED(HttpStatus.FORBIDDEN, "AUTH403_1", "접근 권한이 없습니다."),
+    AUTH_USER_ALREADY_DEACTIVATED(HttpStatus.CONFLICT, "AUTH409_2", "이미 비활성화된 회원입니다"),
 
     AUTH_NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "AUTH409_2", "이미 사용 중인 닉네임입니다."),
     AUTH_NICKNAME_TOO_SHORT(HttpStatus.BAD_REQUEST, "AUTH400_5", "닉네임은 최소 2자 이상이어야 합니다."),

@@ -3,6 +3,7 @@ package com.dingdong.eeum.service;
 import com.dingdong.eeum.apiPayload.code.status.ErrorStatus;
 import com.dingdong.eeum.apiPayload.exception.handler.ExceptionHandler;
 import com.dingdong.eeum.constant.UserRole;
+import com.dingdong.eeum.constant.UserStatus;
 import com.dingdong.eeum.dto.request.PasswordResetRequestDto;
 import com.dingdong.eeum.dto.request.SignupRequestDto;
 import com.dingdong.eeum.dto.request.SigninRequestDto;
@@ -64,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public SigninResponseDto signinUser(SigninRequestDto request) {
 
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmailAndStatus(request.getEmail(), UserStatus.ACTIVE)
                 .orElseThrow(() -> new ExceptionHandler(ErrorStatus.AUTH_USER_NOT_FOUND));
 
 
@@ -127,7 +128,7 @@ public class AuthServiceImpl implements AuthService {
             throw new ExceptionHandler(ErrorStatus.AUTH_PASSWORD_RESET_NOT_VERIFIED);
         }
 
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailAndStatus(email,UserStatus.ACTIVE)
                 .orElseThrow(() -> new ExceptionHandler(ErrorStatus.AUTH_USER_NOT_FOUND));
 
         String encodedPassword = passwordEncoder.encode(newPassword);
