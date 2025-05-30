@@ -177,6 +177,35 @@ class PlaceService: PlaceServiceProtocol {
         review = ReviewUIO(reviewDTO: reviewDTO)
         return review
     }
+    
+    func addFavoritePlace(placeID: String) async throws -> Bool {
+        let accessToken = getAccessToken()
+        let placeIDData = try jsonEncoder.encode(placeID)
+        let router = PlaceHTTPRequestRouter.addFavoritePlace(token: accessToken, data: placeIDData)
+        let data = try await networkUtility.request(router: router)
+        let response = try jsonDecoder.decode(PlaceStatusResponseDTO.self, from: data)
+        if response.isSuccess {
+            guard let status = response.result?.status else {
+                throw PlaceServiceError.noData
+            }
+            return status
+        }
+        return false
+    }
+    
+    func cancelFavoritePlace(placeID: String) async throws -> Bool {
+        let accessToken = getAccessToken()
+        let router = PlaceHTTPRequestRouter.cancelFavoritePlace(token: accessToken, placeID: placeID)
+        let data = try await networkUtility.request(router: router)
+        let response = try jsonDecoder.decode(PlaceStatusResponseDTO.self, from: data)
+        if response.isSuccess {
+            guard let status = response.result?.status else {
+                throw PlaceServiceError.noData
+            }
+            return status
+        }
+        return false
+    }
 }
 
 enum PlaceServiceError: Error {
