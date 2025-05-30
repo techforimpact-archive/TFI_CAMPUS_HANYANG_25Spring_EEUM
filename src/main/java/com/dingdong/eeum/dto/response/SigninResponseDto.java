@@ -11,4 +11,5 @@ public class SigninResponseDto {
     private String email;
     private String accessToken;
     private String refreshToken;
+    private boolean isQrVerified;
 }
