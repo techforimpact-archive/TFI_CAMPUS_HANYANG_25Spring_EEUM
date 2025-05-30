@@ -1,6 +1,7 @@
 package com.dingdong.eeum.model;
 
 import com.dingdong.eeum.constant.UserRole;
+import com.dingdong.eeum.constant.UserStatus;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
@@ -24,7 +25,18 @@ public class User {
 
     private UserRole role;
 
+    @Builder.Default
+    private UserStatus status = UserStatus.ACTIVE;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    private LocalDateTime deactivatedAt;
+
+    public void deactivate() {
+        this.status = UserStatus.INACTIVE;
+        this.deactivatedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 }
