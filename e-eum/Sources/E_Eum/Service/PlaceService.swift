@@ -6,8 +6,27 @@ class PlaceService: PlaceServiceProtocol {
     private let jsonDecoder: JSONDecoder = JSONDecoder()
     private let jsonEncoder: JSONEncoder = JSONEncoder()
     
+    private func getAccessToken() -> String {
+        if let accessToken = KeychainUtility.shared.getAuthToken(tokenType: .accessToken) {
+            print("accessToken 불러오기 성공")
+            return accessToken
+        }
+        print("accessToken 불러오기 실패")
+        return ""
+    }
+    
+    private func getRefreshToken() -> String {
+        if let refreshToken = KeychainUtility.shared.getAuthToken(tokenType: .refreshToken) {
+            print("refreshToken 불러오기 성공")
+            return refreshToken
+        }
+        print("refreshToken 불러오기 실패")
+        return ""
+    }
+    
     func getAllPlacesOnMap(latitude: Double, longitude: Double, radius: Double) async throws -> [PlaceUIO] {
-        let router = PlaceHTTPRequestRouter.getAllPlacesOnMap(latitude: latitude, longitude: longitude, radius: radius)
+        let accessToken = getAccessToken()
+        let router = PlaceHTTPRequestRouter.getAllPlacesOnMap(token: accessToken, latitude: latitude, longitude: longitude, radius: radius)
         let data = try await networkUtility.request(router: router)
         let placeMapResponse = try jsonDecoder.decode(PlaceMapResponseDTO.self, from: data)
         var places: [PlaceUIO] = []
@@ -20,7 +39,8 @@ class PlaceService: PlaceServiceProtocol {
     }
     
     func getPlacesOnMapByCategories(categories: [String]) async throws -> [PlaceUIO] {
-        let router = PlaceHTTPRequestRouter.getPlacesOnMapByCategories(categories: categories)
+        let accessToken = getAccessToken()
+        let router = PlaceHTTPRequestRouter.getPlacesOnMapByCategories(token: accessToken, categories: categories)
         let data = try await networkUtility.request(router: router)
         let placeMapResponse = try jsonDecoder.decode(PlaceMapResponseDTO.self, from: data)
         var places: [PlaceUIO] = []
@@ -33,7 +53,8 @@ class PlaceService: PlaceServiceProtocol {
     }
     
     func getPlacesOnMapByKeyword(keyword: String) async throws -> [PlaceUIO] {
-        let router = PlaceHTTPRequestRouter.getPlacesOnMapByKeyword(keyword: keyword)
+        let accessToken = getAccessToken()
+        let router = PlaceHTTPRequestRouter.getPlacesOnMapByKeyword(token: accessToken, keyword: keyword)
         let data = try await networkUtility.request(router: router)
         let placeMapResponse = try jsonDecoder.decode(PlaceMapResponseDTO.self, from: data)
         var places: [PlaceUIO] = []
@@ -46,7 +67,8 @@ class PlaceService: PlaceServiceProtocol {
     }
     
     func getAllPlacesOnList(lastID: String, size: Int, sortBy: String, sortDirection: String) async throws -> PlaceListUIO {
-        let router = PlaceHTTPRequestRouter.getAllPlacesOnList(lastID: lastID, size: size, sortBy: sortBy, sortDirection: sortDirection)
+        let accessToken = getAccessToken()
+        let router = PlaceHTTPRequestRouter.getAllPlacesOnList(token: accessToken, lastID: lastID, size: size, sortBy: sortBy, sortDirection: sortDirection)
         let data = try await networkUtility.request(router: router)
         let placeListResponse = try jsonDecoder.decode(PlaceListResponseDTO.self, from: data)
         var placesList: PlaceListUIO
@@ -58,7 +80,8 @@ class PlaceService: PlaceServiceProtocol {
     }
     
     func getPlacesOnListByLocation(latitude: Double, longitude: Double, radius: Double, lastID: String, size: Int, sortBy: String, sortDirection: String) async throws -> PlaceListUIO {
-        let router = PlaceHTTPRequestRouter.getPlacesOnListByLocation(latitude: latitude, longitude: longitude, radius: radius, lastID: lastID, size: size, sortBy: sortBy, sortDirection: sortDirection)
+        let accessToken = getAccessToken()
+        let router = PlaceHTTPRequestRouter.getPlacesOnListByLocation(token: accessToken, latitude: latitude, longitude: longitude, radius: radius, lastID: lastID, size: size, sortBy: sortBy, sortDirection: sortDirection)
         let data = try await networkUtility.request(router: router)
         let placeListResponse = try jsonDecoder.decode(PlaceListResponseDTO.self, from: data)
         var placesList: PlaceListUIO
@@ -70,7 +93,8 @@ class PlaceService: PlaceServiceProtocol {
     }
     
     func getPlacesOnListByCategories(categories: [String], lastID: String, size: Int, sortBy: String, sortDirection: String) async throws -> PlaceListUIO {
-        let router = PlaceHTTPRequestRouter.getPlacesOnListByCategories(categories: categories, lastID: lastID, size: size, sortBy: sortBy, sortDirection: sortDirection)
+        let accessToken = getAccessToken()
+        let router = PlaceHTTPRequestRouter.getPlacesOnListByCategories(token: accessToken, categories: categories, lastID: lastID, size: size, sortBy: sortBy, sortDirection: sortDirection)
         let data = try await networkUtility.request(router: router)
         let placeListResponse = try jsonDecoder.decode(PlaceListResponseDTO.self, from: data)
         var placesList: PlaceListUIO
@@ -82,7 +106,8 @@ class PlaceService: PlaceServiceProtocol {
     }
     
     func getPlacesOnListByKeyword(keyword: String, lastID: String, size: Int, sortBy: String, sortDirection: String) async throws -> PlaceListUIO {
-        let router = PlaceHTTPRequestRouter.getPlacesOnListByKeyword(keyword: keyword, lastID: lastID, size: size, sortBy: sortBy, sortDirection: sortDirection)
+        let accessToken = getAccessToken()
+        let router = PlaceHTTPRequestRouter.getPlacesOnListByKeyword(token: accessToken, keyword: keyword, lastID: lastID, size: size, sortBy: sortBy, sortDirection: sortDirection)
         let data = try await networkUtility.request(router: router)
         let placeListResponse = try jsonDecoder.decode(PlaceListResponseDTO.self, from: data)
         var placesList: PlaceListUIO
@@ -94,7 +119,8 @@ class PlaceService: PlaceServiceProtocol {
     }
     
     func getPlaceDetails(placeID: String) async throws -> PlaceDetailUIO {
-        let router = PlaceHTTPRequestRouter.getPlaceDetails(placeID: placeID)
+        let accessToken = getAccessToken()
+        let router = PlaceHTTPRequestRouter.getPlaceDetails(token: accessToken, placeID: placeID)
         let data = try await networkUtility.request(router: router)
         let placeDetailsResponse = try jsonDecoder.decode(PlaceDetailResponseDTO.self, from: data)
         var placeDetails: PlaceDetailUIO
@@ -106,7 +132,8 @@ class PlaceService: PlaceServiceProtocol {
     }
     
     func getPlaceReviews(placeID: String, lastID: String, size: Int, sortBy: String, sortDirection: String) async throws -> ReviewListUIO {
-        let router = PlaceHTTPRequestRouter.getPlaceReviews(placeID: placeID, lastID: lastID, size: size, sortBy: sortBy, sortDirection: sortDirection)
+        let accessToken = getAccessToken()
+        let router = PlaceHTTPRequestRouter.getPlaceReviews(token: accessToken, placeID: placeID, lastID: lastID, size: size, sortBy: sortBy, sortDirection: sortDirection)
         let data = try await networkUtility.request(router: router)
         let reviewListResponse = try jsonDecoder.decode(ReviewListResponseDTO.self, from: data)
         var reviewsList: ReviewListUIO
@@ -118,6 +145,7 @@ class PlaceService: PlaceServiceProtocol {
     }
     
     func createPlaceReview(placeID: String, content: String, ratings: Dictionary<String, Int>, recommended: Bool, images: [UIImage]) async throws -> ReviewUIO {
+        let accessToken = getAccessToken()
         var builder = MultipartForm()
         if let contentData = content.data(using: .utf8) {
             builder.append(name: "content", content: .text(data: contentData))
@@ -139,7 +167,7 @@ class PlaceService: PlaceServiceProtocol {
         guard let (boundary, data) = builder.build() else {
             throw PlaceServiceError.multipartFormBuilderError
         }
-        let router = PlaceHTTPRequestRouter.createPlaceReview(placeID: placeID, data: data)
+        let router = PlaceHTTPRequestRouter.createPlaceReview(token: accessToken, placeID: placeID, data: data)
         let responseData = try await networkUtility.requestWithMultipartForm(router: router, boundary: boundary)
         let reviewResponse = try jsonDecoder.decode(ReviewResponseDTO.self, from: responseData)
         var review: ReviewUIO
@@ -152,6 +180,7 @@ class PlaceService: PlaceServiceProtocol {
 }
 
 enum PlaceServiceError: Error {
+    case tokenError
     case noData
     case multipartFormBuilderError
 }

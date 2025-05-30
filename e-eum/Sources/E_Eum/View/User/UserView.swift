@@ -4,9 +4,12 @@ struct UserView: View {
     @Environment(AuthService.self) private var authService
     
     @State private var qrAutorized: Bool = false
+    @State private var showSignOutAlert: Bool = false
     
     var body: some View {
         VStack(spacing: 16) {
+            Spacer()
+            
             Text("유저 로그인 및 인증 정보, 설정 등이 들어갈 화면입니다.")
             
             Toggle(isOn: $qrAutorized, label: { Text("QR코드 인증") })
@@ -14,9 +17,11 @@ struct UserView: View {
                     authService.qrAuthorized = qrAutorized
                 }
             
+            Spacer()
+            
             if authService.userInfo != nil {
                 Button {
-                    signOut()
+                    showSignOutAlert = true
                 } label: {
                     Text("로그아웃")
                         .underline()
@@ -24,9 +29,22 @@ struct UserView: View {
                 }
             }
         }
-        .padding(.horizontal, 16)
+        .padding(16)
         .onAppear {
             qrAutorized = authService.qrAuthorized
+        }
+        .alert("로그아웃 하시겠습니까?", isPresented: $showSignOutAlert) {
+            Button(role: .cancel) {
+                showSignOutAlert = false
+            } label: {
+                Text("취소")
+            }
+            
+            Button(role: .destructive) {
+                signOut()
+            } label: {
+                Text("로그아웃")
+            }
         }
     }
 }

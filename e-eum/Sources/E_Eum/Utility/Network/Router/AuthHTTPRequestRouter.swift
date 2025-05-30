@@ -4,7 +4,7 @@ enum AuthHTTPRequestRouter {
     case signup(data: Data)
     case signin(data: Data)
     case signout(token: String)
-    case refresh(data: Data)
+    case refresh(token: String, data: Data)
     case passwordResetSendEmail(data: Data)
     case passwordResetVerify(data: Data)
     case passwordResetConfirm(data: Data)
@@ -30,7 +30,12 @@ extension AuthHTTPRequestRouter: HTTPRequestable {
             return nil
         case .signout(let token):
             return ["Authorization": "Bearer \(token)"]
-        case .signup, .signin, .refresh, .passwordResetSendEmail, .passwordResetVerify, .passwordResetConfirm, .sendEmailVerification, .verifyEmail:
+        case .refresh(let token, _):
+            return [
+                "Authorization": "Bearer \(token)",
+                "content-type": "application/json"
+            ]
+        case .signup, .signin, .passwordResetSendEmail, .passwordResetVerify, .passwordResetConfirm, .sendEmailVerification, .verifyEmail:
             return ["content-type": "application/json"]
         }
     }
@@ -43,7 +48,7 @@ extension AuthHTTPRequestRouter: HTTPRequestable {
             return data
         case .signin(let data):
             return data
-        case .refresh(let data):
+        case .refresh(_, let data):
             return data
         case .passwordResetSendEmail(let data):
             return data

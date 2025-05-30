@@ -1,10 +1,10 @@
 import Foundation
 
 enum ReviewHTTPRequestRouter {
-    case getReview(reviewID: String)
-    case modifyReview(reviewID: String, reviewBody: Data)
-    case deleteReview(reviewID: String)
-    case getQuestions
+    case getReview(token: String, reviewID: String)
+    case modifyReview(token: String, reviewID: String, reviewBody: Data)
+    case deleteReview(token: String, reviewID: String)
+    case getQuestions(token: String)
 }
 
 extension ReviewHTTPRequestRouter: HTTPRequestable {
@@ -19,13 +19,24 @@ extension ReviewHTTPRequestRouter: HTTPRequestable {
         }
     }
     
-    var headers: [String : String]? { return nil }
+    var headers: [String : String]? {
+        switch self {
+        case .getReview(let token, _):
+            return ["Authorization": "Bearer \(token)"]
+        case .modifyReview(let token, _, _):
+            return ["Authorization": "Bearer \(token)"]
+        case .deleteReview(let token, _):
+            return ["Authorization": "Bearer \(token)"]
+        case .getQuestions(let token):
+            return ["Authorization": "Bearer \(token)"]
+        }
+    }
     
     var body: Data? {
         switch self {
         case .getReview, .deleteReview, .getQuestions:
             return nil
-        case .modifyReview(_, let reviewBody):
+        case .modifyReview(_, _, let reviewBody):
             return reviewBody
         }
     }
@@ -42,11 +53,11 @@ extension ReviewHTTPRequestRouter: HTTPRequestable {
     
     var path: [String] {
         switch self {
-        case .getReview(let reviewID):
+        case .getReview(_, let reviewID):
             return ["v1", "reviews", "\(reviewID)"]
-        case .modifyReview(_, let reviewID):
+        case .modifyReview(_, _, let reviewID):
             return ["v1", "reviews", "\(reviewID)"]
-        case .deleteReview(let reviewID):
+        case .deleteReview(_, let reviewID):
             return ["v1", "reviews", "\(reviewID)"]
         case .getQuestions:
             return ["v1", "reviews", "questions"]

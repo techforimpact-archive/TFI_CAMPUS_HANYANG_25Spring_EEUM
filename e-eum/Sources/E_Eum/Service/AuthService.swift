@@ -36,6 +36,19 @@ class AuthService: AuthServiceProtocol {
                 throw AuthServiceError.noData
             }
             self.userInfo = UserInfoUIO(signinResult: userInfoDTO)
+            if let accessToken = KeychainUtility.shared.getAuthToken(tokenType: .accessToken) {
+                if accessToken != userInfoDTO.accessToken {
+                    KeychainUtility.shared.removeAuthToken(tokenType: .accessToken)
+                    guard let refreshToken = KeychainUtility.shared.getAuthToken(tokenType: .refreshToken) else {
+                        throw AuthServiceError.tokenError
+                    }
+                    try await refresh(refreshToken: refreshToken)
+                }
+            } else {
+                KeychainUtility.shared.saveAuthToken(tokenType: .accessToken, token: userInfoDTO.accessToken)
+                KeychainUtility.shared.saveAuthToken(tokenType: .refreshToken, token: userInfoDTO.refreshToken)
+            }
+            return signinResponse.isSuccess
         }
         return signinResponse.isSuccess
     }
@@ -52,20 +65,26 @@ class AuthService: AuthServiceProtocol {
         }
         if status {
             self.userInfo = nil
+            KeychainUtility.shared.removeAuthToken(tokenType: .accessToken)
+            KeychainUtility.shared.removeAuthToken(tokenType: .refreshToken)
         }
         return status
     }
     
-    func refresh(refreshToken: String) async throws -> (String, String) {
-        let refreshToken = RefreshBodyDTO(refreshToken: refreshToken)
-        let refreshTokenData = try jsonEncoder.encode(refreshToken)
-        let router = AuthHTTPRequestRouter.refresh(data: refreshTokenData)
+    func refresh(refreshToken: String) async throws {
+        guard let accessToken = KeychainUtility.shared.getAuthToken(tokenType: .accessToken) else {
+            throw PlaceServiceError.tokenError
+        }
+        let refreshBodyDTO = RefreshBodyDTO(refreshToken: refreshToken)
+        let refreshTokenData = try jsonEncoder.encode(refreshBodyDTO)
+        let router = AuthHTTPRequestRouter.refresh(token: accessToken, data: refreshTokenData)
         let data = try await networkUtility.request(router: router)
         let refreshResponse = try jsonDecoder.decode(RefreshResponseDTO.self, from: data)
         guard let result = refreshResponse.result else {
             throw AuthServiceError.noData
         }
-        return (result.accessToken, result.refreshToken)
+        KeychainUtility.shared.saveAuthToken(tokenType: .accessToken, token: result.accessToken)
+        KeychainUtility.shared.saveAuthToken(tokenType: .refreshToken, token: result.refreshToken)
     }
     
     func passwordResetSendEmail(email: String) async throws -> (String, Int) {
@@ -161,6 +180,7 @@ class AuthService: AuthServiceProtocol {
             }
             return status
         }
+        print("이미 존재하는 이메일")
         return false
     }
 }
