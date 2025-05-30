@@ -3,7 +3,7 @@ import SwiftUI
 struct QRScannerView: View {
     @Environment(\.dismiss) private var dismiss
     
-    @StateObject private var viewModel: QRScannerModel
+    @State private var viewModel: QRScannerModel
     let onTokenScanned: (String) -> Void
     
     init(onTokenScanned: @escaping (String) -> Void = { _ in }) {
@@ -15,7 +15,7 @@ struct QRScannerView: View {
         let service = QRScannerServiceAndroid()
         #endif
         
-        _viewModel = StateObject(wrappedValue: QRScannerModel(qrService: service))
+        viewModel = QRScannerModel(qrService: service)
     }
     
     var body: some View {
@@ -48,7 +48,7 @@ private extension QRScannerView {
     var scannerContentView: some View {
         VStack(spacing: 16) {
             #if os(iOS) && !SKIP
-            CameraPreviewView(viewModel: viewModel)
+            CameraPreviewView(viewModel: $viewModel)
                 .frame(height: 400)
                 .cornerRadius(8)
                 .clipped()

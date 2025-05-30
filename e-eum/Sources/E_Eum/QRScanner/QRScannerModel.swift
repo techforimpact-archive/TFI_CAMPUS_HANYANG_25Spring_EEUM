@@ -1,11 +1,12 @@
 import Foundation
 import SwiftUI
 
-class QRScannerModel: ObservableObject {
-    @Published var tokenValue: String?
-    @Published var isScanning: Bool = false
-    @Published var hasPermission: Bool = false
-    @Published var scanError: String?
+@Observable
+class QRScannerModel {
+    var tokenValue: String?
+    var isScanning: Bool = false
+    var hasPermission: Bool = false
+    var scanError: String?
     
     private var qrService: QRScannerService
     

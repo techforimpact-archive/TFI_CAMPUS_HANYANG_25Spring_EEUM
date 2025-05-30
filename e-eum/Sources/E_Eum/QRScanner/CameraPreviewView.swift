@@ -4,7 +4,7 @@ import UIKit
 import AVFoundation
 
 struct CameraPreviewView: UIViewRepresentable {
-    @ObservedObject var viewModel: QRScannerModel
+    @Binding var viewModel: QRScannerModel
     
     func makeUIView(context: Context) -> CameraPreviewUIView {
         let view = CameraPreviewUIView()
