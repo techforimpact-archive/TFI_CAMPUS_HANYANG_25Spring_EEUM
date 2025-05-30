@@ -10,6 +10,15 @@ class AuthService: AuthServiceProtocol {
     var userInfo: UserInfoUIO?
     var qrAuthorized: Bool = false
     
+    private func getAccessToken() -> String {
+        if let accessToken = KeychainUtility.shared.getAuthToken(tokenType: .accessToken) {
+            print("accessToken 불러오기 성공")
+            return accessToken
+        }
+        print("accessToken 불러오기 실패")
+        return ""
+    }
+    
     func signup(nickname: String, email: String, password: String) async throws -> Bool {
         let userInfo = SignupBodyDTO(nickname: nickname, email: email, password: password)
         let userInfoData = try jsonEncoder.encode(userInfo)
@@ -54,10 +63,8 @@ class AuthService: AuthServiceProtocol {
     }
     
     func signout() async throws -> Bool {
-        guard let token = userInfo?.accessToken else {
-            throw AuthServiceError.tokenError
-        }
-        let router = AuthHTTPRequestRouter.signout(token: token)
+        let accessToken = getAccessToken()
+        let router = AuthHTTPRequestRouter.signout(token: accessToken)
         let data = try await networkUtility.request(router: router)
         let signoutResponse = try jsonDecoder.decode(AuthStatusResponseDTO.self, from: data)
         guard let status = signoutResponse.result?.status else {
@@ -72,9 +79,7 @@ class AuthService: AuthServiceProtocol {
     }
     
     func refresh(refreshToken: String) async throws {
-        guard let accessToken = KeychainUtility.shared.getAuthToken(tokenType: .accessToken) else {
-            throw PlaceServiceError.tokenError
-        }
+        let accessToken = getAccessToken()
         let refreshBodyDTO = RefreshBodyDTO(refreshToken: refreshToken)
         let refreshTokenData = try jsonEncoder.encode(refreshBodyDTO)
         let router = AuthHTTPRequestRouter.refresh(token: accessToken, data: refreshTokenData)
@@ -181,6 +186,36 @@ class AuthService: AuthServiceProtocol {
             return status
         }
         print("이미 존재하는 이메일")
+        return false
+    }
+    
+    func qrAuthorization(qrCode: String) async throws -> Bool {
+        let accessToken = getAccessToken()
+        let qrCodeData = try jsonEncoder.encode(qrCode)
+        let router = AuthHTTPRequestRouter.qrAuthorization(token: accessToken, data: qrCodeData)
+        let data = try await networkUtility.request(router: router)
+        let qrAuthResponse = try jsonDecoder.decode(QRAuthorizationResponseDTO.self, from: data)
+        if qrAuthResponse.isSuccess {
+            guard let token = qrAuthResponse.result?.accessToken else {
+                throw AuthServiceError.noData
+            }
+            KeychainUtility.shared.saveAuthToken(tokenType: .accessToken, token: token)
+            return true
+        }
+        return false
+    }
+    
+    func deactivate() async throws -> Bool {
+        let accessToken = getAccessToken()
+        let router = AuthHTTPRequestRouter.deactivate(token: accessToken)
+        let data = try await networkUtility.request(router: router)
+        let response = try jsonDecoder.decode(AuthStatusResponseDTO.self, from: data)
+        if response.isSuccess {
+            guard let status = response.result?.status else {
+                throw AuthServiceError.noData
+            }
+            return status
+        }
         return false
     }
 }

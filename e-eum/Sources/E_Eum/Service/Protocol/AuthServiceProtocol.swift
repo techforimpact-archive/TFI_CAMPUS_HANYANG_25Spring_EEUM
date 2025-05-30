@@ -12,4 +12,6 @@ protocol AuthServiceProtocol {
     func verifyEmail(email: String, verificationCode: String) async throws -> Bool
     func checkNickname(nickname: String) async throws -> Bool
     func checkEmail(email: String) async throws -> Bool
+    func qrAuthorization(qrCode: String) async throws -> Bool
+    func deactivate() async throws -> Bool
 }
