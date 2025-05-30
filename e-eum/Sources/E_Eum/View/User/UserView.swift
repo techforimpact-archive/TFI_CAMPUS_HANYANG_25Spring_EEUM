@@ -7,6 +7,7 @@ struct UserView: View {
     
     @State private var qrCode: String = ""
     @State private var showQRScanner: Bool = false
+    @State private var showOnboarding: Bool = false
     @State private var showSignOutAlert: Bool = false
     @State private var showDeactivateAlert: Bool = false
     
@@ -21,6 +22,21 @@ struct UserView: View {
                     showQRScanner = true
                 }
                 .frame(width: 200)
+            }
+            
+            Button {
+                UserDefaults.standard.set(false, forKey: "launchedBefore")
+            } label: {
+                Text("온보딩 보기 설정 초기화")
+            }
+            
+            Button {
+                showOnboarding = true
+            } label: {
+                Text("앱 소개 보기")
+            }
+            .fullScreenCover(isPresented: $showOnboarding) {
+                OnboardingView(withHeader: true)
             }
             
             Spacer()
