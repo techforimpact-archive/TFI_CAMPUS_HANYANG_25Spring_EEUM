@@ -8,14 +8,13 @@ import com.dingdong.eeum.constant.PlaceCategory;
 import com.dingdong.eeum.constant.PlaceSearch;
 import com.dingdong.eeum.constant.PlaceStatus;
 import com.dingdong.eeum.dto.UserInfoDto;
+import com.dingdong.eeum.dto.request.FavoriteRequestDto;
 import com.dingdong.eeum.dto.request.PlaceSearchDto;
 import com.dingdong.eeum.dto.request.ReviewCreateRequestDto;
-import com.dingdong.eeum.dto.response.PlaceDetailResponseDto;
-import com.dingdong.eeum.dto.response.ReviewResponseDto;
-import com.dingdong.eeum.dto.response.ScrollResponseDto;
-import com.dingdong.eeum.dto.response.SearchResult;
+import com.dingdong.eeum.dto.response.*;
 import com.dingdong.eeum.dto.response.swagger.ListSearchResponse;
 import com.dingdong.eeum.dto.response.swagger.MapSearchResponse;
+import com.dingdong.eeum.dto.response.swagger.MutualResponse;
 import com.dingdong.eeum.dto.response.swagger.ReviewGetResponse;
 import com.dingdong.eeum.service.MapService;
 import com.dingdong.eeum.service.ReviewService;
@@ -125,7 +124,8 @@ public class MapController {
             @Parameter(description = "정렬 기준 (LIST 모드 전용)", example = "reviewStats.temperature")
             @RequestParam(required = false) String sortBy,
             @Parameter(description = "정렬 방향 (LIST 모드 전용)", example = "DESC")
-            @RequestParam(required = false) Sort.Direction sortDirection) {
+            @RequestParam(required = false) Sort.Direction sortDirection,
+    @User @Parameter(hidden=true) UserInfoDto userInfoDto) {
 
         PlaceSearchDto criteria = PlaceSearchDto.builder()
                 .mode(mode)
@@ -150,7 +150,7 @@ public class MapController {
                 .sortDirection(sortDirection)
                 .build();
 
-        SearchResult result = mapService.findPlaces(criteria);
+        SearchResult result = mapService.findPlaces(criteria, userInfoDto.getUserId());
 
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), result);
     }
@@ -183,8 +183,8 @@ public class MapController {
             )
     })
     @GetMapping("/{placeId}")
-    public Response<PlaceDetailResponseDto> getPlaceById(@PathVariable String placeId) {
-        PlaceDetailResponseDto place = mapService.findPlaceById(placeId);
+    public Response<PlaceDetailResponseDto> getPlaceById(@PathVariable String placeId, @User @Parameter(hidden = true) UserInfoDto userInfoDto) {
+        PlaceDetailResponseDto place = mapService.findPlaceById(placeId, userInfoDto.getUserId());
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), place);
     }
 
@@ -242,5 +242,70 @@ public class MapController {
             @Valid @ModelAttribute ReviewCreateRequestDto requestDto, @User UserInfoDto userInfoDto) {
         ReviewResponseDto review = reviewService.createReview(placeId, requestDto, userInfoDto);
         return new Response<>(true, SuccessStatus._CREATED.getCode(), SuccessStatus._CREATED.getMessage(), review);
+    }
+
+    @PostMapping("/favorites")
+    @Operation(summary = "장소 찜하기", description = "특정 장소를 찜 목록에 추가합니다")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "찜하기 성공",
+                    content = @Content(schema = @Schema(implementation = MutualResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "잘못된 요청",
+                    content = @Content(schema = @Schema(implementation = Response.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "존재하지 않는 사용자 또는 장소",
+                    content = @Content(schema = @Schema(implementation = Response.class))
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "이미 찜한 장소",
+                    content = @Content(schema = @Schema(implementation = Response.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "서버 오류",
+                    content = @Content(schema = @Schema(implementation = Response.class))
+            )
+    })
+    public Response<MutualResponseDto> addToFavorites(
+            @Valid @RequestBody FavoriteRequestDto request, @User @Parameter(hidden = true) UserInfoDto userInfoDto) {
+
+        MutualResponseDto response = mapService.addToFavorites(userInfoDto.getUserId(), request);
+
+        return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
+    }
+
+    @DeleteMapping("/favorites/{placeId}")
+    @Operation(summary = "장소 찜하기 취소", description = "특정 장소를 찜 목록에서 제거합니다")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "찜하기 취소 성공",
+                    content = @Content(schema = @Schema(implementation = MutualResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "존재하지 않는 사용자 또는 찜하지 않은 장소",
+                    content = @Content(schema = @Schema(implementation = Response.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "서버 오류",
+                    content = @Content(schema = @Schema(implementation = Response.class))
+            )
+    })
+    public Response<MutualResponseDto> removeFromFavorites(
+            @PathVariable String placeId,
+            @User UserInfoDto userInfoDto) {
+
+        MutualResponseDto response = mapService.removeFromFavorites(userInfoDto.getUserId(), placeId);
+
+        return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
     }
 }
