@@ -3,7 +3,7 @@ package com.dingdong.eeum.service;
 import com.dingdong.eeum.apiPayload.exception.handler.ExceptionHandler;
 import com.dingdong.eeum.constant.UserRole;
 import com.dingdong.eeum.dto.request.QrAuthRequestDto;
-import com.dingdong.eeum.dto.response.FavoriteResponseDto;
+import com.dingdong.eeum.dto.response.UserFavoriteResponseDto;
 import com.dingdong.eeum.dto.response.QrAuthResponseDto;
 import com.dingdong.eeum.dto.response.ScrollResponseDto;
 import com.dingdong.eeum.dto.response.UserReviewResponseDto;
@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public ScrollResponseDto<FavoriteResponseDto> getFavoritesByUserId(
+    public ScrollResponseDto<UserFavoriteResponseDto> getFavoritesByUserId(
             String userId, String cursor, int size, String sortBy, Sort.Direction sortDirection) {
 
         userRepository.findById(userId)
@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService{
 
         Map<String, Place> placeMap = getPlaceMap(placeIds);
 
-        List<FavoriteResponseDto> favoriteDtos = favorites.stream()
+        List<UserFavoriteResponseDto> favoriteDtos = favorites.stream()
                 .map(favorite -> {
                     Place place = placeMap.get(favorite.getPlaceId());
 
@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService{
                         return null;
                     }
 
-                    return FavoriteResponseDto.toFavoriteResponseDto(favorite, place);
+                    return UserFavoriteResponseDto.toFavoriteResponseDto(favorite, place);
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());

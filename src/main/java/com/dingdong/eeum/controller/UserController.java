@@ -5,11 +5,13 @@ import com.dingdong.eeum.apiPayload.code.status.SuccessStatus;
 import com.dingdong.eeum.apiPayload.exception.response.Response;
 import com.dingdong.eeum.dto.UserInfoDto;
 import com.dingdong.eeum.dto.request.QrAuthRequestDto;
-import com.dingdong.eeum.dto.response.FavoriteResponseDto;
+import com.dingdong.eeum.dto.response.UserFavoriteResponseDto;
 import com.dingdong.eeum.dto.response.QrAuthResponseDto;
 import com.dingdong.eeum.dto.response.ScrollResponseDto;
 import com.dingdong.eeum.dto.response.UserReviewResponseDto;
 import com.dingdong.eeum.dto.response.swagger.QrAuthResponse;
+import com.dingdong.eeum.dto.response.swagger.UserFavoriteResponse;
+import com.dingdong.eeum.dto.response.swagger.UserReviewResponse;
 import com.dingdong.eeum.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -72,7 +74,7 @@ public class UserController {
             @ApiResponse(
                     responseCode = "200",
                     description = "내 찜 목록 조회 성공",
-                    content = @Content(schema = @Schema(implementation = ScrollResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = UserFavoriteResponse.class))
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -85,14 +87,14 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = Response.class))
             )
     })
-    public Response<ScrollResponseDto<FavoriteResponseDto>> getFavorites(
+    public Response<ScrollResponseDto<UserFavoriteResponseDto>> getFavorites(
             @User @Parameter(hidden = true) UserInfoDto userInfoDto,
             @RequestParam(required = false) String cursor,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "DESC") Sort.Direction sortDirection) {
 
-        ScrollResponseDto<FavoriteResponseDto> response = userService.getFavoritesByUserId(
+        ScrollResponseDto<UserFavoriteResponseDto> response = userService.getFavoritesByUserId(
                 userInfoDto.getUserId(), cursor, size, sortBy, sortDirection);
 
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
@@ -104,7 +106,7 @@ public class UserController {
             @ApiResponse(
                     responseCode = "200",
                     description = "리뷰 목록 조회 성공",
-                    content = @Content(schema = @Schema(implementation = ScrollResponseDto.class))
+                    content = @Content(schema = @Schema(implementation = UserReviewResponse.class))
             ),
             @ApiResponse(
                     responseCode = "404",

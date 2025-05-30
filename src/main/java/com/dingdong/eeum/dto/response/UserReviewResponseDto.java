@@ -1,5 +1,6 @@
 package com.dingdong.eeum.dto.response;
 
+import com.dingdong.eeum.constant.PlaceCategory;
 import com.dingdong.eeum.model.Place;
 import com.dingdong.eeum.model.Review;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,7 +25,7 @@ public class UserReviewResponseDto {
     private String placeName;
 
     @Schema(description = "장소 카테고리")
-    private List<String> placeCategories;
+    private List<PlaceCategory> placeCategories;
 
     @Schema(description = "장소 주소", example = "서울시 강남구...")
     private String placeAddress;

@@ -1,5 +1,6 @@
 package com.dingdong.eeum.dto.response;
 
+import com.dingdong.eeum.constant.PlaceCategory;
 import com.dingdong.eeum.model.Favorite;
 import com.dingdong.eeum.model.Place;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 @Getter
 @Builder
 @AllArgsConstructor
-public class FavoriteResponseDto {
+public class UserFavoriteResponseDto {
     @Schema(description = "찜 ID", example = "fav123")
     private String favoriteId;
 
@@ -24,19 +25,17 @@ public class FavoriteResponseDto {
     private String placeName;
 
     @Schema(description = "장소 카테고리")
-    private List<String> categories;
+    private List<PlaceCategory> categories;
 
     @Schema(description = "주소", example = "서울시 강남구...")
     private String address;
 
-    public static FavoriteResponseDto toFavoriteResponseDto(Favorite favorite, Place place) {
-        return FavoriteResponseDto.builder()
+    public static UserFavoriteResponseDto toFavoriteResponseDto(Favorite favorite, Place place) {
+        return UserFavoriteResponseDto.builder()
                 .favoriteId(favorite.getId())
                 .placeId(place.getId())
                 .placeName(place.getName())
-                .categories(place.getCategories().stream()
-                        .map(Enum::toString)
-                        .collect(Collectors.toList()))
+                .categories(place.getCategories())
                 .address(place.getAddress().getFullAddress())
                 .build();
     }
