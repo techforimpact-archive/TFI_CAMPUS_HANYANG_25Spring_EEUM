@@ -51,10 +51,6 @@ class QRScannerModel {
         scanError = nil
     }
     
-    func getScannedToken() -> String? {
-        return tokenValue
-    }
-    
     #if os(iOS) && !SKIP
     func attachPreviewToView(_ view: UIView) {
         if let iosService = qrService as? QRScannerServiceiOS {

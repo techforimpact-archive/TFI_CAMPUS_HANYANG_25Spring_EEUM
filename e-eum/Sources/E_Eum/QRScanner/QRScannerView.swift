@@ -3,19 +3,21 @@ import SwiftUI
 struct QRScannerView: View {
     @Environment(\.dismiss) private var dismiss
     
-    @State private var viewModel: QRScannerModel
-    let onTokenScanned: (String) -> Void
+    @Binding var qrCode: String
     
-    init(onTokenScanned: @escaping (String) -> Void = { _ in }) {
-        self.onTokenScanned = onTokenScanned
+    @State private var viewModel: QRScannerModel
+    @State private var showScanSuccessAlert: Bool = false
+    
+    init (qrCode: Binding<String>) {
+        self._qrCode = qrCode
         
         #if os(iOS) && !SKIP
         let service = QRScannerServiceiOS()
         #else
         let service = QRScannerServiceAndroid()
         #endif
-        
-        viewModel = QRScannerModel(qrService: service)
+
+        self.viewModel = QRScannerModel(qrService: service)
     }
     
     var body: some View {
@@ -38,9 +40,17 @@ struct QRScannerView: View {
         }
         .onChange(of: viewModel.tokenValue, {
             if let token = viewModel.tokenValue {
-                onTokenScanned(token)
+                qrCode = token
+                showScanSuccessAlert = true
             }
         })
+        .alert("QR 코드 스캔 성공!", isPresented: $showScanSuccessAlert) {
+            Button {
+                dismiss()
+            } label: {
+                Text("확인")
+            }
+        }
     }
 }
 
