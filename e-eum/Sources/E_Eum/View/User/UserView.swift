@@ -3,7 +3,7 @@ import SwiftUI
 struct UserView: View {
     @Environment(AuthService.self) private var authService
     
-    private let qrCode: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.75jOXNJBlItFBxIAP9Ew_1Qmzfzq_D1zi0Yn59B0ZOU"
+    private let qrCode: String = Bundle.main.infoDictionary?["QR_CODE"] as? String ?? ""
     
     @Binding var qrAuthorized: Bool
     
