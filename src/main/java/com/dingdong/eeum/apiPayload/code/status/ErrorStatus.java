@@ -101,7 +101,11 @@ public enum ErrorStatus implements BaseErrorCode {
     // IMAGE Error
     IMAGE_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "IMAGE_001", "이미지는 최대 5개까지 업로드할 수 있습니다."),
     IMAGE_FORMAT_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "IMAGE_002", "지원되지 않는 이미지 형식입니다."),
-    IMAGE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "IMAGE_003", "이미지 크기가 너무 큽니다.");
+    IMAGE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "IMAGE_003", "이미지 크기가 너무 큽니다."),
+
+    // FAVORITE Error
+    FAVORITE_ALREADY_EXISTS(HttpStatus.CONFLICT, "FAVORITE_409_1", "이미 찜한 장소입니다."),
+    FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "FAVORITE_404_1", "아직 찜하지 않은 장소입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
