@@ -5,10 +5,8 @@ import com.dingdong.eeum.apiPayload.code.status.SuccessStatus;
 import com.dingdong.eeum.apiPayload.exception.response.Response;
 import com.dingdong.eeum.dto.UserInfoDto;
 import com.dingdong.eeum.dto.request.QrAuthRequestDto;
-import com.dingdong.eeum.dto.response.UserFavoriteResponseDto;
-import com.dingdong.eeum.dto.response.QrAuthResponseDto;
-import com.dingdong.eeum.dto.response.ScrollResponseDto;
-import com.dingdong.eeum.dto.response.UserReviewResponseDto;
+import com.dingdong.eeum.dto.response.*;
+import com.dingdong.eeum.dto.response.swagger.MutualResponse;
 import com.dingdong.eeum.dto.response.swagger.QrAuthResponse;
 import com.dingdong.eeum.dto.response.swagger.UserFavoriteResponse;
 import com.dingdong.eeum.dto.response.swagger.UserReviewResponse;
@@ -128,6 +126,39 @@ public class UserController {
 
         ScrollResponseDto<UserReviewResponseDto> response = userService.getReviewsByUserId(
                 userInfoDto.getUserId(), cursor, size, sortBy, sortDirection);
+
+        return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
+    }
+
+    @PatchMapping("/deactivate")
+    @Operation(summary = "회원 탈퇴", description = "사용자 계정을 비활성화합니다")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "회원 탈퇴 성공",
+                    content = @Content(schema = @Schema(implementation = MutualResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "존재하지 않는 사용자",
+                    content = @Content(schema = @Schema(implementation = Response.class))
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "이미 탈퇴한 사용자",
+                    content = @Content(schema = @Schema(implementation = Response.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "서버 오류",
+                    content = @Content(schema = @Schema(implementation = Response.class))
+            )
+    })
+    public Response<MutualResponseDto> deactivateUser(
+            @User @Parameter(hidden = true) UserInfoDto userInfoDto) {
+
+        MutualResponseDto response = userService.deactivateUser(
+                userInfoDto.getUserId());
 
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
     }
