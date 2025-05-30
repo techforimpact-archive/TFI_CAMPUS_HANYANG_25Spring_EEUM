@@ -12,6 +12,7 @@ struct ContentView: View {
     @AppStorage("qrAuthorized") var qrAuthorized: Bool = false
     
     @State private var authService = AuthService()
+    @State private var showOnboarding: Bool = false
 
     var body: some View {
         TabView(selection: $tab) {
@@ -46,7 +47,13 @@ struct ContentView: View {
         .environment(authService)
         .preferredColorScheme(.light)
         .onAppear {
+            if !UserDefaults.standard.bool(forKey: "launchedBefore") {
+                showOnboarding = true
+            }
             authService.qrAuthorized = qrAuthorized
+        }
+        .fullScreenCover(isPresented: $showOnboarding) {
+            OnboardingView(withHeader: false)
         }
     }
 }
