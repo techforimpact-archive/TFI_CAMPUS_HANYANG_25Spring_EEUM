@@ -14,8 +14,9 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends MongoRepository<User, String> {
     Optional<User> findByEmailAndStatus(String email,UserStatus status);
-    boolean existsByEmail(String email);
-    boolean existsByNickname(String nickname);
+    Optional<User> findByEmail(String email);
+    boolean existsByEmailAndStatus(String email,UserStatus status);
+    boolean existsByNicknameAndStatus(String nickname, UserStatus status);
 
     @Query("{ '_id': ?0 }")
     @Update("{ '$set': { 'role': ?1, 'updatedAt': ?2 } }")

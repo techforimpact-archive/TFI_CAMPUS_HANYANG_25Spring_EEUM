@@ -4,12 +4,14 @@ import com.dingdong.eeum.constant.UserRole;
 import com.dingdong.eeum.constant.UserStatus;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.Indexed;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Document(collection = "users")
 @Builder
 public class User {

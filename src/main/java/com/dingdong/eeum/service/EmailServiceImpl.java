@@ -3,6 +3,7 @@ package com.dingdong.eeum.service;
 import com.dingdong.eeum.apiPayload.code.status.ErrorStatus;
 import com.dingdong.eeum.apiPayload.exception.GeneralException;
 import com.dingdong.eeum.apiPayload.exception.handler.ExceptionHandler;
+import com.dingdong.eeum.constant.UserStatus;
 import com.dingdong.eeum.dto.request.EmailSendRequestDto;
 import com.dingdong.eeum.dto.request.EmailVerifyRequestDto;
 import com.dingdong.eeum.dto.response.EmailSendResponseDto;
@@ -44,9 +45,8 @@ public class EmailServiceImpl implements EmailService {
     @Transactional
     public EmailSendResponseDto sendVerificationCode(EmailSendRequestDto request) {
         String email = request.getEmail();
-        log.info("인증번호 발송 요청: {}", email);
 
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmailAndStatus(email, UserStatus.ACTIVE)) {
             throw new GeneralException(ErrorStatus.AUTH_EMAIL_ALREADY_EXISTS);
         }
 
@@ -171,9 +171,8 @@ public class EmailServiceImpl implements EmailService {
     @Transactional
     public EmailSendResponseDto sendPasswordResetCode(EmailSendRequestDto request) {
         String email = request.getEmail();
-        log.info("비밀번호 재설정 인증번호 발송 요청: {}", email);
 
-        if (!userRepository.existsByEmail(email)) {
+        if (!userRepository.existsByEmailAndStatus(email,UserStatus.ACTIVE)) {
             throw new ExceptionHandler(ErrorStatus.AUTH_USER_NOT_FOUND);
         }
 

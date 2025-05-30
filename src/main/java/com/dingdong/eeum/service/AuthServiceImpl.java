@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,21 +35,30 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public MutualResponseDto signupUser(SignupRequestDto request) {
-
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new ExceptionHandler(ErrorStatus.AUTH_EMAIL_ALREADY_EXISTS);
-        }
-
+        Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
-        User user = User.builder()
-                .nickname(request.getNickname())
-                .email(request.getEmail())
-                .password(encodedPassword)
-                .role(UserRole.GUEST)
-                .build();
+        if (existingUser.isPresent()) {
+            User user = existingUser.get();
+            if (user.getStatus().equals(UserStatus.ACTIVE)) {
+                throw new ExceptionHandler(ErrorStatus.AUTH_EMAIL_ALREADY_EXISTS);
+            }
 
-        userRepository.save(user);
+            user.setNickname(request.getNickname());
+            user.setPassword(encodedPassword);
+            user.setStatus(UserStatus.ACTIVE);
+            user.setRole(UserRole.GUEST);
+            userRepository.save(user);
+        } else {
+            User newUser = User.builder()
+                    .nickname(request.getNickname())
+                    .email(request.getEmail())
+                    .password(encodedPassword)
+                    .role(UserRole.GUEST)
+                    .status(UserStatus.ACTIVE)
+                    .build();
+            userRepository.save(newUser);
+        }
 
         return MutualResponseDto.builder().status(true).build();
     }
@@ -100,7 +110,7 @@ public class AuthServiceImpl implements AuthService {
 
         if (nickname.length() < 2 || nickname.length() > 20) throw new ExceptionHandler(ErrorStatus.AUTH_NICKNAME_TOO_LONG);
 
-        boolean exists = userRepository.existsByNickname(nickname);
+        boolean exists = userRepository.existsByNicknameAndStatus(nickname,UserStatus.ACTIVE);
 
         if (exists) throw new ExceptionHandler(ErrorStatus.AUTH_NICKNAME_ALREADY_EXISTS);
 
@@ -109,7 +119,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public MutualResponseDto checkEmail(String email) {
-        boolean exists = userRepository.existsByEmail(email);
+        boolean exists = userRepository.existsByEmailAndStatus(email,UserStatus.ACTIVE);
 
         if (exists) throw new ExceptionHandler(ErrorStatus.AUTH_EMAIL_ALREADY_EXISTS);
 
