@@ -102,6 +102,7 @@ public class AuthServiceImpl implements AuthService {
                 .email(user.getEmail())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .isQrVerified(user.getRole().equals(UserRole.USER))
                 .build();
     }
 
