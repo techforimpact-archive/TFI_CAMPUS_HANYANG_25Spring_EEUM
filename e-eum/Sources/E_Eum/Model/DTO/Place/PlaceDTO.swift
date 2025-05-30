@@ -13,4 +13,5 @@ struct PlaceDTO: Decodable {
     let temperature: Double
     let status: String
     let verified: Bool
+    let favorite: Bool
 }

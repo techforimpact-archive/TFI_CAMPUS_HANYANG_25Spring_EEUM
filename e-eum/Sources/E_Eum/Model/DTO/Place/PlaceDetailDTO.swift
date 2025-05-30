@@ -19,4 +19,5 @@ struct PlaceDetailDTO: Decodable {
     let reviewCount: Int
     let status: String
     let verified: Bool
+    let favorite: Bool
 }

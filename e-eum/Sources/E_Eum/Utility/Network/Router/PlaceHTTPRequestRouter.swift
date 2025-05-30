@@ -1,16 +1,18 @@
 import Foundation
 
 enum PlaceHTTPRequestRouter {
-    case getAllPlacesOnMap(latitude: Double, longitude: Double, radius: Double)
-    case getPlacesOnMapByCategories(categories: [String])
-    case getPlacesOnMapByKeyword(keyword: String)
-    case getAllPlacesOnList(lastID: String, size: Int, sortBy: String, sortDirection: String)
-    case getPlacesOnListByLocation(latitude: Double, longitude: Double, radius: Double, lastID: String, size: Int, sortBy: String, sortDirection: String)
-    case getPlacesOnListByCategories(categories: [String], lastID: String, size: Int, sortBy: String, sortDirection: String)
-    case getPlacesOnListByKeyword(keyword: String, lastID: String, size: Int, sortBy: String, sortDirection: String)
-    case getPlaceDetails(placeID: String)
-    case getPlaceReviews(placeID: String, lastID: String, size: Int, sortBy: String, sortDirection: String)
-    case createPlaceReview(placeID: String, data: Data)
+    case getAllPlacesOnMap(token: String, latitude: Double, longitude: Double, radius: Double)
+    case getPlacesOnMapByCategories(token: String, categories: [String])
+    case getPlacesOnMapByKeyword(token: String, keyword: String)
+    case getAllPlacesOnList(token: String, lastID: String, size: Int, sortBy: String, sortDirection: String)
+    case getPlacesOnListByLocation(token: String, latitude: Double, longitude: Double, radius: Double, lastID: String, size: Int, sortBy: String, sortDirection: String)
+    case getPlacesOnListByCategories(token: String, categories: [String], lastID: String, size: Int, sortBy: String, sortDirection: String)
+    case getPlacesOnListByKeyword(token: String, keyword: String, lastID: String, size: Int, sortBy: String, sortDirection: String)
+    case getPlaceDetails(token: String, placeID: String)
+    case getPlaceReviews(token: String, placeID: String, lastID: String, size: Int, sortBy: String, sortDirection: String)
+    case createPlaceReview(token: String, placeID: String, data: Data)
+    case addFavoritePlace(token: String, data: Data)
+    case cancelFavoritePlace(token: String, placeID: String)
 }
 
 extension PlaceHTTPRequestRouter: HTTPRequestable {
@@ -18,25 +20,52 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
         switch self {
         case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getPlaceReviews:
             return .get
-        case .createPlaceReview:
+        case .createPlaceReview, .addFavoritePlace:
             return .post
+        case .cancelFavoritePlace:
+            return .delete
         }
     }
     
     var headers: [String : String]? {
         switch self {
-        case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getPlaceReviews:
-            return nil
-        case .createPlaceReview:
-            return ["content-type": "multipart/form-data"]
+        case .getAllPlacesOnMap(let token, _, _, _):
+            return ["Authorization": "Bearer \(token)"]
+        case .getPlacesOnMapByCategories(let token, _):
+            return ["Authorization": "Bearer \(token)"]
+        case .getPlacesOnMapByKeyword(let token, _):
+            return ["Authorization": "Bearer \(token)"]
+        case .getAllPlacesOnList(let token, _, _, _, _):
+            return ["Authorization": "Bearer \(token)"]
+        case .getPlacesOnListByLocation(let token, _, _, _, _, _, _, _):
+            return ["Authorization": "Bearer \(token)"]
+        case .getPlacesOnListByCategories(let token, _, _, _, _, _):
+            return ["Authorization": "Bearer \(token)"]
+        case .getPlacesOnListByKeyword(let token, _, _, _, _, _):
+            return ["Authorization": "Bearer \(token)"]
+        case .getPlaceDetails(let token, _):
+            return ["Authorization": "Bearer \(token)"]
+        case .getPlaceReviews(let token, _, _, _, _, _):
+            return ["Authorization": "Bearer \(token)"]
+        case .createPlaceReview(let token, _, _):
+            return [
+                "Authorization": "Bearer \(token)",
+                "content-type": "multipart/form-data"
+            ]
+        case .addFavoritePlace(let token, _):
+            return ["Authorization": "Bearer \(token)"]
+        case .cancelFavoritePlace(let token, _):
+            return ["Authorization": "Bearer \(token)"]
         }
     }
     
     var body: Data? {
         switch self {
-        case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getPlaceReviews:
+        case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getPlaceReviews, .cancelFavoritePlace:
             return nil
-        case .createPlaceReview(_, let data):
+        case .createPlaceReview(_, _, let data):
+            return data
+        case .addFavoritePlace(_, let data):
             return data
         }
     }
@@ -67,20 +96,24 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
             return ["v1", "places"]
         case .getPlacesOnListByKeyword:
             return ["v1", "places"]
-        case .getPlaceDetails(let placeID):
+        case .getPlaceDetails(_, let placeID):
             return ["v1", "places", "\(placeID)"]
-        case .getPlaceReviews(let placeID, _, _, _, _):
+        case .getPlaceReviews(_, let placeID, _, _, _, _):
             return ["v1", "places", "\(placeID)", "reviews"]
-        case .createPlaceReview(let placeID, _):
+        case .createPlaceReview(_, let placeID, _):
             return ["v1", "places", "\(placeID)", "reviews"]
+        case .addFavoritePlace:
+            return ["v1", "places", "favorites"]
+        case .cancelFavoritePlace(_, let placeID):
+            return ["v1", "places", "favorites", "\(placeID)"]
         }
     }
     
     var queryItems: [URLQueryItem]? {
         switch self {
-        case .getPlaceDetails, .createPlaceReview:
+        case .getPlaceDetails, .createPlaceReview, .addFavoritePlace, .cancelFavoritePlace:
             return nil
-        case .getAllPlacesOnMap(let latitude, let longitude, let radius):
+        case .getAllPlacesOnMap(_, let latitude, let longitude, let radius):
             let queryItems = [
                 URLQueryItem(name: "mode", value: "MAP"),
                 URLQueryItem(name: "latitude", value: "\(latitude)"),
@@ -88,7 +121,7 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
                 URLQueryItem(name: "radius", value: "\(radius)")
             ]
             return queryItems
-        case .getPlacesOnMapByCategories(let categories):
+        case .getPlacesOnMapByCategories(_, let categories):
             var queryItems = [
                 URLQueryItem(name: "mode", value: "MAP")
             ]
@@ -96,13 +129,13 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
                 queryItems.append(URLQueryItem(name: "categories", value: category))
             }
             return queryItems
-        case .getPlacesOnMapByKeyword(let keyword):
+        case .getPlacesOnMapByKeyword(_, let keyword):
             let queryItems = [
                 URLQueryItem(name: "mode", value: "MAP"),
                 URLQueryItem(name: "name", value: keyword)
             ]
             return queryItems
-        case .getAllPlacesOnList(let lastID, let size, let sortBy, let sortDirection):
+        case .getAllPlacesOnList(_, let lastID, let size, let sortBy, let sortDirection):
             let queryItems = [
                 URLQueryItem(name: "mode", value: "LIST"),
                 URLQueryItem(name: "lastId", value: lastID),
@@ -111,7 +144,7 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
                 URLQueryItem(name: "sortDirection", value: sortDirection)
             ]
             return queryItems
-        case .getPlacesOnListByLocation(let latitude, let longitude, let radius, let lastID, let size, let sortBy, let sortDirection):
+        case .getPlacesOnListByLocation(_, let latitude, let longitude, let radius, let lastID, let size, let sortBy, let sortDirection):
             let queryItems = [
                 URLQueryItem(name: "mode", value: "LIST"),
                 URLQueryItem(name: "latitude", value: "\(latitude)"),
@@ -123,7 +156,7 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
                 URLQueryItem(name: "sortDirection", value: sortDirection)
             ]
             return queryItems
-        case .getPlacesOnListByCategories(let categories, let lastID, let size, let sortBy, let sortDirection):
+        case .getPlacesOnListByCategories(_, let categories, let lastID, let size, let sortBy, let sortDirection):
             var queryItems = [
                 URLQueryItem(name: "mode", value: "LIST"),
                 URLQueryItem(name: "lastId", value: lastID),
@@ -135,7 +168,7 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
                 queryItems.append(URLQueryItem(name: "categories", value: category))
             }
             return queryItems
-        case .getPlacesOnListByKeyword(let keyword, let lastID, let size, let sortBy, let sortDirection):
+        case .getPlacesOnListByKeyword(_, let keyword, let lastID, let size, let sortBy, let sortDirection):
             let queryItems = [
                 URLQueryItem(name: "mode", value: "LIST"),
                 URLQueryItem(name: "name", value: keyword),
@@ -145,7 +178,7 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
                 URLQueryItem(name: "sortDirection", value: sortDirection)
             ]
             return queryItems
-        case .getPlaceReviews(_, let lastID, let size, let sortBy, let sortDirection):
+        case .getPlaceReviews(_, _, let lastID, let size, let sortBy, let sortDirection):
             let queryItems = [
                 URLQueryItem(name: "lastId", value: lastID),
                 URLQueryItem(name: "size", value: "\(size)"),
