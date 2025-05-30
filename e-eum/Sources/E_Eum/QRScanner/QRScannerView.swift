@@ -7,6 +7,7 @@ struct QRScannerView: View {
     
     @State private var viewModel: QRScannerModel
     @State private var showScanSuccessAlert: Bool = false
+    @State private var showScanFailureAlert: Bool = false
     
     init (qrCode: Binding<String>) {
         self._qrCode = qrCode
@@ -42,13 +43,23 @@ struct QRScannerView: View {
             if let token = viewModel.tokenValue {
                 qrCode = token
                 showScanSuccessAlert = true
+            } else {
+                showScanFailureAlert = true
             }
         })
-        .alert("QR 코드 스캔 성공!", isPresented: $showScanSuccessAlert) {
+        .alert("QR 코드 스캔을 완료했습니다.", isPresented: $showScanSuccessAlert) {
             Button {
                 dismiss()
             } label: {
                 Text("확인")
+            }
+        }
+        .alert("QR 코드 스캔을 실패했습니다.", isPresented: $showScanFailureAlert) {
+            Button {
+                viewModel.resetScan()
+                viewModel.startScanning()
+            } label: {
+                Text("다시 시도하기")
             }
         }
     }
@@ -74,83 +85,59 @@ private extension QRScannerView {
             #endif
             
             if viewModel.isScanning {
-                VStack(spacing: 10) {
+                HStack(spacing: 8) {
                     ProgressView()
                     
-                    Text("토큰 스캔 중...")
+                    Text("QR 스캔 중...")
+                        .font(.title3)
                         .foregroundColor(.black)
                 }
-            }
-            
-            if let token = viewModel.tokenValue {
-                VStack(spacing: 10) {
-                    Text("토큰 스캔 완료")
-                        .font(.headline)
-                        .foregroundColor(.green)
-                    
-                    Text("토큰: \(token)")
-                        .font(.caption)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.black.opacity(0.7))
-                        .cornerRadius(8)
+            } else {
+                if viewModel.tokenValue != nil {
+                    Text("QR 스캔 완료")
+                        .font(.title3)
+                        .foregroundStyle(Color.green)
+                } else {
+                    Text(" ")
+                        .font(.title3)
+                        .foregroundStyle(Color.clear)
                 }
             }
             
-            HStack(spacing: 20) {
+            HStack(spacing: 16) {
                 if !viewModel.isScanning {
-                    Button("스캔 시작") {
+                    BasicButton(title: "QR 스캔 시작", disabled: .constant(false)) {
                         viewModel.startScanning()
                     }
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
                 } else {
-                    Button("스캔 중지") {
+                    BasicButton(title: "QR 스캔 중지", disabled: .constant(false)) {
                         viewModel.stopScanning()
                     }
-                    .padding()
-                    .background(Color.red)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-                }
-                
-                if viewModel.tokenValue != nil {
-                    Button("다시 스캔") {
-                        viewModel.resetScan()
-                        viewModel.startScanning()
-                    }
-                    .padding()
-                    .background(Color.orange)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
                 }
             }
         }
-        .padding()
     }
     
     var permissionView: some View {
         VStack(spacing: 16) {
             Image(systemName: "camera.fill")
                 .font(.system(size: 50))
-                .foregroundColor(.white)
+                .foregroundStyle(Color.white)
             
             Text("카메라 권한이 필요합니다")
                 .font(.headline)
-                .foregroundColor(.white)
+                .foregroundStyle(Color.white)
             
             Text("QR 코드에서 토큰을 스캔하기 위해\n카메라 접근 권한이 필요합니다")
                 .multilineTextAlignment(.center)
-                .foregroundColor(.gray)
+                .foregroundStyle(Color.gray)
             
             Button("권한 허용하기") {
                 viewModel.checkPermission()
             }
             .padding()
             .background(Color.blue)
-            .foregroundColor(.white)
+            .foregroundStyle(Color.white)
             .cornerRadius(8)
         }
         .padding()
