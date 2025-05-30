@@ -2,11 +2,9 @@ package com.dingdong.eeum.service;
 
 import com.dingdong.eeum.apiPayload.exception.handler.ExceptionHandler;
 import com.dingdong.eeum.constant.UserRole;
+import com.dingdong.eeum.constant.UserStatus;
 import com.dingdong.eeum.dto.request.QrAuthRequestDto;
-import com.dingdong.eeum.dto.response.UserFavoriteResponseDto;
-import com.dingdong.eeum.dto.response.QrAuthResponseDto;
-import com.dingdong.eeum.dto.response.ScrollResponseDto;
-import com.dingdong.eeum.dto.response.UserReviewResponseDto;
+import com.dingdong.eeum.dto.response.*;
 import com.dingdong.eeum.model.Favorite;
 import com.dingdong.eeum.model.Place;
 import com.dingdong.eeum.model.Review;
@@ -21,7 +19,11 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 
 import static com.dingdong.eeum.apiPayload.code.status.ErrorStatus.*;
 import static com.dingdong.eeum.constant.UserRole.GUEST;
+import static com.dingdong.eeum.constant.UserStatus.INACTIVE;
 
 @RequiredArgsConstructor
 @Service
@@ -183,5 +186,20 @@ public class UserServiceImpl implements UserService{
                 reviews.get(reviews.size() - 1).getId() : null;
 
         return new ScrollResponseDto<>(reviewDtos, hasNext, nextCursor);
+    }
+
+    @Override
+    public MutualResponseDto deactivateUser(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ExceptionHandler(AUTH_USER_NOT_FOUND));
+
+        if (user.getStatus() == INACTIVE) {
+            throw new ExceptionHandler(AUTH_USER_ALREADY_DEACTIVATED);
+        }
+
+        user.deactivate();
+        userRepository.save(user);
+
+        return MutualResponseDto.builder().status(true).build();
     }
 }
