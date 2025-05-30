@@ -3,10 +3,10 @@ import SwiftUI
 struct UserView: View {
     @Environment(AuthService.self) private var authService
     
-    private let qrCode: String = Bundle.main.infoDictionary?["QR_CODE"] as? String ?? ""
-    
     @Binding var qrAuthorized: Bool
     
+    @State private var qrCode: String = ""
+    @State private var showQRScanner: Bool = false
     @State private var showSignOutAlert: Bool = false
     @State private var showDeactivateAlert: Bool = false
     
@@ -17,18 +17,10 @@ struct UserView: View {
             Text("유저 로그인 및 인증 정보, 설정 등이 들어갈 화면입니다.")
             
             if authService.userInfo != nil && !qrAuthorized {
-                Button {
-                    Task {
-                        do {
-                            authService.qrAuthorized = try await authService.qrAuthorization(qrCode: qrCode)
-                            qrAuthorized = authService.qrAuthorized
-                        } catch {
-                            print(error.localizedDescription)
-                        }
-                    }
-                } label: {
-                    Text("QR코드 인증")
+                BasicButton(title: "QR코드 스캔하기", disabled: .constant(false)) {
+                    showQRScanner = true
                 }
+                .frame(width: 200)
             }
             
             Spacer()
@@ -54,6 +46,14 @@ struct UserView: View {
             }
         }
         .padding(16)
+        .sheet(isPresented: $showQRScanner) {
+            QRScannerView(qrCode: $qrCode)
+                .onDisappear {
+                    if qrCode != "" {
+                        qrAuthorization()
+                    }
+                }
+        }
         .alert("로그아웃 하시겠습니까?", isPresented: $showSignOutAlert) {
             Button(role: .cancel) {
                 showSignOutAlert = false
@@ -84,11 +84,24 @@ struct UserView: View {
 }
 
 private extension UserView {
+    func qrAuthorization() {
+        Task {
+            do {
+                authService.qrAuthorized = try await authService.qrAuthorization(qrCode: qrCode)
+                qrAuthorized = authService.qrAuthorized
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
     func signOut() {
         Task {
             do {
-                _ = try await authService.signout()
-                qrAuthorized = false
+                let result = try await authService.signout()
+                if result {
+                    qrAuthorized = false
+                }
             } catch {
                 print(error.localizedDescription)
             }

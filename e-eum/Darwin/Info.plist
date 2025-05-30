@@ -4,7 +4,5 @@
 <dict>
 	<key>SERVER_ADDRESS</key>
 	<string>$(SERVER_ADDRESS)</string>
-	<key>QR_CODE</key>
-	<string>$(QR_CODE)</string>
 </dict>
 </plist>
