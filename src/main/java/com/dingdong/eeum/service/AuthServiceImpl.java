@@ -82,7 +82,6 @@ public class AuthServiceImpl implements AuthService {
                 .token(refreshToken)
                 .userId(user.getId())
                 .createdAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plusSeconds(jwtTokenProvider.getRefreshTokenValidityInSeconds()))
                 .build();
 
         refreshTokenRepository.save(refreshTokenEntity);
@@ -157,12 +156,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenValue)
-                .orElseThrow(() -> new ExceptionHandler(ErrorStatus.AUTH_INVALID_REFRESH_TOKEN));
-
-        if (refreshToken.isExpired()) {
-            refreshTokenRepository.delete(refreshToken);
-            throw new ExceptionHandler(ErrorStatus.AUTH_EXPIRED_REFRESH_TOKEN);
-        }
+                .orElseThrow(() -> new ExceptionHandler(ErrorStatus.AUTH_EXPIRED_REFRESH_TOKEN));
 
         String newAccessToken = jwtTokenProvider.createAccessToken(refreshToken.getUserId(),role);
         String newRefreshToken = jwtTokenProvider.createRefreshToken(refreshToken.getUserId());
@@ -173,7 +167,6 @@ public class AuthServiceImpl implements AuthService {
                 .token(newRefreshToken)
                 .userId(refreshToken.getUserId())
                 .createdAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plusSeconds(jwtTokenProvider.getRefreshTokenValidityInSeconds()))
                 .build();
 
         refreshTokenRepository.save(newRefreshTokenEntity);

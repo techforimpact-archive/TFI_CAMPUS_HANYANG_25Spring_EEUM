@@ -20,12 +20,7 @@ public class RefreshToken {
     @Indexed
     private String userId;
 
-    private LocalDateTime createdAt;
-
+    @Indexed(expireAfter = "P14D")
     @Builder.Default
-    private LocalDateTime expiresAt = LocalDateTime.now().plusWeeks(2);
-
-    public boolean isExpired() {
-        return LocalDateTime.now().isAfter(expiresAt);
-    }
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

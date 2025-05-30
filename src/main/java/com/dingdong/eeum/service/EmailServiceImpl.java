@@ -96,7 +96,6 @@ public class EmailServiceImpl implements EmailService {
                     .email(verification.getEmail())
                     .code(verification.getCode())
                     .createdAt(verification.getCreatedAt())
-                    .expiresAt(verification.getExpiresAt())
                     .verified(false)
                     .attemptCount(verification.getAttemptCount() + 1)
                     .build();
@@ -110,7 +109,6 @@ public class EmailServiceImpl implements EmailService {
                 .email(verification.getEmail())
                 .code(verification.getCode())
                 .createdAt(verification.getCreatedAt())
-                .expiresAt(LocalDateTime.now().plusMinutes(5))
                 .verified(true)
                 .attemptCount(verification.getAttemptCount())
                 .build();
@@ -203,42 +201,18 @@ public class EmailServiceImpl implements EmailService {
         String email = request.getEmail();
         String inputCode = request.getVerificationCode();
 
-        Optional<PasswordResetVerification> optionalVerification =
-                passwordResetRepository.findByEmailAndCode(email, inputCode);
-
-        if (optionalVerification.isEmpty()) {
-            throw new ExceptionHandler(ErrorStatus.AUTH_VERIFICATION_CODE_INVALID);
-        }
-
-        PasswordResetVerification verification = optionalVerification.get();
+        PasswordResetVerification verification =
+                passwordResetRepository.findByEmailAndCode(email, inputCode).orElseThrow( () -> new ExceptionHandler(ErrorStatus.AUTH_VERIFICATION_CODE_EXPIRED));
 
         if (verification.isVerified()) throw new ExceptionHandler(ErrorStatus.VERIFICATION_ALREADY_COMPLETED);
 
-        if (verification.getExpiresAt().isBefore(LocalDateTime.now())) {
-            passwordResetRepository.deleteByEmail(email);
-            throw new ExceptionHandler(ErrorStatus.AUTH_VERIFICATION_CODE_EXPIRED);
-        }
 
         if (verification.getAttemptCount() >= MAX_ATTEMPTS) {
             passwordResetRepository.deleteByEmail(email);
             throw new ExceptionHandler(ErrorStatus.VERIFICATION_CODE_TOO_MANY_ATTEMPTS);
         }
 
-        if (!verification.getCode().equals(inputCode)) {
-            PasswordResetVerification updatedVerification = PasswordResetVerification.builder()
-                    .id(verification.getId())
-                    .email(verification.getEmail())
-                    .code(verification.getCode())
-                    .createdAt(verification.getCreatedAt())
-                    .expiresAt(verification.getExpiresAt())
-                    .verified(false)
-                    .attemptCount(verification.getAttemptCount() + 1)
-                    .resetToken(verification.getResetToken())
-                    .build();
-
-            passwordResetRepository.save(updatedVerification);
-            throw new ExceptionHandler(ErrorStatus.AUTH_VERIFICATION_CODE_INVALID);
-        }
+        if (!verification.getCode().equals(inputCode)) throw new ExceptionHandler(ErrorStatus.AUTH_VERIFICATION_CODE_INVALID);
 
         String resetToken = generateResetToken();
 
@@ -247,7 +221,6 @@ public class EmailServiceImpl implements EmailService {
                 .email(verification.getEmail())
                 .code(verification.getCode())
                 .createdAt(verification.getCreatedAt())
-                .expiresAt(LocalDateTime.now().plusMinutes(10))
                 .verified(true)
                 .attemptCount(verification.getAttemptCount())
                 .resetToken(resetToken)
@@ -268,7 +241,7 @@ public class EmailServiceImpl implements EmailService {
         }
 
         PasswordResetVerification v = verification.get();
-        return v.isVerified() && v.getExpiresAt().isAfter(LocalDateTime.now());
+        return v.isVerified();
     }
 
     private String generateResetToken() {

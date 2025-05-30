@@ -19,17 +19,14 @@ public class PasswordResetVerification {
 
     private String code;
 
+    @Indexed(expireAfter = "PT5M")
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    @Indexed(expireAfter = "5m")
-    @Builder.Default
-    private LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(5);
 
     private boolean verified;
 
     @Builder.Default
     private int attemptCount = 0;
 
-    private String resetToken; // 비밀번호 재설정용 임시 토큰
+    private String resetToken;
 }

@@ -19,12 +19,9 @@ public class EmailVerification {
 
     private String code;
 
+    @Indexed(expireAfter = "PT5M")
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    @Indexed(expireAfter = "5m")
-    @Builder.Default
-    private LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(5);
 
     private boolean verified;
 
