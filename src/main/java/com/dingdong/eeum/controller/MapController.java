@@ -239,7 +239,7 @@ public class MapController {
     @PostMapping(value = "/{placeId}/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<ReviewResponseDto> createReview(
             @PathVariable String placeId,
-            @Valid @ModelAttribute ReviewCreateRequestDto requestDto, @User UserInfoDto userInfoDto) {
+            @Valid @ModelAttribute ReviewCreateRequestDto requestDto, @User @Parameter(hidden = true) UserInfoDto userInfoDto) {
         ReviewResponseDto review = reviewService.createReview(placeId, requestDto, userInfoDto);
         return new Response<>(true, SuccessStatus._CREATED.getCode(), SuccessStatus._CREATED.getMessage(), review);
     }
@@ -302,7 +302,7 @@ public class MapController {
     })
     public Response<MutualResponseDto> removeFromFavorites(
             @PathVariable String placeId,
-            @User UserInfoDto userInfoDto) {
+            @User @Parameter(hidden = true) UserInfoDto userInfoDto) {
 
         MutualResponseDto response = mapService.removeFromFavorites(userInfoDto.getUserId(), placeId);
 

@@ -11,6 +11,7 @@ import com.dingdong.eeum.dto.response.ReviewResponseDto;
 import com.dingdong.eeum.dto.response.swagger.QuestionListResponse;
 import com.dingdong.eeum.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -93,7 +94,7 @@ public class ReviewController {
             )
     })
     @DeleteMapping("/{reviewId}")
-    public Response<Void> deleteReview(@PathVariable String reviewId, @User UserInfoDto userInfoDto) {
+    public Response<Void> deleteReview(@PathVariable String reviewId, @User @Parameter(hidden = true) UserInfoDto userInfoDto) {
         reviewService.deleteReview(reviewId,userInfoDto);
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), null);
     }

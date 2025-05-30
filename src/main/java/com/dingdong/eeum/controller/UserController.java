@@ -61,7 +61,7 @@ public class UserController {
             )
     })
     public Response<QrAuthResponseDto> authenticateWithQr(
-            @Valid @RequestBody QrAuthRequestDto request, @User UserInfoDto userInfoDto) {
+            @Valid @RequestBody QrAuthRequestDto request, @User @Parameter(hidden = true) UserInfoDto userInfoDto) {
 
         QrAuthResponseDto response = userService.authenticateWithQr(request, userInfoDto.getUserId());
 
