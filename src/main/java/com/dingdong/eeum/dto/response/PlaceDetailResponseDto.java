@@ -28,9 +28,10 @@ public class PlaceDetailResponseDto {
     private double temperature;
     private long reviewCount;
     private PlaceStatus status;
+    private boolean isFavorite;
     private boolean isVerified;
 
-    public static PlaceDetailResponseDto toPlaceDetailResponseDto(Place place, List<String> imageUrls) {
+    public static PlaceDetailResponseDto toPlaceDetailResponseDto(Place place, List<String> imageUrls, boolean isFavorite) {
         return PlaceDetailResponseDto.builder()
                 .id(place.getId())
                 .name(place.getName())
@@ -50,6 +51,7 @@ public class PlaceDetailResponseDto {
                 .reviewCount(place.getReviewStats().getCount())
                 .status(place.getStatus())
                 .isVerified(place.isVerified())
+                .isFavorite(isFavorite)
                 .build();
     }
 }
