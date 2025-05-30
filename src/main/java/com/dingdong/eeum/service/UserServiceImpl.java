@@ -3,17 +3,29 @@ package com.dingdong.eeum.service;
 import com.dingdong.eeum.apiPayload.exception.handler.ExceptionHandler;
 import com.dingdong.eeum.constant.UserRole;
 import com.dingdong.eeum.dto.request.QrAuthRequestDto;
+import com.dingdong.eeum.dto.response.FavoriteResponseDto;
 import com.dingdong.eeum.dto.response.QrAuthResponseDto;
+import com.dingdong.eeum.dto.response.ScrollResponseDto;
+import com.dingdong.eeum.dto.response.UserReviewResponseDto;
+import com.dingdong.eeum.model.Favorite;
+import com.dingdong.eeum.model.Place;
+import com.dingdong.eeum.model.Review;
 import com.dingdong.eeum.model.User;
+import com.dingdong.eeum.repository.FavoriteRepository;
+import com.dingdong.eeum.repository.PlaceRepository;
+import com.dingdong.eeum.repository.ReviewRepository;
 import com.dingdong.eeum.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.dingdong.eeum.apiPayload.code.status.ErrorStatus.*;
 import static com.dingdong.eeum.constant.UserRole.GUEST;
@@ -24,9 +36,12 @@ public class UserServiceImpl implements UserService{
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final PlaceRepository placeRepository;
+    private final ReviewRepository reviewRepository;
+    private final FavoriteRepository favoriteRepository;
 
     @Override
-    public QrAuthResponseDto authenticateWithQr(QrAuthRequestDto qrAuthRequestDto) {
+    public QrAuthResponseDto authenticateWithQr(QrAuthRequestDto qrAuthRequestDto, String id) {
         String qrToken = qrAuthRequestDto.getQrCode();
 
         if (qrToken == null || qrToken.trim().isEmpty()) {
@@ -38,19 +53,17 @@ public class UserServiceImpl implements UserService{
                 throw new ExceptionHandler(AUTH_TOKEN_INVALID);
             }
 
-            String userId = jwtService.getUserIdFromToken(qrToken);
-
-            User user = userRepository.findById(userId)
+            User user = userRepository.findById(id)
                     .orElseThrow(() -> new ExceptionHandler(AUTH_USER_NOT_FOUND));
 
             if (user.getRole() != GUEST) {
                 throw new ExceptionHandler(QR_AUTH_ALREADY_AUTHORIZED);
             } else {
-                userRepository.updateRoleById(userId, UserRole.USER, LocalDateTime.now());
+                userRepository.updateRoleById(id, UserRole.USER, LocalDateTime.now());
             }
 
             return QrAuthResponseDto.builder()
-                    .accessToken(jwtService.createAccessToken(userId,UserRole.USER))
+                    .accessToken(jwtService.createAccessToken(id,UserRole.USER))
                     .build();
 
         } catch (ExpiredJwtException e) {
@@ -62,5 +75,113 @@ public class UserServiceImpl implements UserService{
         } catch (SignatureException e) {
             throw new ExceptionHandler(AUTH_TOKEN_SIGNATURE_INVALID);
         }
+    }
+
+    @Override
+    public ScrollResponseDto<FavoriteResponseDto> getFavoritesByUserId(
+            String userId, String cursor, int size, String sortBy, Sort.Direction sortDirection) {
+
+        userRepository.findById(userId)
+                .orElseThrow(() -> new ExceptionHandler(AUTH_USER_NOT_FOUND));
+
+        if (size <= 0) size = 10;
+        if (sortBy == null) sortBy = "createdAt";
+        if (sortDirection == null) sortDirection = Sort.Direction.DESC;
+
+        Sort sort = Sort.by(sortDirection, sortBy);
+
+        List<Favorite> favorites = favoriteRepository.findAllByUserId(
+                userId, cursor, size + 1, sort);
+
+        boolean hasNext = favorites.size() > size;
+
+        if (hasNext) {
+            favorites = favorites.subList(0, size);
+        }
+
+        if (favorites.isEmpty()) {
+            return new ScrollResponseDto<>(Collections.emptyList(), false, null);
+        }
+
+        Set<String> placeIds = favorites.stream()
+                .map(Favorite::getPlaceId)
+                .collect(Collectors.toSet());
+
+        Map<String, Place> placeMap = getPlaceMap(placeIds);
+
+        List<FavoriteResponseDto> favoriteDtos = favorites.stream()
+                .map(favorite -> {
+                    Place place = placeMap.get(favorite.getPlaceId());
+
+                    if (place == null) {
+                        return null;
+                    }
+
+                    return FavoriteResponseDto.toFavoriteResponseDto(favorite, place);
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        String nextCursor = hasNext && !favorites.isEmpty() ?
+                favorites.get(favorites.size() - 1).getId() : null;
+
+        return new ScrollResponseDto<>(favoriteDtos, hasNext, nextCursor);
+    }
+
+    private Map<String, Place> getPlaceMap(Set<String> placeIds) {
+        List<Place> places = placeRepository.findAllById(placeIds);
+        return places.stream()
+                .collect(Collectors.toMap(Place::getId, place -> place));
+    }
+
+    @Override
+    public ScrollResponseDto<UserReviewResponseDto> getReviewsByUserId(
+            String userId, String cursor, int size, String sortBy, Sort.Direction sortDirection) {
+
+        userRepository.findById(userId)
+                .orElseThrow(() -> new ExceptionHandler(AUTH_USER_NOT_FOUND));
+
+        if (size <= 0) size = 10;
+        if (sortBy == null) sortBy = "createdAt";
+        if (sortDirection == null) sortDirection = Sort.Direction.DESC;
+
+        Sort sort = Sort.by(sortDirection, sortBy);
+
+        List<Review> reviews = reviewRepository.findAllByUserId(
+                userId, cursor, size + 1, sort);
+
+        boolean hasNext = reviews.size() > size;
+
+        if (hasNext) {
+            reviews = reviews.subList(0, size);
+        }
+
+        if (reviews.isEmpty()) {
+            return new ScrollResponseDto<>(Collections.emptyList(), false, null);
+        }
+
+        Set<String> placeIds = reviews.stream()
+                .map(Review::getPlaceId)
+                .collect(Collectors.toSet());
+
+        Map<String, Place> placeMap = getPlaceMap(placeIds);
+
+        List<UserReviewResponseDto> reviewDtos = reviews.stream()
+                .map(review -> {
+                    Place place = placeMap.get(review.getPlaceId());
+
+                    if (place == null) {
+                        return null;
+                    }
+
+                    return UserReviewResponseDto.toUserReviewResponseDto(review, place);
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        String nextCursor = hasNext && !reviews.isEmpty() ?
+                reviews.get(reviews.size() - 1).getId() : null;
+
+        return new ScrollResponseDto<>(reviewDtos, hasNext, nextCursor);
     }
 }
