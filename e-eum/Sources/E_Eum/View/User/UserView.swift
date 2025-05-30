@@ -10,6 +10,8 @@ struct UserView: View {
     @State private var showSignOutAlert: Bool = false
     @State private var showDeactivateAlert: Bool = false
     
+    @State private var showQRtest: Bool = false
+    
     var body: some View {
         VStack(spacing: 16) {
             Spacer()
@@ -29,6 +31,12 @@ struct UserView: View {
                 } label: {
                     Text("QR코드 인증")
                 }
+            }
+            
+            Button {
+                showQRtest = true
+            } label: {
+                Text("QR 스캐너 보기")
             }
             
             Spacer()
@@ -79,6 +87,9 @@ struct UserView: View {
             } label: {
                 Text("회원탈퇴")
             }
+        }
+        .sheet(isPresented: $showQRtest) {
+            QRScannerView()
         }
     }
 }
