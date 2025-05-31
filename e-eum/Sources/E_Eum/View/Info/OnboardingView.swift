@@ -70,7 +70,7 @@ private extension OnboardingView {
                 .bold()
                 .multilineTextAlignment(.center)
             
-            Image("speech_bubble", bundle: .module)
+            Image("speech_bubble_1", bundle: .module)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 300)
