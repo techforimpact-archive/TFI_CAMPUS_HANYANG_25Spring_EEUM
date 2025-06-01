@@ -2,7 +2,6 @@ import Foundation
 
 enum ReviewHTTPRequestRouter {
     case getReview(token: String, reviewID: String)
-    case modifyReview(token: String, reviewID: String, reviewBody: Data)
     case deleteReview(token: String, reviewID: String)
     case getQuestions(token: String)
 }
@@ -12,8 +11,6 @@ extension ReviewHTTPRequestRouter: HTTPRequestable {
         switch self {
         case .getReview, .getQuestions:
             return .get
-        case .modifyReview:
-            return .put
         case .deleteReview:
             return .delete
         }
@@ -22,8 +19,6 @@ extension ReviewHTTPRequestRouter: HTTPRequestable {
     var headers: [String : String]? {
         switch self {
         case .getReview(let token, _):
-            return ["Authorization": "Bearer \(token)"]
-        case .modifyReview(let token, _, _):
             return ["Authorization": "Bearer \(token)"]
         case .deleteReview(let token, _):
             return ["Authorization": "Bearer \(token)"]
@@ -36,8 +31,6 @@ extension ReviewHTTPRequestRouter: HTTPRequestable {
         switch self {
         case .getReview, .deleteReview, .getQuestions:
             return nil
-        case .modifyReview(_, _, let reviewBody):
-            return reviewBody
         }
     }
     
@@ -55,8 +48,6 @@ extension ReviewHTTPRequestRouter: HTTPRequestable {
         switch self {
         case .getReview(_, let reviewID):
             return ["v1", "reviews", "\(reviewID)"]
-        case .modifyReview(_, _, let reviewID):
-            return ["v1", "reviews", "\(reviewID)"]
         case .deleteReview(_, let reviewID):
             return ["v1", "reviews", "\(reviewID)"]
         case .getQuestions:
@@ -66,7 +57,7 @@ extension ReviewHTTPRequestRouter: HTTPRequestable {
     
     var queryItems: [URLQueryItem]? {
         switch self {
-        case .getReview, .modifyReview, .deleteReview, .getQuestions:
+        case .getReview, .deleteReview, .getQuestions:
             return nil
         }
     }
