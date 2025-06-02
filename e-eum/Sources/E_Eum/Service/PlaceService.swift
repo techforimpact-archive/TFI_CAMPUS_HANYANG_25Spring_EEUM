@@ -211,7 +211,9 @@ class PlaceService: PlaceServiceProtocol {
         let accessToken = getAccessToken()
         let router = PlaceHTTPRequestRouter.myFavoritePlaces(token: accessToken, cursor: cursor, size: size, sortBy: sortBy, sortDirection: sortDirection)
         let data = try await networkUtility.request(router: router)
+        print(String(data: data, encoding: .utf8) ?? "")
         let placeListResponse = try jsonDecoder.decode(FavoritePlaceListResponseDTO.self, from: data)
+        print(placeListResponse)
         var placesList: FavoritePlaceListUIO
         guard let placeListDTO = placeListResponse.result else {
             throw PlaceServiceError.noData

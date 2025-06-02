@@ -15,12 +15,6 @@ struct UserInfoView: View {
                 } label: {
                     userInfoCell(title: "닉네임", value: userInfo.nickname)
                 }
-                
-                NavigationLink {
-                    Text("메일 주소 변경")
-                } label: {
-                    userInfoCell(title: "메일 주소", value: userInfo.email)
-                }
 
                 NavigationLink {
                     Text("비밀번호 변경")

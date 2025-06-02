@@ -67,7 +67,9 @@ class ReviewService: ReviewServiceProtocol {
         let accessToken = getAccessToken()
         let router = ReviewHTTPRequestRouter.myReviews(token: accessToken, cursor: cursor, size: size, sortBy: sortBy, sortDirection: sortDirection)
         let data = try await networkUtility.request(router: router)
+        print(String(data: data, encoding: .utf8) ?? "")
         let reviewListResponse = try jsonDecoder.decode(MyReviewListResponseDTO.self, from: data)
+        print(reviewListResponse)
         var reviewsList: MyReviewListUIO
         guard let reviewListDTO = reviewListResponse.result else {
             throw PlaceServiceError.noData
