@@ -6,6 +6,7 @@ struct SignInView: View {
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var buttonDisabled: Bool = true
+    @State private var autoLoginChecked: Bool = false
     @State private var showPasswordResetSheet: Bool = false
     
     var body: some View {
@@ -22,7 +23,22 @@ struct SignInView: View {
             
             Spacer()
             
+            Button {
+                if autoLoginChecked {
+                    autoLoginChecked = false
+                } else {
+                    autoLoginChecked = true
+                }
+            } label: {
+                Label("자동 로그인", systemImage: autoLoginChecked ? "checkmark.square" : "square")
+                    .foregroundStyle(autoLoginChecked ? Color.pink : Color.gray)
+            }
+            
             BasicButton(title: "로그인하기", disabled: $buttonDisabled) {
+                if autoLoginChecked {
+                    UserDefaults.standard.set(email, forKey: "email")
+                    UserDefaults.standard.set(password, forKey: "password")
+                }
                 signIn()
             }
             .frame(width: 200)

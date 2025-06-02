@@ -85,6 +85,8 @@ private extension UserInfoView {
                 authService.userInfo = nil
                 authService.qrAuthorized = false
                 qrAuthorized = false
+                UserDefaults.standard.removeObject(forKey: "email")
+                UserDefaults.standard.removeObject(forKey: "password")
             } catch {
                 print(error.localizedDescription)
             }

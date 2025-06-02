@@ -176,6 +176,8 @@ private extension UserView {
                 let result = try await authService.signout()
                 if result {
                     qrAuthorized = false
+                    UserDefaults.standard.removeObject(forKey: "email")
+                    UserDefaults.standard.removeObject(forKey: "password")
                 }
             } catch {
                 print(error.localizedDescription)
