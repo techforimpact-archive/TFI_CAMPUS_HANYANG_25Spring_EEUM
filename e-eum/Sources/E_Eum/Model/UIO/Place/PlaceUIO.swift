@@ -13,8 +13,9 @@ struct PlaceUIO: Identifiable {
     let temperature: Double
     let status: String
     let verified: Bool
+    let favorite: Bool
     
-    init(id: String, name: String, longitude: Double, latitude: Double, province: String, city: String, district: String, fullAddress: String, categories: [String], temperature: Double, status: String, verified: Bool) {
+    init(id: String, name: String, longitude: Double, latitude: Double, province: String, city: String, district: String, fullAddress: String, categories: [String], temperature: Double, status: String, verified: Bool, favorite: Bool) {
         self.id = id
         self.name = name
         self.longitude = longitude
@@ -27,6 +28,7 @@ struct PlaceUIO: Identifiable {
         self.temperature = temperature
         self.status = status
         self.verified = verified
+        self.favorite = favorite
     }
     
     init(placeDTO: PlaceDTO) {
@@ -42,6 +44,7 @@ struct PlaceUIO: Identifiable {
         self.temperature = placeDTO.temperature
         self.status = placeDTO.status
         self.verified = placeDTO.verified
+        self.favorite = placeDTO.favorite
     }
 }
 
@@ -58,7 +61,8 @@ extension PlaceUIO {
         categories: ["COUNSELING"],
         temperature: 4.5,
         status: "ACTIVE",
-        verified: false
+        verified: false,
+        favorite: true
     )
     
     static let sample1: PlaceUIO = .init(
@@ -73,7 +77,8 @@ extension PlaceUIO {
         categories: ["HOSPITAL"],
         temperature: 4.7,
         status: "ACTIVE",
-        verified: false
+        verified: false,
+        favorite: false
     )
     
     static let sample2: PlaceUIO = .init(
@@ -88,7 +93,8 @@ extension PlaceUIO {
         categories: ["SHELTER"],
         temperature: 4.6,
         status: "ACTIVE",
-        verified: false
+        verified: false,
+        favorite: true
     )
     
     static let samples: [PlaceUIO] = [sample0, sample1, sample2]
