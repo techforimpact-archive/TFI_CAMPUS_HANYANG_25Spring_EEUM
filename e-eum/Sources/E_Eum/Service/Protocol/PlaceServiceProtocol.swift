@@ -14,4 +14,5 @@ protocol PlaceServiceProtocol {
     func createPlaceReview(placeID: String, content: String, ratings: Dictionary<String, Int>, recommended: Bool, images: [UIImage]) async throws -> ReviewUIO
     func addFavoritePlace(placeID: String) async throws -> Bool
     func cancelFavoritePlace(placeID: String) async throws -> Bool
+    func myFavoritePlaces(cursor: String, size: Int, sortBy: String, sortDirection: String) async throws -> FavoritePlaceListUIO
 }

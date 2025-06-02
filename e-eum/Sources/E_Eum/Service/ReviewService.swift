@@ -62,6 +62,19 @@ class ReviewService: ReviewServiceProtocol {
         }
         return questions
     }
+    
+    func myReviews(cursor: String, size: Int, sortBy: String, sortDirection: String) async throws -> MyReviewListUIO {
+        let accessToken = getAccessToken()
+        let router = ReviewHTTPRequestRouter.myReviews(token: accessToken, cursor: cursor, size: size, sortBy: sortBy, sortDirection: sortDirection)
+        let data = try await networkUtility.request(router: router)
+        let reviewListResponse = try jsonDecoder.decode(MyReviewListResponseDTO.self, from: data)
+        var reviewsList: MyReviewListUIO
+        guard let reviewListDTO = reviewListResponse.result else {
+            throw PlaceServiceError.noData
+        }
+        reviewsList = MyReviewListUIO(reviews: reviewListDTO.contents, hasNext: reviewListDTO.hasNext, nextCursor: reviewListDTO.nextCursor)
+        return reviewsList
+    }
 }
 
 enum ReviewServiceError: Error {
