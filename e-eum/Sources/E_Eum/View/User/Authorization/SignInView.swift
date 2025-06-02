@@ -8,6 +8,7 @@ struct SignInView: View {
     @State private var buttonDisabled: Bool = true
     @State private var autoLoginChecked: Bool = false
     @State private var showPasswordResetSheet: Bool = false
+    @State private var showSignInFailureAlert: Bool = false
     
     var body: some View {
         VStack(spacing: 16) {
@@ -54,6 +55,16 @@ struct SignInView: View {
         .sheet(isPresented: $showPasswordResetSheet) {
             PasswordResetView()
         }
+        .alert("로그인 실패", isPresented: $showSignInFailureAlert) {
+            Button {
+                email = ""
+                password = ""
+            } label: {
+                Text("확인")
+            }
+        } message: {
+            Text("이메일 또는 비밀번호를 확인해주세요.")
+        }
     }
 }
 
@@ -61,13 +72,18 @@ private extension SignInView {
     func checkButtonDisabled() {
         if !email.isEmpty && !password.isEmpty {
             buttonDisabled = false
+        } else {
+            buttonDisabled = true
         }
     }
     
     func signIn() {
         Task {
             do {
-                _ = try await authService.signin(email: email, password: password)
+                let result = try await authService.signin(email: email, password: password)
+                if !result {
+                    showSignInFailureAlert = true
+                }
             } catch {
                 print(error.localizedDescription)
             }
