@@ -13,4 +13,5 @@ struct SigninResultDTOContainer: Decodable {
     let email: String
     let accessToken: String
     let refreshToken: String
+    let qrVerified: Bool
 }
