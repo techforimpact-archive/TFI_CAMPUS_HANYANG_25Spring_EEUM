@@ -147,7 +147,7 @@ private extension UserView {
     }
     
     func termsOfUse() -> String {
-        guard let filePath = Bundle.main.url(forResource: "TermsOfUse", withExtension: "txt") else {
+        guard let filePath = Bundle.module.url(forResource: "TermsOfUse", withExtension: "txt") else {
             return "서비스 이용약관 문서가 존재하지 않습니다."
         }
         
@@ -159,7 +159,7 @@ private extension UserView {
     }
     
     func privacyPolicy() -> String {
-        guard let filePath = Bundle.main.url(forResource: "PrivacyPolicy", withExtension: "txt") else {
+        guard let filePath = Bundle.module.url(forResource: "PrivacyPolicy", withExtension: "txt") else {
             return "개인정보 처리방침 문서가 존재하지 않습니다."
         }
         
