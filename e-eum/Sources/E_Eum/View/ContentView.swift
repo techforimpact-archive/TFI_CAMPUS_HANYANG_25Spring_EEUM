@@ -50,6 +50,9 @@ struct ContentView: View {
             if !UserDefaults.standard.bool(forKey: "launchedBefore") {
                 showOnboarding = true
             }
+            if let email = UserDefaults.standard.string(forKey: "email"), let password = UserDefaults.standard.string(forKey: "password") {
+                autoLogin(email: email, password: password)
+            }
             authService.qrAuthorized = qrAuthorized
         }
         .fullScreenCover(isPresented: $showOnboarding) {
@@ -78,6 +81,18 @@ private extension ContentView {
             QRAuthorizationAlertView(qrAuthorized: $qrAuthorized)
         } else {
             PlaceListView()
+        }
+    }
+}
+
+private extension ContentView {
+    func autoLogin(email: String, password: String) {
+        Task {
+            do {
+                _ = try await authService.signin(email: email, password: password)
+            } catch {
+                print(error.localizedDescription)
+            }
         }
     }
 }

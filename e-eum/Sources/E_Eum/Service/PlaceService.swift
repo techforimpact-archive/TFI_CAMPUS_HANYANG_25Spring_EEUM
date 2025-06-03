@@ -206,6 +206,19 @@ class PlaceService: PlaceServiceProtocol {
         }
         return false
     }
+    
+    func myFavoritePlaces(cursor: String, size: Int, sortBy: String, sortDirection: String) async throws -> FavoritePlaceListUIO {
+        let accessToken = getAccessToken()
+        let router = PlaceHTTPRequestRouter.myFavoritePlaces(token: accessToken, cursor: cursor, size: size, sortBy: sortBy, sortDirection: sortDirection)
+        let data = try await networkUtility.request(router: router)
+        let placeListResponse = try jsonDecoder.decode(FavoritePlaceListResponseDTO.self, from: data)
+        var placesList: FavoritePlaceListUIO
+        guard let placeListDTO = placeListResponse.result else {
+            throw PlaceServiceError.noData
+        }
+        placesList = FavoritePlaceListUIO(places: placeListDTO.contents, hasNext: placeListDTO.hasNext, nextCursor: placeListDTO.nextCursor)
+        return placesList
+    }
 }
 
 enum PlaceServiceError: Error {

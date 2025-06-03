@@ -13,12 +13,13 @@ enum PlaceHTTPRequestRouter {
     case createPlaceReview(token: String, placeID: String, data: Data)
     case addFavoritePlace(token: String, data: Data)
     case cancelFavoritePlace(token: String, placeID: String)
+    case myFavoritePlaces(token: String, cursor: String, size: Int, sortBy: String, sortDirection: String)
 }
 
 extension PlaceHTTPRequestRouter: HTTPRequestable {
     var method: HTTPMethod {
         switch self {
-        case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getPlaceReviews:
+        case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getPlaceReviews, .myFavoritePlaces:
             return .get
         case .createPlaceReview, .addFavoritePlace:
             return .post
@@ -56,12 +57,14 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
             return ["Authorization": "Bearer \(token)"]
         case .cancelFavoritePlace(let token, _):
             return ["Authorization": "Bearer \(token)"]
+        case .myFavoritePlaces(let token, _, _, _, _):
+            return ["Authorization": "Bearer \(token)"]
         }
     }
     
     var body: Data? {
         switch self {
-        case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getPlaceReviews, .cancelFavoritePlace:
+        case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getPlaceReviews, .cancelFavoritePlace, .myFavoritePlaces:
             return nil
         case .createPlaceReview(_, _, let data):
             return data
@@ -106,6 +109,8 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
             return ["v1", "places", "favorites"]
         case .cancelFavoritePlace(_, let placeID):
             return ["v1", "places", "favorites", "\(placeID)"]
+        case .myFavoritePlaces:
+            return ["v1", "user", "favorites"]
         }
     }
     
@@ -181,6 +186,14 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
         case .getPlaceReviews(_, _, let lastID, let size, let sortBy, let sortDirection):
             let queryItems = [
                 URLQueryItem(name: "lastId", value: lastID),
+                URLQueryItem(name: "size", value: "\(size)"),
+                URLQueryItem(name: "sortBy", value: sortBy),
+                URLQueryItem(name: "sortDirection", value: sortDirection)
+            ]
+            return queryItems
+        case .myFavoritePlaces(_, let cursor, let size, let sortBy, let sortDirection):
+            let queryItems = [
+                URLQueryItem(name: "cursor", value: cursor),
                 URLQueryItem(name: "size", value: "\(size)"),
                 URLQueryItem(name: "sortBy", value: sortBy),
                 URLQueryItem(name: "sortDirection", value: sortDirection)

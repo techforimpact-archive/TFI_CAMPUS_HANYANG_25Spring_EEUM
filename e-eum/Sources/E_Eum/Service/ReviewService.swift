@@ -36,20 +36,6 @@ class ReviewService: ReviewServiceProtocol {
         return review
     }
     
-    func modifyReview(reviewID: String, reviewBody: ReviewBodyDTO) async throws -> ReviewUIO {
-        let accessToken = getAccessToken()
-        let reviewBodyData = try jsonEncoder.encode(reviewBody)
-        let router = ReviewHTTPRequestRouter.modifyReview(token: accessToken, reviewID: reviewID, reviewBody: reviewBodyData)
-        let data = try await networkUtility.request(router: router)
-        let reviewResponse = try jsonDecoder.decode(ReviewResponseDTO.self, from: data)
-        var review: ReviewUIO
-        guard let reviewDTO = reviewResponse.result else {
-            throw ReviewServiceError.noData
-        }
-        review = ReviewUIO(reviewDTO: reviewDTO)
-        return review
-    }
-    
     func deleteReview(reviewID: String) async throws -> ReviewUIO {
         let accessToken = getAccessToken()
         let router = ReviewHTTPRequestRouter.deleteReview(token: accessToken, reviewID: reviewID)
@@ -75,6 +61,19 @@ class ReviewService: ReviewServiceProtocol {
             }
         }
         return questions
+    }
+    
+    func myReviews(cursor: String, size: Int, sortBy: String, sortDirection: String) async throws -> MyReviewListUIO {
+        let accessToken = getAccessToken()
+        let router = ReviewHTTPRequestRouter.myReviews(token: accessToken, cursor: cursor, size: size, sortBy: sortBy, sortDirection: sortDirection)
+        let data = try await networkUtility.request(router: router)
+        let reviewListResponse = try jsonDecoder.decode(MyReviewListResponseDTO.self, from: data)
+        var reviewsList: MyReviewListUIO
+        guard let reviewListDTO = reviewListResponse.result else {
+            throw PlaceServiceError.noData
+        }
+        reviewsList = MyReviewListUIO(reviews: reviewListDTO.contents, hasNext: reviewListDTO.hasNext, nextCursor: reviewListDTO.nextCursor)
+        return reviewsList
     }
 }
 

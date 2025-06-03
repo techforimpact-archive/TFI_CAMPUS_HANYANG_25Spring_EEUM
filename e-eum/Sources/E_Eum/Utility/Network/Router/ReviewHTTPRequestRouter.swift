@@ -2,18 +2,16 @@ import Foundation
 
 enum ReviewHTTPRequestRouter {
     case getReview(token: String, reviewID: String)
-    case modifyReview(token: String, reviewID: String, reviewBody: Data)
     case deleteReview(token: String, reviewID: String)
     case getQuestions(token: String)
+    case myReviews(token: String, cursor: String, size: Int, sortBy: String, sortDirection: String)
 }
 
 extension ReviewHTTPRequestRouter: HTTPRequestable {
     var method: HTTPMethod {
         switch self {
-        case .getReview, .getQuestions:
+        case .getReview, .getQuestions, .myReviews:
             return .get
-        case .modifyReview:
-            return .put
         case .deleteReview:
             return .delete
         }
@@ -23,21 +21,19 @@ extension ReviewHTTPRequestRouter: HTTPRequestable {
         switch self {
         case .getReview(let token, _):
             return ["Authorization": "Bearer \(token)"]
-        case .modifyReview(let token, _, _):
-            return ["Authorization": "Bearer \(token)"]
         case .deleteReview(let token, _):
             return ["Authorization": "Bearer \(token)"]
         case .getQuestions(let token):
+            return ["Authorization": "Bearer \(token)"]
+        case .myReviews(let token, _, _, _, _):
             return ["Authorization": "Bearer \(token)"]
         }
     }
     
     var body: Data? {
         switch self {
-        case .getReview, .deleteReview, .getQuestions:
+        case .getReview, .deleteReview, .getQuestions, .myReviews:
             return nil
-        case .modifyReview(_, _, let reviewBody):
-            return reviewBody
         }
     }
     
@@ -55,19 +51,27 @@ extension ReviewHTTPRequestRouter: HTTPRequestable {
         switch self {
         case .getReview(_, let reviewID):
             return ["v1", "reviews", "\(reviewID)"]
-        case .modifyReview(_, _, let reviewID):
-            return ["v1", "reviews", "\(reviewID)"]
         case .deleteReview(_, let reviewID):
             return ["v1", "reviews", "\(reviewID)"]
         case .getQuestions:
             return ["v1", "reviews", "questions"]
+        case .myReviews:
+            return ["v1", "user", "reviews"]
         }
     }
     
     var queryItems: [URLQueryItem]? {
         switch self {
-        case .getReview, .modifyReview, .deleteReview, .getQuestions:
+        case .getReview, .deleteReview, .getQuestions:
             return nil
+        case .myReviews(_, let cursor, let size, let sortBy, let sortDirection):
+            let queryItems = [
+                URLQueryItem(name: "cursor", value: cursor),
+                URLQueryItem(name: "size", value: "\(size)"),
+                URLQueryItem(name: "sortBy", value: sortBy),
+                URLQueryItem(name: "sortDirection", value: sortDirection)
+            ]
+            return queryItems
         }
     }
 }

@@ -19,6 +19,15 @@ class AuthService: AuthServiceProtocol {
         return ""
     }
     
+    private func getRefreshToken() -> String {
+        if let refreshToken = KeychainUtility.shared.getAuthToken(tokenType: .refreshToken) {
+            print("refreshToken 불러오기 성공")
+            return refreshToken
+        }
+        print("refreshToken 불러오기 실패")
+        return ""
+    }
+    
     func signup(nickname: String, email: String, password: String) async throws -> Bool {
         let userInfo = SignupBodyDTO(nickname: nickname, email: email, password: password)
         let userInfoData = try jsonEncoder.encode(userInfo)
@@ -45,18 +54,9 @@ class AuthService: AuthServiceProtocol {
                 throw AuthServiceError.noData
             }
             self.userInfo = UserInfoUIO(signinResult: userInfoDTO)
-            if let accessToken = KeychainUtility.shared.getAuthToken(tokenType: .accessToken) {
-                if accessToken != userInfoDTO.accessToken {
-                    KeychainUtility.shared.removeAuthToken(tokenType: .accessToken)
-                    guard let refreshToken = KeychainUtility.shared.getAuthToken(tokenType: .refreshToken) else {
-                        throw AuthServiceError.tokenError
-                    }
-                    try await refresh(refreshToken: refreshToken)
-                }
-            } else {
-                KeychainUtility.shared.saveAuthToken(tokenType: .accessToken, token: userInfoDTO.accessToken)
-                KeychainUtility.shared.saveAuthToken(tokenType: .refreshToken, token: userInfoDTO.refreshToken)
-            }
+            self.qrAuthorized = userInfoDTO.qrVerified
+            KeychainUtility.shared.saveAuthToken(tokenType: .accessToken, token: userInfoDTO.accessToken)
+            KeychainUtility.shared.saveAuthToken(tokenType: .refreshToken, token: userInfoDTO.refreshToken)
             return signinResponse.isSuccess
         }
         return signinResponse.isSuccess
