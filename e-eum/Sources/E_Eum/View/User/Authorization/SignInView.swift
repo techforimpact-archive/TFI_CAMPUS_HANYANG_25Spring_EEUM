@@ -31,7 +31,7 @@ struct SignInView: View {
                     autoLoginChecked = true
                 }
             } label: {
-                Label("자동 로그인", systemImage: autoLoginChecked ? "checkmark.square" : "square")
+                Label("자동 로그인", systemImage: autoLoginChecked ? "checkmark.circle.fill" : "checkmark.circle")
                     .foregroundStyle(autoLoginChecked ? Color.pink : Color.gray)
             }
             
