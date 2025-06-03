@@ -2,10 +2,10 @@ import SwiftUI
 
 struct ReviewPreviewCell: View {
     let placeID: String
-    let reviews: [ReviewUIO]
+    @Binding var reviews: [ReviewUIO]
     
-    @State private var reviewPreviews: [ReviewUIO] = []
     @State private var navigationToReviewList: Bool = false
+    @State private var navigationToReviewCreate: Bool = false
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -14,31 +14,44 @@ struct ReviewPreviewCell: View {
                     .bold()
                 
                 Spacer()
-            }
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    ForEach(reviewPreviews) { preview in
-                        reviewItem(review: preview)
+                
+                if !reviews.isEmpty {
+                    Button {
+                        navigationToReviewList = true
+                    } label: {
+                        Text("모두 보기")
+                            .bold()
+                            .foregroundStyle(Color.pink)
                     }
-                    
-                    if reviews.count > reviewPreviews.count {
-                        moreReviewsButton
+                    .navigationDestination(isPresented: $navigationToReviewList) {
+                        ReviewListView(placeID: placeID)
                     }
                 }
             }
-            .padding(.vertical, 8)
+            .padding(.bottom, 8)
             
-            BasicButton(title: "한줄평 모두 보기", disabled: .constant(false)) {
-                navigationToReviewList = true
+            if !reviews.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(reviews.prefix(3)) { review in
+                            reviewItem(review: review)
+                        }
+                        
+                        if reviews.count > 3 {
+                            moreReviewsButton
+                        }
+                    }
+                }
+                .padding(.bottom, 8)
+            }
+            
+            BasicButton(title: "한줄평 작성하기", disabled: .constant(false)) {
+                navigationToReviewCreate = true
             }
             .padding(.bottom, 8)
-            .navigationDestination(isPresented: $navigationToReviewList) {
-                ReviewListView(placeID: placeID)
+            .navigationDestination(isPresented: $navigationToReviewCreate) {
+                ReviewCreateView(placeId: placeID)
             }
-        }
-        .onAppear {
-            reviewPreviews = reviews.suffix(3)
         }
     }
 }
