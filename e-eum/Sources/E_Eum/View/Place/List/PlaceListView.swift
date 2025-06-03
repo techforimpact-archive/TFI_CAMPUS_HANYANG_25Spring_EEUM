@@ -62,8 +62,10 @@ private extension PlaceListView {
     var header: some View {
         VStack {
             RoundedRectangle(cornerRadius: 8)
+                .stroke(style: StrokeStyle(lineWidth: 2))
+                .foregroundStyle(Color.pink)
+                .background(Color.white.opacity(0.9))
                 .frame(height: 50)
-                .foregroundStyle(Color.white)
                 .overlay {
                     HStack(spacing: 8) {
                         TextField("검색어를 입력하세요.", text: $searchText)
