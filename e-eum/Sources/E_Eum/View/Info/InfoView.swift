@@ -86,16 +86,20 @@ struct InfoView: View {
                         } label: {
                             cardButton {
                                 VStack(alignment: .center) {
-                                    Image("place_recommend_icon", bundle: .module)
+                                    Image("rainbow", bundle: .module)
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
-                                        .frame(width: 100)
+                                        .frame(width: 140)
+                                    
+                                    Spacer()
                                     
                                     Text("퀴어들의\n장소를 추천해줘!")
                                         .font(.title2)
                                         .bold()
                                         .multilineTextAlignment(.leading)
                                         .foregroundStyle(Color.black)
+                                    
+                                    Spacer()
                                 }
                             }
                         }
@@ -131,6 +135,7 @@ private extension InfoView {
     func cardButton<Content: View>(@ViewBuilder content: () -> Content) -> some View {
         RoundedRectangle(cornerRadius: 8)
             .stroke(style: StrokeStyle(lineWidth: 2))
+            .frame(width: 160, height: 200)
             .foregroundStyle(Color.pink)
             .background(
                 RoundedRectangle(cornerRadius: 8)
