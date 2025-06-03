@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct PlaceDetailTemperatureCell: View {
-    let place: PlaceDetailUIO
+    let temperature: Double
     
     private let minTemperature: Double = 0.0
     private let maxTemperature: Double = 50.0
@@ -14,7 +14,7 @@ struct PlaceDetailTemperatureCell: View {
                 
                 Spacer()
                 
-                Text(String(format: "%.1f°C", place.temperature))
+                Text(String(format: "%.1f°C", temperature))
                     .font(.title3)
                     .bold()
                     .foregroundStyle(Color.pink)
@@ -32,7 +32,7 @@ struct PlaceDetailTemperatureCell: View {
                 .overlay {
                     HStack {
                         Capsule()
-                            .frame(width: 360 * CGFloat(place.temperature / (maxTemperature - minTemperature)), height: 20)
+                            .frame(width: 360 * CGFloat(temperature / (maxTemperature - minTemperature)), height: 20)
                             .foregroundStyle(Color.clear)
                             .overlay {
                                 HStack {

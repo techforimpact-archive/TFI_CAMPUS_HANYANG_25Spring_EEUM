@@ -11,7 +11,7 @@ struct MyFavoritePlacesView: View {
             LazyVStack {
                 ForEach(favoritePlaces) { place in
                     NavigationLink {
-                        PlaceDetailView(placeID: place.placeId, isNavigation: true)
+                        PlaceDetailView(placeID: place.placeId)
                     } label: {
                         myFavoritePlaceCell(place: place)
                     }

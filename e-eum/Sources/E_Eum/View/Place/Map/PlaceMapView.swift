@@ -9,91 +9,141 @@ struct PlaceMapView: View {
     @State private var places: [PlaceUIO] = []
     @State private var searchText: String = ""
     @State private var selectedCategories: [String] = []
+    @State private var showPreview: Bool = false
+    @State private var showDetail: Bool = false
+    @State private var selectedPlaceID: String = ""
     
     var body: some View {
-        ZStack {
-            if let latitude = latitude, let longitude = longitude {
-                #if os(iOS)
-                MapiOSView(latitude: latitude, longitude: longitude, places: $places)
-                #elseif os(Android)
-                MapAndroidView(latitude: latitude, longitude: longitude, places: $places)
-                #endif
-            }
-            
-            VStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(style: StrokeStyle(lineWidth: 2))
-                    .foregroundStyle(Color.pink)
-                    .background(Color.white.opacity(0.9))
-                    .frame(height: 50)
-                    .overlay {
-                        HStack(spacing: 8) {
-                            TextField("검색어를 입력하세요.", text: $searchText)
-                                .lineLimit(1)
-                                .submitLabel(.search)
-                                .onSubmit {
-                                    searchPlaces(keyword: searchText)
-                                }
-                            
-                            Button {
-                                searchPlaces(keyword: searchText)
-                            } label: {
-                                Circle()
-                                    .frame(width: 34, height: 34)
-                                    .foregroundStyle(
-                                        LinearGradient(
-                                            colors: [.red, .orange, .yellow, .green, .blue, .indigo, .purple],
-                                            startPoint: .leading,
-                                            endPoint: .trailing
-                                        )
-                                    )
-                                    .overlay {
-                                        Image(systemName: "magnifyingglass")
-                                            .font(.title2)
-                                            .bold()
-                                            .foregroundStyle(Color.white)
-                                    }
-                            }
-                        }
-                        .padding(8)
-                    }
-                    .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                
-                HStack {
-                    ForEach(PlaceCategory.allCases, id: \.self) { category in
-                        Button {
-                            if selectedCategories.contains(category.rawValue) {
-                                selectedCategories.remove(at: selectedCategories.firstIndex(of: category.rawValue)!)
-                            } else {
-                                selectedCategories.append(category.rawValue)
-                            }
-                        } label: {
-                            PlaceCategoryTag(category: category.rawValue)
-                                .opacity(selectedCategories.contains(category.rawValue) ? 1.0 : 0.6)
-                        }
-                        .onChange(of: selectedCategories, {
-                            Task {
-                                do {
-                                    places = try await placeService.getPlacesOnMapByCategories(categories: selectedCategories)
-                                } catch {
-                                    print(error.localizedDescription)
-                                }
-                            }
-                        })
-                    }
+        NavigationStack {
+            ZStack {
+                if let latitude = latitude, let longitude = longitude {
+                    #if os(iOS)
+                    MapiOSView(latitude: latitude, longitude: longitude, places: $places, showPreview: $showPreview, selectedPlaceID: $selectedPlaceID)
+                        .ignoresSafeArea(edges: .top)
+                    #elseif os(Android)
+                    MapAndroidView(latitude: latitude, longitude: longitude, places: $places, showPreview: $showPreview, selectedPlaceID: $selectedPlaceID)
+                    #endif
                 }
-                .padding(.horizontal, 16)
                 
-                Spacer()
+                header
+            }
+            .toolbar(.hidden, for: .navigationBar)
+            .navigationDestination(isPresented: $showDetail) {
+                PlaceDetailView(placeID: selectedPlaceID)
             }
         }
+        .sheet(isPresented: $showPreview, content: {
+            if let place = places.filter({$0.id == selectedPlaceID}).first {
+                placePreview(place: place)
+                    .presentationDetents([.height(200)])
+                    .onTapGesture {
+                        showDetail = true
+                        showPreview = false
+                    }
+            }
+        })
         .task {
             await requestLocationAndStartMonitoring()
         }
     }
 }
 
-extension PlaceMapView {
+private extension PlaceMapView {
+    var header: some View {
+        VStack {
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(style: StrokeStyle(lineWidth: 2))
+                .foregroundStyle(Color.pink)
+                .background(Color.white.opacity(0.9))
+                .frame(height: 50)
+                .overlay {
+                    HStack(spacing: 8) {
+                        TextField("검색어를 입력하세요.", text: $searchText)
+                            .lineLimit(1)
+                            .submitLabel(.search)
+                            .onSubmit {
+                                searchPlaces(keyword: searchText)
+                            }
+                        
+                        Button {
+                            searchPlaces(keyword: searchText)
+                        } label: {
+                            Circle()
+                                .frame(width: 34, height: 34)
+                                .foregroundStyle(
+                                    LinearGradient(
+                                        colors: [.red, .orange, .yellow, .green, .blue, .indigo, .purple],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .overlay {
+                                    Image(systemName: "magnifyingglass")
+                                        .font(.title2)
+                                        .bold()
+                                        .foregroundStyle(Color.white)
+                                }
+                        }
+                    }
+                    .padding(8)
+                }
+                .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+            
+            HStack {
+                ForEach(PlaceCategory.allCases, id: \.self) { category in
+                    Button {
+                        if selectedCategories.contains(category.rawValue) {
+                            selectedCategories.remove(at: selectedCategories.firstIndex(of: category.rawValue)!)
+                        } else {
+                            selectedCategories.append(category.rawValue)
+                        }
+                    } label: {
+                        PlaceCategoryTag(category: category.rawValue)
+                            .opacity(selectedCategories.contains(category.rawValue) ? 1.0 : 0.6)
+                    }
+                    .onChange(of: selectedCategories, {
+                        Task {
+                            do {
+                                places = try await placeService.getPlacesOnMapByCategories(categories: selectedCategories)
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                        }
+                    })
+                }
+            }
+            .padding(.horizontal, 16)
+            
+            Spacer()
+        }
+    }
+    
+    func placePreview(place: PlaceUIO) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            SheetHeader()
+            
+            HStack {
+                RainbowColorTitle(text: place.name, font: .title)
+                
+                ForEach(place.categories, id: \.self) { category in
+                    PlaceCategoryTag(category: category)
+                }
+            }
+            
+            HStack {
+                Image(systemName: "location.fill")
+                
+                Text(place.fullAddress)
+                    .foregroundStyle(Color.black)
+            }
+            
+            PlaceDetailTemperatureCell(temperature: place.temperature)
+        }
+        .padding(.horizontal, 16)
+    }
+}
+
+private extension PlaceMapView {
     func requestLocationAndStartMonitoring() async {
         let permissionResult = await PermissionManager.requestLocationPermission(precise: true, always: false)
         

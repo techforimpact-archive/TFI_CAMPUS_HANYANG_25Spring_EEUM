@@ -4,7 +4,6 @@ struct PlaceDetailView: View {
     @Environment(\.dismiss) private var dismiss
     
     let placeID: String
-    let isNavigation: Bool
     
     @State private var placeService = PlaceService()
     @State private var place: PlaceDetailUIO?
@@ -12,10 +11,6 @@ struct PlaceDetailView: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 16) {
-            if !isNavigation {
-                SheetHeader()
-            }
-            
             if let place = place {
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 16) {
@@ -29,7 +24,7 @@ struct PlaceDetailView: View {
                         
                         Divider()
                         
-                        PlaceDetailTemperatureCell(place: place)
+                        PlaceDetailTemperatureCell(temperature: place.temperature)
                         
                         Divider()
                         

@@ -19,7 +19,7 @@ struct PlaceListView: View {
                         ForEach(places) { place in
                             if selectedCategories.isEmpty {
                                 NavigationLink {
-                                    PlaceDetailView(placeID: place.id, isNavigation: true)
+                                    PlaceDetailView(placeID: place.id)
                                 } label: {
                                     PlaceListCell(place: place)
                                         .onAppear {
@@ -29,7 +29,7 @@ struct PlaceListView: View {
                             } else {
                                 if !Set(selectedCategories).intersection(Set(place.categories)).isEmpty {
                                     NavigationLink {
-                                        PlaceDetailView(placeID: place.id, isNavigation: true)
+                                        PlaceDetailView(placeID: place.id)
                                     } label: {
                                         PlaceListCell(place: place)
                                             .onAppear {
