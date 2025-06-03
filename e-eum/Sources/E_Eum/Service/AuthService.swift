@@ -55,14 +55,8 @@ class AuthService: AuthServiceProtocol {
             }
             self.userInfo = UserInfoUIO(signinResult: userInfoDTO)
             self.qrAuthorized = userInfoDTO.qrVerified
-            let accessToken = getAccessToken()
-            if accessToken == "" {
-                KeychainUtility.shared.saveAuthToken(tokenType: .accessToken, token: userInfoDTO.accessToken)
-                KeychainUtility.shared.saveAuthToken(tokenType: .refreshToken, token: userInfoDTO.refreshToken)
-            } else if accessToken != userInfoDTO.accessToken {
-                let refreshToken = getRefreshToken()
-                try await refresh(refreshToken: refreshToken)
-            }
+            KeychainUtility.shared.saveAuthToken(tokenType: .accessToken, token: userInfoDTO.accessToken)
+            KeychainUtility.shared.saveAuthToken(tokenType: .refreshToken, token: userInfoDTO.refreshToken)
             return signinResponse.isSuccess
         }
         return signinResponse.isSuccess
