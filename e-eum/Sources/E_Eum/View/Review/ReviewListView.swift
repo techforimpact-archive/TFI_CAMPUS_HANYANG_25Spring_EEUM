@@ -14,18 +14,15 @@ struct ReviewListView: View {
             ScrollView {
                 LazyVStack {
                     ForEach(reviews) { review in
-                        VStack {
-                            ReviewListCell(review: review)
-                        }
-                        .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                        .onAppear {
-                            loadMoreReviews(reviewID: review.id)
-                        }
+                        ReviewListCell(review: review)
+                            .onAppear {
+                                loadMoreReviews(reviewID: review.id)
+                            }
                     }
                 }
+                .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
             }
-            
-            Spacer()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             
             BasicButton(title: "한줄평 작성하기", disabled: .constant(false)) {
                 navigationToReviewCreate = true
