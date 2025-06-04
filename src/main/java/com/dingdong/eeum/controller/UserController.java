@@ -4,6 +4,8 @@ import com.dingdong.eeum.annotation.User;
 import com.dingdong.eeum.apiPayload.code.status.SuccessStatus;
 import com.dingdong.eeum.apiPayload.exception.response.Response;
 import com.dingdong.eeum.dto.UserInfoDto;
+import com.dingdong.eeum.dto.request.NicknameResetRequestDto;
+import com.dingdong.eeum.dto.request.PasswordResetRequestDto;
 import com.dingdong.eeum.dto.request.QrAuthRequestDto;
 import com.dingdong.eeum.dto.response.*;
 import com.dingdong.eeum.dto.response.swagger.MutualResponse;
@@ -160,6 +162,30 @@ public class UserController {
         MutualResponseDto response = userService.deactivateUser(
                 userInfoDto.getUserId());
 
+        return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
+    }
+
+    @Operation(summary = "닉네임 재설정")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "비밀번호 재설정 성공",
+                    content = @Content(schema = @Schema(implementation = MutualResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "20자 이상 닉네임",
+                    content = @Content(schema = @Schema(implementation = Response.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "서버 오류",
+                    content = @Content(schema = @Schema(implementation = Response.class))
+            )
+    })
+    @PostMapping("/nickname")
+    public Response<MutualResponseDto> resetNickname(@Valid @RequestBody NicknameResetRequestDto request, @User @Parameter(hidden = true) UserInfoDto userInfoDto) {
+        MutualResponseDto response = userService.resetNickname(userInfoDto.getUserId(), request.getNickname());
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
     }
 }
