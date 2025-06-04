@@ -39,6 +39,7 @@ struct ChangeNicknameView: View {
             Spacer()
         }
         .padding(16)
+        .navigationTitle("닉네임 변경")
         .alert("닉네임 변경", isPresented: $showNicknameChangedAlert) {
             Button {
                 dismiss()

@@ -17,7 +17,7 @@ struct UserInfoView: View {
                 }
 
                 NavigationLink {
-                    Text("비밀번호 변경")
+                    ChangePasswordView()
                 } label: {
                     userInfoCell(title: "비밀번호", value: "********")
                 }
