@@ -29,16 +29,42 @@ struct MyFavoritePlacesView: View {
 
 private extension MyFavoritePlacesView {
     func myFavoritePlaceCell(place: FavoritePlaceUIO) -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(place.placeName)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .center) {
+                VStack(alignment: .leading) {
+                    HStack {
+                        Text(place.placeName)
+                            .font(.title2)
+                            .fontDesign(.rounded)
+                            .bold()
+                            .foregroundStyle(Color.pink)
+                        
+                        ForEach(place.categories, id: \.self) { category in
+                            PlaceCategoryTag(category: category)
+                        }
+                    }
+                    
+                    HStack {
+                        Image(systemName: "location.fill")
+                            .foregroundStyle(Color.pink)
+                        
+                        Text(place.address)
+                            .foregroundStyle(Color.black)
+                    }
+                }
                 
-                Text(place.address)
+                Spacer()
+                
+                Image("chevron_right", bundle: .module)
+                    .resizable()
+                    .frame(width: 20, height: 20)
             }
             
-            Spacer()
+            Divider()
+                .padding(.vertical, 8)
         }
         .padding(.horizontal, 16)
+        .background(Color.white)
     }
 }
 

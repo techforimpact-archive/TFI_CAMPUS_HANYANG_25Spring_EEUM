@@ -134,6 +134,7 @@ private extension PlaceMapView {
                     
                     HStack {
                         Image(systemName: "location.fill")
+                            .foregroundStyle(Color.pink)
                         
                         Text(place.fullAddress)
                             .foregroundStyle(Color.black)

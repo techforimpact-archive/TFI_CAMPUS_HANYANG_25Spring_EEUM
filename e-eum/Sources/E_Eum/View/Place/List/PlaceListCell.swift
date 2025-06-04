@@ -21,6 +21,7 @@ struct PlaceListCell: View {
                     
                     HStack {
                         Image(systemName: "location.fill")
+                            .foregroundStyle(Color.pink)
                         
                         Text(place.fullAddress)
                             .foregroundStyle(Color.black)

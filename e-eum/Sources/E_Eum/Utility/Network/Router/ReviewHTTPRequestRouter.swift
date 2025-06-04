@@ -65,12 +65,21 @@ extension ReviewHTTPRequestRouter: HTTPRequestable {
         case .getReview, .deleteReview, .getQuestions:
             return nil
         case .myReviews(_, let cursor, let size, let sortBy, let sortDirection):
-            let queryItems = [
-                URLQueryItem(name: "cursor", value: cursor),
-                URLQueryItem(name: "size", value: "\(size)"),
-                URLQueryItem(name: "sortBy", value: sortBy),
-                URLQueryItem(name: "sortDirection", value: sortDirection)
-            ]
+            var queryItems: [URLQueryItem] = []
+            if cursor.isEmpty {
+                queryItems = [
+                    URLQueryItem(name: "size", value: "\(size)"),
+                    URLQueryItem(name: "sortBy", value: sortBy),
+                    URLQueryItem(name: "sortDirection", value: sortDirection)
+                ]
+            } else {
+                queryItems = [
+                    URLQueryItem(name: "cursor", value: cursor),
+                    URLQueryItem(name: "size", value: "\(size)"),
+                    URLQueryItem(name: "sortBy", value: sortBy),
+                    URLQueryItem(name: "sortDirection", value: sortDirection)
+                ]
+            }
             return queryItems
         }
     }
