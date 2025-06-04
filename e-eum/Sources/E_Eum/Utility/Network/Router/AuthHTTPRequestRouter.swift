@@ -13,13 +13,14 @@ enum AuthHTTPRequestRouter {
     case checkNickname(nickname: String)
     case checkEmail(email: String)
     case qrAuthorization(token: String, data: Data)
+    case changeNickname(token: String, data: Data)
     case deactivate(token: String)
 }
 
 extension AuthHTTPRequestRouter: HTTPRequestable {
     var method: HTTPMethod {
         switch self {
-        case .signup, .signin, .signout, .refresh, .passwordResetSendEmail, .passwordResetVerify, .passwordResetConfirm, .sendEmailVerification, .verifyEmail, .qrAuthorization:
+        case .signup, .signin, .signout, .refresh, .passwordResetSendEmail, .passwordResetVerify, .passwordResetConfirm, .sendEmailVerification, .verifyEmail, .qrAuthorization, .changeNickname:
             return .post
         case .checkNickname, .checkEmail:
             return .get
@@ -42,6 +43,11 @@ extension AuthHTTPRequestRouter: HTTPRequestable {
                 "content-type": "application/json"
             ]
         case .qrAuthorization(let token, _):
+            return [
+                "Authorization": "Bearer \(token)",
+                "content-type": "application/json"
+            ]
+        case .changeNickname(let token, _):
             return [
                 "Authorization": "Bearer \(token)",
                 "content-type": "application/json"
@@ -72,6 +78,8 @@ extension AuthHTTPRequestRouter: HTTPRequestable {
         case .verifyEmail(let data):
             return data
         case .qrAuthorization(_, let data):
+            return data
+        case .changeNickname(_, let data):
             return data
         }
     }
@@ -112,6 +120,8 @@ extension AuthHTTPRequestRouter: HTTPRequestable {
             return ["v1", "auth", "check-email"]
         case .qrAuthorization:
             return ["v1", "user", "qr"]
+        case .changeNickname:
+            return ["v1", "user", "nickname"]
         case .deactivate:
             return ["v1", "user", "deactivate"]
         }
@@ -119,7 +129,7 @@ extension AuthHTTPRequestRouter: HTTPRequestable {
     
     var queryItems: [URLQueryItem]? {
         switch self {
-        case .signup, .signin, .signout, .refresh, .passwordResetSendEmail, .passwordResetVerify, .passwordResetConfirm, .sendEmailVerification, .verifyEmail, .qrAuthorization, .deactivate:
+        case .signup, .signin, .signout, .refresh, .passwordResetSendEmail, .passwordResetVerify, .passwordResetConfirm, .sendEmailVerification, .verifyEmail, .qrAuthorization, .changeNickname, .deactivate:
             return nil
         case .checkNickname(let nickname):
             let queryItems = [

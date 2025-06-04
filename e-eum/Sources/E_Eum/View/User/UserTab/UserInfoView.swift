@@ -11,13 +11,13 @@ struct UserInfoView: View {
         VStack {
             if let userInfo = authService.userInfo {
                 NavigationLink {
-                    Text("닉네임 변경")
+                    ChangeNicknameView()
                 } label: {
                     userInfoCell(title: "닉네임", value: userInfo.nickname)
                 }
 
                 NavigationLink {
-                    Text("비밀번호 변경")
+                    ChangePasswordView()
                 } label: {
                     userInfoCell(title: "비밀번호", value: "********")
                 }

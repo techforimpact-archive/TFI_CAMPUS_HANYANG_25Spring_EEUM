@@ -210,6 +210,22 @@ class AuthService: AuthServiceProtocol {
         return false
     }
     
+    func changeNickname(nickname: String) async throws -> Bool {
+        let accessToken = getAccessToken()
+        let nickname = NicknameBodyDTO(nickname: nickname)
+        let nicknameData = try jsonEncoder.encode(nickname)
+        let router = AuthHTTPRequestRouter.changeNickname(token: accessToken, data: nicknameData)
+        let data = try await networkUtility.request(router: router)
+        let response = try jsonDecoder.decode(AuthStatusResponseDTO.self, from: data)
+        if response.isSuccess {
+            guard let status = response.result?.status else {
+                throw AuthServiceError.noData
+            }
+            return status
+        }
+        return false
+    }
+    
     func deactivate() async throws -> Bool {
         let accessToken = getAccessToken()
         let router = AuthHTTPRequestRouter.deactivate(token: accessToken)
