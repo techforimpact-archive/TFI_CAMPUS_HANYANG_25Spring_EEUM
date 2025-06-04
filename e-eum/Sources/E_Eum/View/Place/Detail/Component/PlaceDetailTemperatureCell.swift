@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct PlaceDetailTemperatureCell: View {
-    let place: PlaceDetailUIO
+    let temperature: Double
     
     private let minTemperature: Double = 0.0
     private let maxTemperature: Double = 50.0
@@ -14,25 +14,37 @@ struct PlaceDetailTemperatureCell: View {
                 
                 Spacer()
                 
-                Text(String(format: "%.1f°C", place.temperature))
+                Text(String(format: "%.1f°C", temperature))
                     .font(.title3)
                     .bold()
+                    .foregroundStyle(Color.pink)
             }
             
             Capsule()
                 .frame(width: 360, height: 20)
-                .foregroundStyle(Color.gray.opacity(0.5))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [.red, .orange, .yellow, .green, .blue, .indigo, .purple],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
                 .overlay {
                     HStack {
                         Capsule()
-                            .frame(width: 360 * CGFloat(place.temperature / (maxTemperature - minTemperature)), height: 20)
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [.red, .orange, .yellow, .green, .blue, .indigo, .purple],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
+                            .frame(width: 360 * CGFloat(temperature / (maxTemperature - minTemperature)), height: 20)
+                            .foregroundStyle(Color.clear)
+                            .overlay {
+                                HStack {
+                                    Spacer()
+                                    
+                                    Circle()
+                                        .stroke(lineWidth: 4)
+                                        .foregroundStyle(Color.white)
+                                        .background(Color.pink)
+                                        .clipShape(Circle())
+                                }
+                            }
                         
                         Spacer()
                     }

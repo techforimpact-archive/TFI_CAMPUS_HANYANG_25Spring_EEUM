@@ -11,12 +11,11 @@ struct ReviewCreateView: View {
     
     @State private var placeService = PlaceService()
     @State private var reviewService = ReviewService()
-    @State private var questions: [QuestionUIO] = [QuestionUIO(id: "recommend", question: "해당 장소는 어떠셨나요?")]
+    @State private var questions: [QuestionUIO] = []
     @State private var currentQuestionIndex: Int = 0
     @State private var buttonDisabled: Bool = true
     @State private var content: String = ""
     @State private var ratings: Dictionary<String, Int> = [:]
-    @State private var recommended: Bool = false
     @State private var showImagePicker = false
     @State private var selectedImageURL: URL?
     @State private var selectedUIImage: UIImage?
@@ -26,39 +25,26 @@ struct ReviewCreateView: View {
     
     var body: some View {
         VStack(spacing: 8) {
+            headerPageArea
+            
             Spacer()
             
-            Text("\(currentQuestionIndex + 1) / \(questions.count)")
-                .animation(.bouncy(duration: 1), value: currentQuestionIndex)
-                
-            questionCell(question: questions[currentQuestionIndex])
-                .animation(.bouncy(duration: 1), value: currentQuestionIndex)
+            if questions.isEmpty {
+                ProgressView()
+            } else {
+                questionCell(question: questions[currentQuestionIndex])
+                    .animation(.bouncy(duration: 1), value: currentQuestionIndex)
+            }
             
             Spacer()
             
             BasicButton(title: "한줄평 작성하기", disabled: $buttonDisabled) {
-                Task {
-                    do {
-                        if let selectedUIImage = selectedUIImage {
-                            _ = try await placeService.createPlaceReview(placeID: placeId, content: content, ratings: ratings, recommended: recommended, images: [selectedUIImage])
-                        } else {
-                            _ = try await placeService.createPlaceReview(placeID: placeId, content: content, ratings: ratings, recommended: recommended, images: [])
-                        }
-                        showReviewCreatedAlert = true
-                    } catch {
-                        print(error.localizedDescription)
-                    }
-                }
+                createReview()
             }
             .padding(EdgeInsets(top: 0, leading: 16, bottom: 16, trailing: 16))
         }
-        .task {
-            do {
-                questions.append(contentsOf: try await reviewService.getQuestions())
-                questions.append(QuestionUIO(id: "content", question: "추가로 남기고 싶은 이야기나 느낀 점이 있다면 자유롭게 작성해주세요."))
-            } catch {
-                print(error.localizedDescription)
-            }
+        .onAppear {
+            loadQuestion()
         }
         .alert("한줄평 작성 완료", isPresented: $showReviewCreatedAlert) {
             Button {
@@ -75,7 +61,32 @@ struct ReviewCreateView: View {
     }
 }
 
-extension ReviewCreateView {    
+private extension ReviewCreateView {
+    var headerPageArea: some View {
+        HStack(spacing: 40) {
+            Button {
+                currentQuestionIndex -= 1
+            } label: {
+                Image(systemName: "arrow.left")
+                    .bold()
+                    .foregroundStyle(currentQuestionIndex == 0 ? Color.gray : Color.black)
+            }
+            .disabled(currentQuestionIndex == 0)
+            
+            Text("\(currentQuestionIndex + 1) / \(questions.count)")
+                .animation(.bouncy(duration: 1), value: currentQuestionIndex)
+            
+            Button {
+                currentQuestionIndex += 1
+            } label: {
+                Image(systemName: "arrow.forward")
+                    .bold()
+                    .foregroundStyle(currentQuestionIndex == questions.count - 1 ? Color.gray : Color.black)
+            }
+            .disabled(currentQuestionIndex == questions.count - 1)
+        }
+    }
+    
     func questionCell(question: QuestionUIO) -> some View {
         VStack(spacing: 16) {
             Text(question.question)
@@ -90,42 +101,9 @@ extension ReviewCreateView {
             }
             
             switch question.id {
-            case "recommend":
-                HStack(spacing: 16) {
-                    Button {
-                        recommended = true
-                        currentQuestionIndex += 1
-                    } label: {
-                        Text("추천")
-                            .font(.title3)
-                            .foregroundStyle(Color.white)
-                            .padding(4)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .foregroundStyle(Color.pink)
-                            )
-                    }
-                    
-                    Text("|")
-                        .font(.title3)
-                    
-                    Button {
-                        recommended = false
-                        currentQuestionIndex += 1
-                    } label: {
-                        Text("비추천")
-                            .font(.title3)
-                            .foregroundStyle(Color.white)
-                            .padding(4)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .foregroundStyle(Color.gray)
-                            )
-                    }
-                }
             case "content":
                 VStack {
-                    TextField("500자 이내", text: $content)
+                    TextEditor(text: $content)
                         .multilineTextAlignment(.leading)
                         .focused($isFocused)
                         .onAppear(perform: {
@@ -147,20 +125,42 @@ extension ReviewCreateView {
                         showImagePicker = true
                     } label: {
                         if let selectedUIImage = selectedUIImage {
-                            Image(uiImage: selectedUIImage)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 120, height: 120)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            HStack {
+                                Image(uiImage: selectedUIImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 60, height: 60)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                
+                                VStack {
+                                    Text("사진 변경하기")
+                                        .bold()
+                                        .foregroundStyle(Color.black)
+                                    
+                                    Text("최대 1장")
+                                        .foregroundStyle(Color.black)
+                                }
+                            }
                         } else {
-                            RoundedRectangle(cornerRadius: 8)
-                                .frame(width: 120, height: 120)
-                                .foregroundStyle(Color.gray)
-                                .overlay {
+                            HStack {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .frame(width: 60, height: 60)
+                                    .foregroundStyle(Color.gray)
+                                    .overlay {
+                                        Image(systemName: "plus")
+                                            .bold()
+                                            .foregroundStyle(Color.white)
+                                    }
+                                
+                                VStack {
                                     Text("사진 추가하기")
                                         .bold()
-                                        .foregroundStyle(Color.white)
+                                        .foregroundStyle(Color.black)
+                                    
+                                    Text("최대 1장")
+                                        .foregroundStyle(Color.black)
                                 }
+                            }
                         }
                     }
                     .withMediaPicker(type: .library, isPresented: $showImagePicker, selectedImageURL: $selectedImageURL)
@@ -170,9 +170,15 @@ extension ReviewCreateView {
                         }
                     }
                 }
+                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(style: StrokeStyle(lineWidth: 2))
+                        .foregroundStyle(Color.pink)
+                }
             default:
                 HStack(alignment: .top) {
-                    VStack {
+                    VStack(spacing: 16) {
                         QuestionCircleButton(text: "1", currentQuestionIndex: $currentQuestionIndex) {
                             ratings.updateValue(1, forKey: questions[currentQuestionIndex].id)
                         }
@@ -201,7 +207,7 @@ extension ReviewCreateView {
                     
                     Spacer()
                     
-                    VStack {
+                    VStack(spacing: 16) {
                         QuestionCircleButton(text: "5", currentQuestionIndex: $currentQuestionIndex) {
                             ratings.updateValue(5, forKey: questions[currentQuestionIndex].id)
                         }
@@ -218,9 +224,35 @@ extension ReviewCreateView {
 }
 
 private extension ReviewCreateView {
+    func loadQuestion() {
+        Task {
+            do {
+                questions.append(contentsOf: try await reviewService.getQuestions())
+                questions.append(QuestionUIO(id: "content", question: "추가로 남기고 싶은 이야기나 느낀 점이 있다면 자유롭게 작성해주세요."))
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
     func loadUIImage(from url: URL) {
         if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
             self.selectedUIImage = image
+        }
+    }
+    
+    func createReview() {
+        Task {
+            do {
+                if let selectedUIImage = selectedUIImage {
+                    _ = try await placeService.createPlaceReview(placeID: placeId, content: content, ratings: ratings, recommended: true, images: [selectedUIImage])
+                } else {
+                    _ = try await placeService.createPlaceReview(placeID: placeId, content: content, ratings: ratings, recommended: true, images: [])
+                }
+                showReviewCreatedAlert = true
+            } catch {
+                print(error.localizedDescription)
+            }
         }
     }
 }

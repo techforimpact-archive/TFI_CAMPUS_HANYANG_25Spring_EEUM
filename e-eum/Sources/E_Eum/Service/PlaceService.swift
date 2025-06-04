@@ -180,6 +180,7 @@ class PlaceService: PlaceServiceProtocol {
     
     func addFavoritePlace(placeID: String) async throws -> Bool {
         let accessToken = getAccessToken()
+        let placeID = FavoritePlaceBodyDTO(placeId: placeID)
         let placeIDData = try jsonEncoder.encode(placeID)
         let router = PlaceHTTPRequestRouter.addFavoritePlace(token: accessToken, data: placeIDData)
         let data = try await networkUtility.request(router: router)

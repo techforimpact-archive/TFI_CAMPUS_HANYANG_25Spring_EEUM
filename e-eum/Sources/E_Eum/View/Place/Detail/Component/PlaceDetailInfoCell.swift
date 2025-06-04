@@ -4,33 +4,40 @@ struct PlaceDetailInfoCell: View {
     let place: PlaceDetailUIO
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 0) {
-                Text("주소 : ")
-                    .bold()
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 8) {
+                Image(systemName: "mappin.circle.fill")
+                    .foregroundStyle(Color.pink)
                 
                 Text(place.fullAddress)
             }
             
-            HStack(spacing: 0) {
-                Text("연락처 : ")
-                    .bold()
+            HStack(spacing: 8) {
+                Image(systemName: "phone.fill")
+                    .foregroundStyle(Color.pink)
                 
                 Text(place.phone)
             }
             
-            HStack(spacing: 0) {
-                Text("이메일 : ")
-                    .bold()
+            HStack(spacing: 8) {
+                Image(systemName: "envelope.fill")
+                    .foregroundStyle(Color.pink)
                 
                 Text(place.email)
             }
             
-            HStack(spacing: 0) {
-                Text("홈페이지 : ")
-                    .bold()
-                
-                Text("[\(place.name)](\(place.website))")
+            if let url = URL(string: place.website) {
+                HStack(spacing: 8) {
+                    Image(systemName: "house.fill")
+                        .foregroundStyle(Color.pink)
+                    
+                    NavigationLink {
+                        WebpageView(url: url)
+                    } label: {
+                        Text(place.website)
+                            .foregroundStyle(Color.black)
+                    }
+                }
             }
         }
     }

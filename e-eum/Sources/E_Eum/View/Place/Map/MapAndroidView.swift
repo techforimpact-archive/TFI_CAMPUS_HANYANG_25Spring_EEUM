@@ -7,12 +7,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 
 struct MapAndroidView: View {
     @State private var placeService = PlaceService()
-    @State private var showDetail: Bool = false
-    @State private var selectedPlaceID: String = ""
     
     let latitude: Double
     let longitude: Double
     @Binding var places: [PlaceUIO]
+    @Binding var showPreview: Bool
+    @Binding var selectedPlaceID: String
     
     var body: some View {
         ComposeView { ctx in
@@ -30,7 +30,7 @@ struct MapAndroidView: View {
                         onClick = { marker in
                             withAnimation {
                                 selectedPlaceID = place.id
-                                showDetail = true
+                                showPreview = true
                             }
                             true
                         }
@@ -38,9 +38,6 @@ struct MapAndroidView: View {
                 }
             }
         }
-        .fullScreenCover(isPresented: $showDetail, content: {
-            PlaceDetailView(placeID: selectedPlaceID, isNavigation: false)
-        })
     }
 }
 
@@ -60,7 +57,7 @@ private extension MapAndroidView {
             return BitmapDescriptorFactory.HUE_BLUE
         case .bookstore:
             return BitmapDescriptorFactory.HUE_VIOLET
-        case .exhibition:
+        case .religion:
             return BitmapDescriptorFactory.HUE_MAGENTA
         case .etc:
             return BitmapDescriptorFactory.HUE_CYAN
