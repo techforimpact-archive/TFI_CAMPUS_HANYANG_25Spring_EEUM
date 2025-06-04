@@ -7,6 +7,7 @@ struct PlaceListView: View {
     @State private var nextCursor: String? = nil
     @State private var isSearching: Bool = false
     @State private var searchText: String = ""
+    @State private var selectedAll: Bool = true
     @State private var selectedCategories: [String] = []
     
     var body: some View {
@@ -101,28 +102,42 @@ private extension PlaceListView {
                 }
                 .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
             
-            HStack {
-                ForEach(PlaceCategory.allCases, id: \.self) { category in
+            ScrollView(.horizontal) {
+                HStack {
                     Button {
-                        if selectedCategories.contains(category.rawValue) {
-                            selectedCategories.remove(at: selectedCategories.firstIndex(of: category.rawValue)!)
-                        } else {
-                            selectedCategories.append(category.rawValue)
-                        }
+                        selectedCategories.removeAll()
+                        selectedAll = true
                     } label: {
-                        PlaceCategoryTag(category: category.rawValue)
-                            .opacity(selectedCategories.contains(category.rawValue) ? 1.0 : 0.6)
+                        PlaceCategoryAllTag()
+                            .opacity(selectedAll ? 1.0 : 0.6)
                     }
-                    .onChange(of: selectedCategories, {
-                        Task {
-                            do {
-                                places = try await placeService.getPlacesOnMapByCategories(categories: selectedCategories)
-                            } catch {
-                                print(error.localizedDescription)
+                    
+                    ForEach(PlaceCategory.allCases, id: \.self) { category in
+                        Button {
+                            if selectedCategories.contains(category.rawValue) {
+                                selectedCategories.remove(at: selectedCategories.firstIndex(of: category.rawValue)!)
+                                if selectedCategories.isEmpty {
+                                    selectedAll = true
+                                }
+                            } else {
+                                selectedCategories.append(category.rawValue)
+                                selectedAll = false
                             }
+                        } label: {
+                            PlaceCategoryTag(category: category.rawValue)
+                                .opacity(selectedCategories.contains(category.rawValue) ? 1.0 : 0.6)
                         }
-                    })
+                    }
                 }
+                .onChange(of: selectedCategories, {
+                    Task {
+                        do {
+                            places = try await placeService.getPlacesOnMapByCategories(categories: selectedCategories)
+                        } catch {
+                            print(error.localizedDescription)
+                        }
+                    }
+                })
             }
             .padding(EdgeInsets(top: 0, leading: 16, bottom: 8, trailing: 16))
             

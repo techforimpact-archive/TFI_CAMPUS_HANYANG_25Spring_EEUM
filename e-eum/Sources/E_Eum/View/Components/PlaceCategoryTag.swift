@@ -30,8 +30,8 @@ extension PlaceCategoryTag {
             return "카페"
         case .bookstore:
             return "서점"
-        case .exhibition:
-            return "전시"
+        case .religion:
+            return "종교"
         case .etc:
             return "기타"
         }
@@ -52,7 +52,7 @@ extension PlaceCategoryTag {
             return .blue
         case .bookstore:
             return .indigo
-        case .exhibition:
+        case .religion:
             return .purple
         case .etc:
             return .gray
@@ -67,6 +67,6 @@ enum PlaceCategory: String, CaseIterable {
     case legal = "LEGAL"
     case cafe = "CAFE"
     case bookstore = "BOOKSTORE"
-    case exhibition = "EXHIBITION"
+    case religion = "RELIGION"
     case etc = "ETC"
 }

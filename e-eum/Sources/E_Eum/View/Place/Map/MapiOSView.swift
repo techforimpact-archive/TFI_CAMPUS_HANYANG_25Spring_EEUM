@@ -74,7 +74,7 @@ private extension MapiOSView {
             return .blue
         case .bookstore:
             return .indigo
-        case .exhibition:
+        case .religion:
             return .purple
         case .etc:
             return .gray

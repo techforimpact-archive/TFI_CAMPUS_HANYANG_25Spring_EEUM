@@ -57,7 +57,7 @@ private extension MapAndroidView {
             return BitmapDescriptorFactory.HUE_BLUE
         case .bookstore:
             return BitmapDescriptorFactory.HUE_VIOLET
-        case .exhibition:
+        case .religion:
             return BitmapDescriptorFactory.HUE_MAGENTA
         case .etc:
             return BitmapDescriptorFactory.HUE_CYAN
