@@ -16,9 +16,6 @@ struct ReviewListView: View {
                     ForEach(reviews) { review in
                         VStack {
                             ReviewListCell(review: review)
-                            
-                            Divider()
-                                .padding(.top, 8)
                         }
                         .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                         .onAppear {

@@ -10,10 +10,15 @@ struct MyReviewsView: View {
         ScrollView {
             LazyVStack {
                 ForEach(myReviews) { review in
-                    myReviewCell(review: review)
-                        .onAppear {
-                            loadMoreMyReviews(reviewID: review.id)
-                        }
+                    NavigationLink {
+                        PlaceDetailView(placeID: review.placeId)
+                    } label: {
+                        myReviewCell(review: review)
+                            .padding(8)
+                            .onAppear {
+                                loadMoreMyReviews(reviewID: review.id)
+                            }
+                    }
                 }
             }
         }
@@ -31,27 +36,28 @@ private extension MyReviewsView {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 50, height: 50)
             
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(style: StrokeStyle(lineWidth: 2))
-                .foregroundStyle(Color.pink)
-                .overlay {
-                    VStack(alignment: .leading) {
-                        HStack {
-                            Text(review.placeName)
-                                .font(.title3)
-                                .bold()
-                            
-                            Spacer()
-                            
-                            Text(review.createdAt)
-                                .font(.caption)
-                        }
-                        
-                        Text(review.content)
-                            .multilineTextAlignment(.leading)
-                    }
-                    .padding()
+            HStack {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(review.placeName)
+                        .font(.title3)
+                        .bold()
+                    
+                    Text("작성일 : " + review.createdAt.prefix(10))
+                        .font(.caption)
+                    
+                    Text(review.content)
+                        .multilineTextAlignment(.leading)
                 }
+                
+                Spacer()
+            }
+            .padding()
+            .foregroundStyle(Color.black)
+            .background {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(style: StrokeStyle(lineWidth: 2))
+                    .foregroundStyle(Color.pink)
+            }
         }
         .padding(.horizontal, 16)
     }
