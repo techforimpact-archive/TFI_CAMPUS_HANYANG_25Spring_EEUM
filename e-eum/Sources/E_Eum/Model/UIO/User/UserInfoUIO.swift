@@ -2,7 +2,7 @@ import Foundation
 
 struct UserInfoUIO {
     let userId: String
-    let nickname: String
+    var nickname: String
     let email: String
     let accessToken: String
     let refreshToken: String

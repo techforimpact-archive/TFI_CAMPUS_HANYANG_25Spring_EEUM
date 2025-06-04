@@ -48,7 +48,10 @@ extension AuthHTTPRequestRouter: HTTPRequestable {
                 "content-type": "application/json"
             ]
         case .changeNickname(let token, _):
-            return ["Authorization": "Bearer \(token)"]
+            return [
+                "Authorization": "Bearer \(token)",
+                "content-type": "application/json"
+            ]
         case .deactivate(let token):
             return ["Authorization": "Bearer \(token)"]
         }
