@@ -122,19 +122,29 @@ private extension PlaceMapView {
         VStack(alignment: .leading, spacing: 16) {
             SheetHeader()
             
-            HStack {
-                RainbowColorTitle(text: place.name, font: .title)
-                
-                ForEach(place.categories, id: \.self) { category in
-                    PlaceCategoryTag(category: category)
+            HStack(alignment: .center) {
+                VStack(alignment: .leading) {
+                    HStack {
+                        RainbowColorTitle(text: place.name, font: .title)
+                        
+                        ForEach(place.categories, id: \.self) { category in
+                            PlaceCategoryTag(category: category)
+                        }
+                    }
+                    
+                    HStack {
+                        Image(systemName: "location.fill")
+                        
+                        Text(place.fullAddress)
+                            .foregroundStyle(Color.black)
+                    }
                 }
-            }
-            
-            HStack {
-                Image(systemName: "location.fill")
                 
-                Text(place.fullAddress)
-                    .foregroundStyle(Color.black)
+                Spacer()
+                
+                Image("chevron_right", bundle: .module)
+                    .resizable()
+                    .frame(width: 20, height: 20)
             }
             
             PlaceDetailTemperatureCell(temperature: place.temperature)
