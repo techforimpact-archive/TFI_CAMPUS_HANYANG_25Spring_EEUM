@@ -48,6 +48,7 @@ struct PlaceListView: View {
                     hasNext = false
                     nextCursor = nil
                     searchText = ""
+                    selectedAll = true
                     selectedCategories = []
                     loadPlaces(isSearching: false, keyword: nil)
                 }
