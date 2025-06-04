@@ -1,5 +1,6 @@
 package com.dingdong.eeum.service;
 
+import com.dingdong.eeum.apiPayload.code.status.ErrorStatus;
 import com.dingdong.eeum.apiPayload.exception.handler.ExceptionHandler;
 import com.dingdong.eeum.constant.UserRole;
 import com.dingdong.eeum.constant.UserStatus;
@@ -198,6 +199,24 @@ public class UserServiceImpl implements UserService{
         }
 
         user.deactivate();
+        userRepository.save(user);
+
+        return MutualResponseDto.builder().status(true).build();
+    }
+
+    @Override
+    public MutualResponseDto resetNickname(String userId, String nickname) {
+        if (nickname.length() < 2 || nickname.length() > 20) throw new ExceptionHandler(ErrorStatus.AUTH_NICKNAME_TOO_LONG);
+
+        boolean exists = userRepository.existsByNicknameAndStatus(nickname,UserStatus.ACTIVE);
+
+        if (exists) throw new ExceptionHandler(ErrorStatus.AUTH_NICKNAME_ALREADY_EXISTS);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ExceptionHandler(AUTH_USER_NOT_FOUND));
+
+        user.setNickname(nickname);
+
         userRepository.save(user);
 
         return MutualResponseDto.builder().status(true).build();
