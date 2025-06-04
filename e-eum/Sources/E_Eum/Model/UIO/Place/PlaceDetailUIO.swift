@@ -19,7 +19,7 @@ struct PlaceDetailUIO: Identifiable {
     let reviewCount: Int
     let status: String
     let verified: Bool
-    let favorite: Bool
+    var favorite: Bool
     
     init(id: String, name: String, longitude: Double, latitude: Double, province: String, city: String, district: String, fullAddress: String, categories: [String], imageUrls: [String], description: String, phone: String, email: String, website: String, temperature: Double, reviewCount: Int, status: String, verified: Bool, favorite: Bool) {
         self.id = id

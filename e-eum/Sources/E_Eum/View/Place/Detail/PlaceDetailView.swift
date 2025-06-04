@@ -40,10 +40,59 @@ struct PlaceDetailView: View {
             }
         }
         .padding()
-        .task {
+        .toolbar(content: {
+            ToolbarItem(placement: .topBarTrailing) {
+                if let place = place {
+                    if place.favorite {
+                        Button {
+                            cancelFavoritePlace()
+                        } label: {
+                            Image(systemName: "heart.fill")
+                                .foregroundStyle(Color.red)
+                        }
+                    } else {
+                        Button {
+                            addFavoritePlace()
+                        } label: {
+                            Image(systemName: "heart")
+                                .foregroundStyle(Color.red)
+                        }
+                    }
+                }
+            }
+        })
+        .onAppear {
+            loadPlaceInfoAndReviews()
+        }
+    }
+}
+
+private extension PlaceDetailView {
+    func loadPlaceInfoAndReviews() {
+        Task {
             do {
                 place = try await placeService.getPlaceDetails(placeID: placeID)
                 reviews = try await placeService.getPlaceReviews(placeID: placeID, lastID: "", size: 5, sortBy: "rating", sortDirection: "DESC").reviews
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func addFavoritePlace() {
+        Task {
+            do {
+                place?.favorite = try await placeService.addFavoritePlace(placeID: placeID)
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func cancelFavoritePlace() {
+        Task {
+            do {
+                place?.favorite = try await !placeService.cancelFavoritePlace(placeID: placeID)
             } catch {
                 print(error.localizedDescription)
             }

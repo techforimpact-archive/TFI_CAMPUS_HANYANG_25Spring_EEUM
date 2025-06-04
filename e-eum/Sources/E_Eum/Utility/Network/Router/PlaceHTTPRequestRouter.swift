@@ -54,7 +54,10 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
                 "content-type": "multipart/form-data"
             ]
         case .addFavoritePlace(let token, _):
-            return ["Authorization": "Bearer \(token)"]
+            return [
+                "Authorization": "Bearer \(token)",
+                "content-type": "application/json"
+            ]
         case .cancelFavoritePlace(let token, _):
             return ["Authorization": "Bearer \(token)"]
         case .myFavoritePlaces(let token, _, _, _, _):
