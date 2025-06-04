@@ -46,6 +46,7 @@ public class UserReviewResponseDto {
                 .placeName(place.getName())
                 .placeAddress(place.getAddress().getFullAddress())
                 .content(review.getContent())
+                .placeCategories(place.getCategories())
                 .createdAt(review.getCreatedAt())
                 .updatedAt(review.getUpdatedAt())
                 .build();
