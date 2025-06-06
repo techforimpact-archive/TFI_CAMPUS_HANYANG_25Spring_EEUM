@@ -94,6 +94,16 @@ struct UserView: View {
                 }
                 
                 Spacer()
+                
+                HStack {
+                    Spacer()
+                    
+                    Text("version \(AppEnvironment.version)")
+                        .font(.caption)
+                        .foregroundStyle(Color.gray)
+                    
+                    Spacer()
+                }
             }
             .padding(16)
             .alert("로그아웃", isPresented: $showSignOutAlert, actions: {
