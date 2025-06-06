@@ -13,6 +13,7 @@ public enum PlaceCategory {
     CAFE("카페"),
     BOOKSTORE("서점"),
     EXHIBITION("전시회"),
+    RELIGION("종교"),
     ETC("기타");
 
     private final String displayName;
