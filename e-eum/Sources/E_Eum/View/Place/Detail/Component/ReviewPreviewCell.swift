@@ -53,6 +53,10 @@ struct ReviewPreviewCell: View {
                 ReviewCreateView(placeId: placeID)
             }
         }
+        #if os(iOS)
+        .sensoryFeedback(.selection, trigger: navigationToReviewList)
+        .sensoryFeedback(.selection, trigger: navigationToReviewCreate)
+        #endif
     }
 }
 

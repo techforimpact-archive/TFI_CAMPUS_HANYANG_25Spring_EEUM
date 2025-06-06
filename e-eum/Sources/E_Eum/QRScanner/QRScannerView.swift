@@ -63,6 +63,10 @@ struct QRScannerView: View {
                 Text("다시 시도하기")
             }
         }
+        #if os(iOS)
+        .sensoryFeedback(.success, trigger: showScanSuccessAlert)
+        .sensoryFeedback(.error, trigger: showScanFailureAlert)
+        #endif
     }
 }
 

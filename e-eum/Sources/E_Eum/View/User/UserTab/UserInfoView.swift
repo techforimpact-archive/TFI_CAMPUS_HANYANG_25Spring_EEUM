@@ -52,6 +52,9 @@ struct UserInfoView: View {
         }, message: {
             Text("정말 회원탈퇴 하시겠어요?")
         })
+        #if os(iOS)
+        .sensoryFeedback(.warning, trigger: showDeactivateAlert)
+        #endif
     }
 }
 

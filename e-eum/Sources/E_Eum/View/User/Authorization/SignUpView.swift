@@ -107,6 +107,9 @@ struct SignUpView: View {
                 Text("로그인 하기")
             }
         }
+        #if os(iOS)
+        .sensoryFeedback(.success, trigger: signUpSuccess)
+        #endif
     }
 }
 

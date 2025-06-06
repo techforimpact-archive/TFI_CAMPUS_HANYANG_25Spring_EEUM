@@ -66,7 +66,9 @@ struct ChangePasswordView: View {
             
             BasicButton(title: "비밀번호 변경하기", disabled: $buttonDisabled) {
                 changePassword()
-                showPasswordChangedAlert = true
+                if passwordResetSuccess {
+                    showPasswordChangedAlert = true
+                }
             }
             .frame(width: 200)
             .onChange(of: resetToken) {
@@ -87,6 +89,9 @@ struct ChangePasswordView: View {
         } message: {
             Text("비밀번호가 변경되었습니다.")
         }
+        #if os(iOS)
+        .sensoryFeedback(.success, trigger: showPasswordChangedAlert)
+        #endif
     }
 }
 

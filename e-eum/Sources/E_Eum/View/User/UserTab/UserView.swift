@@ -111,6 +111,9 @@ struct UserView: View {
             }, message: {
                 Text("정말 로그아웃 하시겠어요?")
             })
+            #if os(iOS)
+            .sensoryFeedback(.warning, trigger: showSignOutAlert)
+            #endif
         }
     }
 }

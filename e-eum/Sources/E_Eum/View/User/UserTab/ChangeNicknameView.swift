@@ -49,6 +49,9 @@ struct ChangeNicknameView: View {
         } message: {
             Text("닉네임이 변경되었습니다.")
         }
+        #if os(iOS)
+        .sensoryFeedback(.success, trigger: showNicknameChangedAlert)
+        #endif
     }
 }
 

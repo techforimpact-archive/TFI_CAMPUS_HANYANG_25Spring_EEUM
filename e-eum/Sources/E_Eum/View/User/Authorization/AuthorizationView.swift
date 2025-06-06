@@ -27,6 +27,9 @@ struct AuthorizationView: View {
             }
         }
         .padding(16)
+        #if os(iOS)
+        .sensoryFeedback(.selection, trigger: viewType)
+        #endif
     }
 }
 

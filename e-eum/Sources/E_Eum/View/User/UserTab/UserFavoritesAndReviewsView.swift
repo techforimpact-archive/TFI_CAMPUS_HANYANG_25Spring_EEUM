@@ -16,6 +16,9 @@ struct UserFavoritesAndReviewsView: View {
         }
         .navigationTitle("나의 저장 목록 및 리뷰")
         .navigationBarTitleDisplayMode(.inline)
+        #if os(iOS)
+        .sensoryFeedback(.selection, trigger: selectedSection)
+        #endif
     }
 }
 

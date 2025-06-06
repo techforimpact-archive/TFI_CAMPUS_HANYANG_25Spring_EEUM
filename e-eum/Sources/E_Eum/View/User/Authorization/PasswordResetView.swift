@@ -92,6 +92,9 @@ struct PasswordResetView: View {
                 Text("확인")
             }
         }
+        #if os(iOS)
+        .sensoryFeedback(.success, trigger: passwordResetSuccess)
+        #endif
     }
 }
 
