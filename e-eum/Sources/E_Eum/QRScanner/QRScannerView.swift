@@ -38,6 +38,7 @@ struct QRScannerView: View {
         .padding(16)
         .onAppear {
             viewModel.checkPermission()
+            viewModel.startScanning()
         }
         .onChange(of: viewModel.tokenValue, {
             if let token = viewModel.tokenValue {
