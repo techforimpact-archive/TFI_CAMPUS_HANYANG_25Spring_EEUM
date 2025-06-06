@@ -46,6 +46,11 @@ struct PlaceMapView: View {
         .task {
             await requestLocationAndStartMonitoring()
         }
+        #if os(iOS)
+        .sensoryFeedback(.selection, trigger: selectedCategories)
+        .sensoryFeedback(.impact(weight: .light), trigger: showPreview)
+        .sensoryFeedback(.impact(weight: .medium), trigger: showDetail)
+        #endif
     }
 }
 

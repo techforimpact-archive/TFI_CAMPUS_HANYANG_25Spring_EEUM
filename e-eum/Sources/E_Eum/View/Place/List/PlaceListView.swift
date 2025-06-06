@@ -56,6 +56,9 @@ struct PlaceListView: View {
             .onAppear {
                 loadPlaces(isSearching: false, keyword: nil)
             }
+            #if os(iOS)
+            .sensoryFeedback(.selection, trigger: selectedCategories)
+            #endif
         }
     }
 }

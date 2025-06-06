@@ -64,6 +64,9 @@ struct PlaceDetailView: View {
         .onAppear {
             loadPlaceInfoAndReviews()
         }
+        #if os(iOS)
+        .sensoryFeedback(.impact(weight: .medium), trigger: place?.favorite)
+        #endif
     }
 }
 

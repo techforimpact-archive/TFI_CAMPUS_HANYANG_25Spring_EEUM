@@ -31,6 +31,9 @@ struct QRAuthorizationAlertView: View {
                     }
                 }
         }
+        #if os(iOS)
+        .sensoryFeedback(.selection, trigger: showQRScanner)
+        #endif
     }
 }
 

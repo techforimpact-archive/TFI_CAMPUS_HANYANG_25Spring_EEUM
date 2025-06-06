@@ -58,6 +58,9 @@ struct ContentView: View {
         .fullScreenCover(isPresented: $showOnboarding) {
             OnboardingView(withHeader: false)
         }
+        #if os(iOS)
+        .sensoryFeedback(.selection, trigger: tab)
+        #endif
     }
 }
 

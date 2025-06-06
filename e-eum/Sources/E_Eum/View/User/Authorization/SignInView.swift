@@ -65,6 +65,10 @@ struct SignInView: View {
         } message: {
             Text("이메일 또는 비밀번호를 확인해주세요.")
         }
+        #if os(iOS)
+        .sensoryFeedback(.selection, trigger: showPasswordResetSheet)
+        .sensoryFeedback(.error, trigger: showSignInFailureAlert)
+        #endif
     }
 }
 
