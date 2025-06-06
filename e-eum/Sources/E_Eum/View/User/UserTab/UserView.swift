@@ -15,7 +15,6 @@ struct UserView: View {
                 header
                 
                 Button {
-                    UserDefaults.standard.set(false, forKey: "launchedBefore")
                     showOnboarding = true
                 } label: {
                     HStack(spacing: 0) {
