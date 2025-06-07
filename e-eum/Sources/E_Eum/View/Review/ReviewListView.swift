@@ -12,7 +12,7 @@ struct ReviewListView: View {
     var body: some View {
         VStack(alignment: .leading) {
             ScrollView {
-                LazyVStack {
+                LazyVStack(spacing: 16) {
                     ForEach(reviews) { review in
                         ReviewListCell(review: review)
                             .onAppear {
