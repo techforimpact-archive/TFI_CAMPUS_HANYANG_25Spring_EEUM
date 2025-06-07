@@ -5,4 +5,5 @@ protocol ReviewServiceProtocol {
     func deleteReview(reviewID: String) async throws -> Bool
     func getQuestions() async throws -> [QuestionUIO]
     func myReviews(cursor: String, size: Int, sortBy: String, sortDirection: String) async throws -> MyReviewListUIO
+    func reportReview(reviewID: String, contentType: ContentType, reportType: ReportType) async throws -> Bool
 }

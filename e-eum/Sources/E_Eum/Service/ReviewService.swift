@@ -70,6 +70,16 @@ class ReviewService: ReviewServiceProtocol {
         reviewsList = MyReviewListUIO(reviews: reviewListDTO.contents, hasNext: reviewListDTO.hasNext, nextCursor: reviewListDTO.nextCursor)
         return reviewsList
     }
+    
+    func reportReview(reviewID: String, contentType: ContentType, reportType: ReportType) async throws -> Bool {
+        let accessToken = getAccessToken()
+        let reportBody = ReportBodyDTO(contentType: contentType.rawValue, reportType: reportType.rawValue)
+        let reportBodyData = try jsonEncoder.encode(reportBody)
+        let router = ReviewHTTPRequestRouter.reportReview(token: accessToken, reviewID: reviewID, data: reportBodyData)
+        let data = try await networkUtility.request(router: router)
+        let response = try jsonDecoder.decode(ReportResponseDTO.self, from: data)
+        return response.isSuccess
+    }
 }
 
 enum ReviewServiceError: Error {
