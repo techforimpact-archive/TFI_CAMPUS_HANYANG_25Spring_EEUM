@@ -10,6 +10,7 @@ import com.dingdong.eeum.constant.PlaceStatus;
 import com.dingdong.eeum.dto.UserInfoDto;
 import com.dingdong.eeum.dto.request.FavoriteRequestDto;
 import com.dingdong.eeum.dto.request.PlaceSearchDto;
+import com.dingdong.eeum.dto.request.ReportRequestDto;
 import com.dingdong.eeum.dto.request.ReviewCreateRequestDto;
 import com.dingdong.eeum.dto.response.*;
 import com.dingdong.eeum.dto.response.swagger.ListSearchResponse;
@@ -306,6 +307,57 @@ public class MapController {
 
         MutualResponseDto response = mapService.removeFromFavorites(userInfoDto.getUserId(), placeId);
 
+        return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
+    }
+
+    @Operation(
+            summary = "장소 신고",
+            description = "부적절한 장소 정보를 신고합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "장소 신고 성공",
+                    content = @Content(
+                            schema = @Schema(implementation = ReportResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "장소를 찾을 수 없음",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "이미 신고한 장소",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "인증되지 않은 사용자",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "서버 오류",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            )
+    })
+    @PostMapping("/{placeId}/report")
+    public Response<ReportResponseDto> reportPlace(
+            @PathVariable String placeId,
+            @Valid @RequestBody ReportRequestDto request,
+            @User @Parameter(hidden = true) UserInfoDto userInfoDto) {
+
+        ReportResponseDto response = mapService.reportPlace(placeId, request, userInfoDto);
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
     }
 }
