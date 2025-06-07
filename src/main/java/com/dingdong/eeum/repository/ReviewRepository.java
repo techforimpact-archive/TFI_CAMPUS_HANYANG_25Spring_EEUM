@@ -16,6 +16,9 @@ public interface ReviewRepository extends MongoRepository<Review, String>, Revie
 
     @Query("{'userId': ?0, $expr: {$cond: [{$ne: [?1, null]}, {$lt: ['$_id', {$toObjectId: ?1}]}, true]}}")
     List<Review> findAllByUserId(String userId, String cursor, int limit, Sort sort);
+
+    List<Review> findByUserId(String userId);
+
 }
 
 interface ReviewRepositoryCustom {

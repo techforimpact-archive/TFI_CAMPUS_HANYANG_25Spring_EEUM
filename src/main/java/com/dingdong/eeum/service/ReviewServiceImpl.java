@@ -1,21 +1,19 @@
 package com.dingdong.eeum.service;
 
+import com.dingdong.eeum.apiPayload.code.status.ErrorStatus;
 import com.dingdong.eeum.apiPayload.exception.handler.ExceptionHandler;
 import com.dingdong.eeum.aws.S3Service;
+import com.dingdong.eeum.constant.ReportStatus;
 import com.dingdong.eeum.dto.UserInfoDto;
+import com.dingdong.eeum.dto.request.ReportRequestDto;
 import com.dingdong.eeum.dto.request.ReviewCreateRequestDto;
 import com.dingdong.eeum.dto.request.ReviewUpdateRequestDto;
 import com.dingdong.eeum.dto.response.QuestionResponseDto;
+import com.dingdong.eeum.dto.response.ReportResponseDto;
 import com.dingdong.eeum.dto.response.ReviewResponseDto;
 import com.dingdong.eeum.dto.response.ScrollResponseDto;
-import com.dingdong.eeum.model.Place;
-import com.dingdong.eeum.model.Question;
-import com.dingdong.eeum.model.Review;
-import com.dingdong.eeum.model.User;
-import com.dingdong.eeum.repository.PlaceRepository;
-import com.dingdong.eeum.repository.QuestionRepository;
-import com.dingdong.eeum.repository.ReviewRepository;
-import com.dingdong.eeum.repository.UserRepository;
+import com.dingdong.eeum.model.*;
+import com.dingdong.eeum.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -23,6 +21,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -40,8 +39,13 @@ public class ReviewServiceImpl implements ReviewService {
     private final S3Service s3Service;
     private final MongoTemplate mongoTemplate;
     private final UserRepository userRepository;
+    private final ReportRepository reportRepository;
+
+    private static final int MAX_REPORT_COUNT = 3;
 
     public ReviewResponseDto createReview(String placeId, ReviewCreateRequestDto requestDto, UserInfoDto userInfoDto) {
+
+        checkUserReportCount(userInfoDto.getUserId());
 
         placeRepository.findById(placeId)
                 .orElseThrow(() -> new ExceptionHandler(PLACE_NOT_FOUND));
@@ -73,6 +77,24 @@ public class ReviewServiceImpl implements ReviewService {
         updatePlaceTemperature(placeId);
 
         return ReviewResponseDto.toReviewResponseDto(savedReview, user.getNickname());
+    }
+
+    private void checkUserReportCount(String userId) {
+        List<Review> userReviews = reviewRepository.findByUserId(userId);
+
+        if (userReviews.isEmpty()) {
+            return;
+        }
+
+        List<String> reviewIds = userReviews.stream()
+                .map(Review::getId)
+                .collect(Collectors.toList());
+
+        long reportCount = reportRepository.countByReviewIdIn(reviewIds);
+
+        if (reportCount >= MAX_REPORT_COUNT) {
+            throw new ExceptionHandler(ErrorStatus.REVIEW_CREATION_BLOCKED_DUE_TO_REPORTS);
+        }
     }
 
     public ReviewResponseDto getReviewById(String reviewId) {
@@ -230,6 +252,39 @@ public class ReviewServiceImpl implements ReviewService {
         return questions.stream()
                 .map(question -> new QuestionResponseDto(question.getId(), question.getQuestion(), question.getDetail()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public ReportResponseDto reportReview(String reviewId, ReportRequestDto request, UserInfoDto userInfo) {
+
+        if (!reviewRepository.existsById(reviewId)) {
+            throw new ExceptionHandler(ErrorStatus.REVIEW_NOT_FOUND);
+        }
+
+        if (reportRepository.existsByContentIdAndReporterId(reviewId, userInfo.getUserId())) {
+            throw new ExceptionHandler(ErrorStatus.REPORT_ALREADY_EXISTS);
+        }
+
+        Report report = Report.builder()
+                .contentId(reviewId)
+                .contentType(request.getContentType())
+                .reporterId(userInfo.getUserId())
+                .reportType(request.getReportType())
+                .status(ReportStatus.PENDING)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        Report savedReport = reportRepository.save(report);
+
+        return ReportResponseDto.builder()
+                .reportId(savedReport.getId())
+                .contentId(savedReport.getContentId())
+                .reportType(savedReport.getReportType())
+                .reporterId(savedReport.getReporterId())
+                .createdAt(savedReport.getCreatedAt())
+                .build();
     }
 
 }

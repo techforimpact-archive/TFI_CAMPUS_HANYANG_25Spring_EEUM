@@ -1,9 +1,10 @@
 package com.dingdong.eeum.service;
 
 import com.dingdong.eeum.dto.UserInfoDto;
+import com.dingdong.eeum.dto.request.ReportRequestDto;
 import com.dingdong.eeum.dto.request.ReviewCreateRequestDto;
-import com.dingdong.eeum.dto.request.ReviewUpdateRequestDto;
 import com.dingdong.eeum.dto.response.QuestionResponseDto;
+import com.dingdong.eeum.dto.response.ReportResponseDto;
 import com.dingdong.eeum.dto.response.ReviewResponseDto;
 import com.dingdong.eeum.dto.response.ScrollResponseDto;
 import org.springframework.data.domain.Sort;
@@ -25,5 +26,5 @@ public interface ReviewService {
 
     void updatePlaceTemperature(String placeId);
 
-
+    ReportResponseDto reportReview(String reviewId, ReportRequestDto request, UserInfoDto userInfo);
 }
