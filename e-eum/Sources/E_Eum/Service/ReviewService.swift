@@ -36,17 +36,12 @@ class ReviewService: ReviewServiceProtocol {
         return review
     }
     
-    func deleteReview(reviewID: String) async throws -> ReviewUIO {
+    func deleteReview(reviewID: String) async throws -> Bool {
         let accessToken = getAccessToken()
         let router = ReviewHTTPRequestRouter.deleteReview(token: accessToken, reviewID: reviewID)
         let data = try await networkUtility.request(router: router)
         let reviewResponse = try jsonDecoder.decode(ReviewResponseDTO.self, from: data)
-        var review: ReviewUIO
-        guard let reviewDTO = reviewResponse.result else {
-            throw ReviewServiceError.noData
-        }
-        review = ReviewUIO(reviewDTO: reviewDTO)
-        return review
+        return reviewResponse.isSuccess
     }
     
     func getQuestions() async throws -> [QuestionUIO] {
@@ -74,6 +69,16 @@ class ReviewService: ReviewServiceProtocol {
         }
         reviewsList = MyReviewListUIO(reviews: reviewListDTO.contents, hasNext: reviewListDTO.hasNext, nextCursor: reviewListDTO.nextCursor)
         return reviewsList
+    }
+    
+    func reportReview(reviewID: String, contentType: ContentType, reportType: ReportType) async throws -> Bool {
+        let accessToken = getAccessToken()
+        let reportBody = ReportBodyDTO(contentType: contentType.rawValue, reportType: reportType.rawValue)
+        let reportBodyData = try jsonEncoder.encode(reportBody)
+        let router = ReviewHTTPRequestRouter.reportReview(token: accessToken, reviewID: reviewID, data: reportBodyData)
+        let data = try await networkUtility.request(router: router)
+        let response = try jsonDecoder.decode(ReportResponseDTO.self, from: data)
+        return response.isSuccess
     }
 }
 

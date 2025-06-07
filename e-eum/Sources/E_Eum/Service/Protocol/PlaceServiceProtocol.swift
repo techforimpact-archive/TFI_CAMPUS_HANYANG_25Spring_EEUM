@@ -15,4 +15,5 @@ protocol PlaceServiceProtocol {
     func addFavoritePlace(placeID: String) async throws -> Bool
     func cancelFavoritePlace(placeID: String) async throws -> Bool
     func myFavoritePlaces(cursor: String, size: Int, sortBy: String, sortDirection: String) async throws -> FavoritePlaceListUIO
+    func reportPlace(placeID: String, contentType: ContentType, reportType: ReportType) async throws -> Bool
 }

@@ -14,6 +14,7 @@ enum PlaceHTTPRequestRouter {
     case addFavoritePlace(token: String, data: Data)
     case cancelFavoritePlace(token: String, placeID: String)
     case myFavoritePlaces(token: String, cursor: String, size: Int, sortBy: String, sortDirection: String)
+    case reportPlace(token: String, placeID: String, data: Data)
 }
 
 extension PlaceHTTPRequestRouter: HTTPRequestable {
@@ -21,7 +22,7 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
         switch self {
         case .getAllPlacesOnMap, .getPlacesOnMapByCategories, .getPlacesOnMapByKeyword, .getAllPlacesOnList, .getPlacesOnListByLocation, .getPlacesOnListByCategories, .getPlacesOnListByKeyword, .getPlaceDetails, .getPlaceReviews, .myFavoritePlaces:
             return .get
-        case .createPlaceReview, .addFavoritePlace:
+        case .createPlaceReview, .addFavoritePlace, .reportPlace:
             return .post
         case .cancelFavoritePlace:
             return .delete
@@ -62,6 +63,11 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
             return ["Authorization": "Bearer \(token)"]
         case .myFavoritePlaces(let token, _, _, _, _):
             return ["Authorization": "Bearer \(token)"]
+        case .reportPlace(let token, _, _):
+            return [
+                "Authorization": "Bearer \(token)",
+                "content-type": "application/json"
+            ]
         }
     }
     
@@ -72,6 +78,8 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
         case .createPlaceReview(_, _, let data):
             return data
         case .addFavoritePlace(_, let data):
+            return data
+        case .reportPlace(_, _, let data):
             return data
         }
     }
@@ -114,12 +122,14 @@ extension PlaceHTTPRequestRouter: HTTPRequestable {
             return ["v1", "places", "favorites", "\(placeID)"]
         case .myFavoritePlaces:
             return ["v1", "user", "favorites"]
+        case .reportPlace(_, let placeID, _):
+            return ["v1", "places", "\(placeID)", "report"]
         }
     }
     
     var queryItems: [URLQueryItem]? {
         switch self {
-        case .getPlaceDetails, .createPlaceReview, .addFavoritePlace, .cancelFavoritePlace:
+        case .getPlaceDetails, .createPlaceReview, .addFavoritePlace, .cancelFavoritePlace, .reportPlace:
             return nil
         case .getAllPlacesOnMap(_, let latitude, let longitude, let radius):
             let queryItems = [

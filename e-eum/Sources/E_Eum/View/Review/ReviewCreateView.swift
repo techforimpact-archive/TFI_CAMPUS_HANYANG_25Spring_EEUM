@@ -228,7 +228,7 @@ private extension ReviewCreateView {
         Task {
             do {
                 questions.append(contentsOf: try await reviewService.getQuestions())
-                questions.append(QuestionUIO(id: "content", question: "추가로 남기고 싶은 이야기나 느낀 점이 있다면 자유롭게 작성해주세요."))
+                questions.append(QuestionUIO(id: "content", question: "추가로 남기고 싶은 이야기나 느낀 점이 있다면 자유롭게 작성해주세요.", detail: "부적절하거나 다른 사용자에게 불쾌감을 줄 수 있는 컨텐츠를 게시할 경우 제재를 받을 수 있습니다."))
             } catch {
                 print(error.localizedDescription)
             }

@@ -5,10 +5,13 @@ struct MyReviewsView: View {
     @State private var myReviews: [MyReviewUIO] = []
     @State private var hasNext: Bool = false
     @State private var nextCursor: String? = nil
+    @State private var selectedReviewID: String = ""
+    @State private var showDeleteAlert: Bool = false
+    @State private var showDeleteSuccessAlert: Bool = false
     
     var body: some View {
         ScrollView {
-            LazyVStack {
+            LazyVStack(spacing: 16) {
                 ForEach(myReviews) { review in
                     NavigationLink {
                         PlaceDetailView(placeID: review.placeId)
@@ -25,16 +28,42 @@ struct MyReviewsView: View {
         .onAppear {
             loadInitialMyReviews()
         }
+        .alert("리뷰 삭제", isPresented: $showDeleteAlert) {
+            Button(role: .destructive) {
+                deleteReview(reviewID: selectedReviewID)
+            } label: {
+                Text("삭제")
+            }
+        } message: {
+            Text("리뷰를 삭제하시겠습니까?")
+        }
+        .alert("리뷰가 삭제되었습니다.", isPresented: $showDeleteSuccessAlert) {
+            Button {
+                loadInitialMyReviews()
+            } label: {
+                Text("확인")
+            }
+        }
     }
 }
 
 private extension MyReviewsView {
     func myReviewCell(review: MyReviewUIO) -> some View {
         HStack(alignment: .top) {
-            Image("user_image", bundle: .module)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 50, height: 50)
+            VStack(alignment: .center, spacing: 8) {
+                Image("user_image", bundle: .module)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 50, height: 50)
+                
+                Button {
+                    selectedReviewID = review.id
+                    showDeleteAlert = true
+                } label: {
+                    Image(systemName: "trash")
+                        .foregroundStyle(Color.gray)
+                }
+            }
             
             HStack {
                 VStack(alignment: .leading, spacing: 8) {
@@ -96,6 +125,16 @@ private extension MyReviewsView {
                         }
                     }
                 }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func deleteReview(reviewID: String) {
+        Task {
+            do {
+                showDeleteSuccessAlert = try await reviewService.deleteReview(reviewID: reviewID)
             } catch {
                 print(error.localizedDescription)
             }

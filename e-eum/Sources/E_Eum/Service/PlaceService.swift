@@ -220,6 +220,16 @@ class PlaceService: PlaceServiceProtocol {
         placesList = FavoritePlaceListUIO(places: placeListDTO.contents, hasNext: placeListDTO.hasNext, nextCursor: placeListDTO.nextCursor)
         return placesList
     }
+    
+    func reportPlace(placeID: String, contentType: ContentType, reportType: ReportType) async throws -> Bool {
+        let accessToken = getAccessToken()
+        let reportBody = ReportBodyDTO(contentType: contentType.rawValue, reportType: reportType.rawValue)
+        let reportBodyData = try jsonEncoder.encode(reportBody)
+        let router = PlaceHTTPRequestRouter.reportPlace(token: accessToken, placeID: placeID, data: reportBodyData)
+        let data = try await networkUtility.request(router: router)
+        let response = try jsonDecoder.decode(ReportResponseDTO.self, from: data)
+        return response.isSuccess
+    }
 }
 
 enum PlaceServiceError: Error {
