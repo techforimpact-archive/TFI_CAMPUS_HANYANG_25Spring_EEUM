@@ -95,6 +95,7 @@ public enum ErrorStatus implements BaseErrorCode {
     REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "REVIEW409_1", "이미 리뷰를 작성한 장소입니다."),
     REVIEW_MODIFY_NOT_ALLOWED(HttpStatus.FORBIDDEN, "REVIEW403_2", "리뷰를 수정할 권한이 없습니다."),
     REVIEW_DELETE_NOT_ALLOWED(HttpStatus.FORBIDDEN, "REVIEW403_3", "리뷰를 삭제할 권한이 없습니다."),
+    REVIEW_CREATION_BLOCKED_DUE_TO_REPORTS(HttpStatus.FORBIDDEN, "REVIEW4002", "신고 누적으로 인해 리뷰 작성이 제한되었습니다."),
 
     // QUESTION Error
     QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "QUESTION404_1", "존재하지 않는 질문입니다."),
@@ -106,7 +107,13 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // FAVORITE Error
     FAVORITE_ALREADY_EXISTS(HttpStatus.CONFLICT, "FAVORITE_409_1", "이미 찜한 장소입니다."),
-    FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "FAVORITE_404_1", "아직 찜하지 않은 장소입니다.");
+    FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "FAVORITE_404_1", "아직 찜하지 않은 장소입니다."),
+
+    // REPORT Error
+    REPORT_ALREADY_EXISTS(HttpStatus.CONFLICT, "REPORT4001", "이미 신고한 리뷰입니다."),
+    REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT4002", "신고를 찾을 수 없습니다."),
+    REPORT_INVALID_TYPE(HttpStatus.BAD_REQUEST, "REPORT4003", "유효하지 않은 신고 유형입니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;
