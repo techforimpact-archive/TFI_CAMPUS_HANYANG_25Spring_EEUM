@@ -13,10 +13,7 @@ import com.dingdong.eeum.dto.request.PlaceSearchDto;
 import com.dingdong.eeum.dto.request.ReportRequestDto;
 import com.dingdong.eeum.dto.request.ReviewCreateRequestDto;
 import com.dingdong.eeum.dto.response.*;
-import com.dingdong.eeum.dto.response.swagger.ListSearchResponse;
-import com.dingdong.eeum.dto.response.swagger.MapSearchResponse;
-import com.dingdong.eeum.dto.response.swagger.MutualResponse;
-import com.dingdong.eeum.dto.response.swagger.ReviewGetResponse;
+import com.dingdong.eeum.dto.response.swagger.*;
 import com.dingdong.eeum.service.MapService;
 import com.dingdong.eeum.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,14 +65,14 @@ public class MapController {
                     responseCode = "400",
                     description = "잘못된 요청",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                            schema = @Schema(implementation = Response.class)
                     )
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "서버 오류",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                            schema = @Schema(implementation = Response.class)
                     )
             )
     })
@@ -172,14 +169,14 @@ public class MapController {
                     responseCode = "404",
                     description = "장소를 찾을 수 없음",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                            schema = @Schema(implementation = Response.class)
                     )
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "서버 오류",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                            schema = @Schema(implementation = Response.class)
                     )
             )
     })
@@ -205,14 +202,14 @@ public class MapController {
                     responseCode = "404",
                     description = "장소를 찾을 수 없음",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                            schema = @Schema(implementation = Response.class)
                     )
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "서버 오류",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                            schema = @Schema(implementation = Response.class)
                     )
             )
     })
@@ -243,56 +240,56 @@ public class MapController {
                     responseCode = "201",
                     description = "리뷰 생성 성공",
                     content = @Content(
-                            schema = @Schema(implementation = ReviewResponseDto.class)
+                            schema = @Schema(implementation = ReviewCreateResponse.class)
                     )
             ),
             @ApiResponse(
                     responseCode = "400",
                     description = "잘못된 요청 (필수 필드 누락, 파일 형식 오류 등)",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                            schema = @Schema(implementation = Response.class)
                     )
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "인증되지 않은 사용자",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                            schema = @Schema(implementation = Response.class)
                     )
             ),
             @ApiResponse(
                     responseCode = "403",
                     description = "신고 누적으로 인한 리뷰 작성 제한",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                            schema = @Schema(implementation = Response.class)
                     )
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "장소를 찾을 수 없음",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                            schema = @Schema(implementation = Response.class)
                     )
             ),
             @ApiResponse(
                     responseCode = "413",
                     description = "파일 크기 초과",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                            schema = @Schema(implementation = Response.class)
                     )
             ),
             @ApiResponse(
                     responseCode = "415",
                     description = "지원하지 않는 파일 형식",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                            schema = @Schema(implementation = Response.class)
                     )
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "서버 오류 (파일 업로드 실패, 데이터베이스 오류 등)",
                     content = @Content(
-                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                            schema = @Schema(implementation = Response.class)
                     )
             )
     })
