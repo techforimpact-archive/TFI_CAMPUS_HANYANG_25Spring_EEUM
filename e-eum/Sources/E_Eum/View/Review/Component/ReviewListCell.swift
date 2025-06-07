@@ -5,6 +5,7 @@ struct ReviewListCell: View {
     
     let review: ReviewUIO
     
+    @State private var reviewService = ReviewService()
     @State private var showReviewActionSheet: Bool = false
     @State private var showReportAlert: Bool = false
     
@@ -72,36 +73,31 @@ struct ReviewListCell: View {
         }
         .confirmationDialog("신고사유를 선택해주세요.", isPresented: $showReviewActionSheet) {
             Button {
-                
-                showReportAlert = true
+                reportReview(reportType: .incorrectInfo)
             } label: {
                 Text("잘못된 정보")
             }
 
             Button {
-                
-                showReportAlert = true
+                reportReview(reportType: .commercialAd)
             } label: {
                 Text("상업적 광고")
             }
             
             Button {
-                
-                showReportAlert = true
+                reportReview(reportType: .spam)
             } label: {
                 Text("음란물")
             }
             
             Button {
-                
-                showReportAlert = true
+                reportReview(reportType: .profanity)
             } label: {
                 Text("폭력성")
             }
             
             Button {
-                
-                showReportAlert = true
+                reportReview(reportType: .other)
             } label: {
                 Text("기타")
             }
@@ -112,6 +108,18 @@ struct ReviewListCell: View {
             Button {
             } label: {
                 Text("확인")
+            }
+        }
+    }
+}
+
+private extension ReviewListCell {
+    func reportReview(reportType: ReportType) {
+        Task {
+            do {
+                showReportAlert = try await reviewService.reportReview(reviewID: review.id, contentType: ContentType.review, reportType: reportType)
+            } catch {
+                print(error.localizedDescription)
             }
         }
     }
