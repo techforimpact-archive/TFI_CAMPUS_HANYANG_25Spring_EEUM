@@ -3,15 +3,17 @@ package com.dingdong.eeum.service;
 
 import com.dingdong.eeum.apiPayload.code.status.ErrorStatus;
 import com.dingdong.eeum.apiPayload.exception.handler.ExceptionHandler;
+import com.dingdong.eeum.constant.ContentType;
+import com.dingdong.eeum.constant.ReportStatus;
+import com.dingdong.eeum.dto.UserInfoDto;
 import com.dingdong.eeum.dto.request.FavoriteRequestDto;
 import com.dingdong.eeum.dto.request.PlaceSearchDto;
+import com.dingdong.eeum.dto.request.ReportRequestDto;
 import com.dingdong.eeum.dto.response.*;
 import com.dingdong.eeum.model.Favorite;
 import com.dingdong.eeum.model.Place;
-import com.dingdong.eeum.repository.FavoriteRepository;
-import com.dingdong.eeum.repository.PlaceRepository;
-import com.dingdong.eeum.repository.ReviewRepository;
-import com.dingdong.eeum.repository.UserRepository;
+import com.dingdong.eeum.model.Report;
+import com.dingdong.eeum.repository.*;
 import com.dingdong.eeum.strategy.search.PlaceSearchStrategy;
 import com.dingdong.eeum.strategy.search.PlaceSearchStrategyFactory;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,7 @@ public class MapServiceImpl implements MapService {
     private final FavoriteRepository favoriteRepository;
     private final PlaceRepository placeRepository;
     private final ReviewRepository reviewRepository;
+    private final ReportRepository reportRepository;
     private final PlaceSearchStrategyFactory searchStrategyFactory;
 
     @Override
@@ -144,5 +147,37 @@ public class MapServiceImpl implements MapService {
         }
 
         return searchResult;
+    }
+
+    @Override
+    @Transactional
+    public ReportResponseDto reportPlace(String placeId, ReportRequestDto request, UserInfoDto userInfo) {
+        if (!placeRepository.existsById(placeId)) {
+            throw new ExceptionHandler(PLACE_NOT_FOUND);
+        }
+
+        if (reportRepository.existsByContentIdAndReporterId(placeId, userInfo.getUserId())) {
+            throw new ExceptionHandler(REPORT_ALREADY_EXISTS);
+        }
+
+        Report report = Report.builder()
+                .contentId(placeId)
+                .reporterId(userInfo.getUserId())
+                .reportType(request.getReportType())
+                .contentType(ContentType.PLACE)
+                .status(ReportStatus.PENDING)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        Report savedReport = reportRepository.save(report);
+
+        return ReportResponseDto.builder()
+                .reportId(savedReport.getId())
+                .contentId(savedReport.getContentId())
+                .reportType(savedReport.getReportType())
+                .reporterId(savedReport.getReporterId())
+                .createdAt(savedReport.getCreatedAt())
+                .build();
     }
 }
