@@ -10,6 +10,7 @@ import com.dingdong.eeum.constant.PlaceStatus;
 import com.dingdong.eeum.dto.UserInfoDto;
 import com.dingdong.eeum.dto.request.FavoriteRequestDto;
 import com.dingdong.eeum.dto.request.PlaceSearchDto;
+import com.dingdong.eeum.dto.request.ReportRequestDto;
 import com.dingdong.eeum.dto.request.ReviewCreateRequestDto;
 import com.dingdong.eeum.dto.response.*;
 import com.dingdong.eeum.dto.response.swagger.ListSearchResponse;
@@ -232,10 +233,69 @@ public class MapController {
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), reviews);
     }
 
+
     @Operation(
             summary = "리뷰 생성",
-            description = "장소에 대한 리뷰를 생성합니다."
+            description = "장소에 대한 리뷰를 생성합니다. 이미지 파일과 함께 업로드 가능하며, 신고 누적 사용자는 리뷰 작성이 제한됩니다."
     )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "리뷰 생성 성공",
+                    content = @Content(
+                            schema = @Schema(implementation = ReviewResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "잘못된 요청 (필수 필드 누락, 파일 형식 오류 등)",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "인증되지 않은 사용자",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "신고 누적으로 인한 리뷰 작성 제한",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "장소를 찾을 수 없음",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "413",
+                    description = "파일 크기 초과",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "415",
+                    description = "지원하지 않는 파일 형식",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "서버 오류 (파일 업로드 실패, 데이터베이스 오류 등)",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            )
+    })
     @PostMapping(value = "/{placeId}/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Response<ReviewResponseDto> createReview(
             @PathVariable String placeId,
@@ -306,6 +366,57 @@ public class MapController {
 
         MutualResponseDto response = mapService.removeFromFavorites(userInfoDto.getUserId(), placeId);
 
+        return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
+    }
+
+    @Operation(
+            summary = "장소 신고",
+            description = "부적절한 장소 정보를 신고합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "장소 신고 성공",
+                    content = @Content(
+                            schema = @Schema(implementation = ReportResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "장소를 찾을 수 없음",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "이미 신고한 장소",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "인증되지 않은 사용자",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "서버 오류",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorReasonDTO.class)
+                    )
+            )
+    })
+    @PostMapping("/{placeId}/report")
+    public Response<ReportResponseDto> reportPlace(
+            @PathVariable String placeId,
+            @Valid @RequestBody ReportRequestDto request,
+            @User @Parameter(hidden = true) UserInfoDto userInfoDto) {
+
+        ReportResponseDto response = mapService.reportPlace(placeId, request, userInfoDto);
         return new Response<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), response);
     }
 }
