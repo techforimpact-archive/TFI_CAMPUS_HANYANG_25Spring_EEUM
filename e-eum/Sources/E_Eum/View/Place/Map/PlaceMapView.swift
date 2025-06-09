@@ -36,7 +36,11 @@ struct PlaceMapView: View {
         .sheet(isPresented: $showPreview, content: {
             if let place = places.filter({$0.id == selectedPlaceID}).first {
                 placePreview(place: place)
+                    #if SKIP
+                    .presentationDetents([.height(250)])
+                    #else
                     .presentationDetents([.height(200)])
+                    #endif
                     .onTapGesture {
                         showDetail = true
                         showPreview = false
@@ -171,7 +175,7 @@ private extension PlaceMapView {
             
             PlaceDetailTemperatureCell(temperature: place.temperature)
         }
-        .padding(.horizontal, 16)
+        .padding(16)
     }
 }
 
