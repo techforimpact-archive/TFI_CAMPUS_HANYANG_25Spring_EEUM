@@ -39,6 +39,5 @@ struct PlaceListCell: View {
                 .padding(.vertical, 8)
         }
         .padding(.horizontal, 16)
-        .background(Color.white)
     }
 }

@@ -74,6 +74,7 @@ private extension PlaceListView {
                 .overlay {
                     HStack(spacing: 8) {
                         TextField("검색어를 입력하세요.", text: $searchText)
+                            .textFieldStyle(.plain)
                             .lineLimit(1)
                             .submitLabel(.search)
                             .onSubmit {

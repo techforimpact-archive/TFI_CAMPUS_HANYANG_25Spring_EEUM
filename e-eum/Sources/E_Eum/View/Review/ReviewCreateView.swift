@@ -103,6 +103,26 @@ private extension ReviewCreateView {
             switch question.id {
             case "content":
                 VStack {
+                    #if SKIP
+                    TextField("내용을 입력하세요.", text: $content)
+                        .textFieldStyle(.plain)
+                        .multilineTextAlignment(.leading)
+                        .focused($isFocused)
+                        .onAppear(perform: {
+                            isFocused = true
+                        })
+                        .onChange(of: content, { oldValue, newValue in
+                            if currentQuestionIndex == questions.count - 1 {
+                                if newValue == "" {
+                                    buttonDisabled = true
+                                } else {
+                                    buttonDisabled = false
+                                }
+                            } else {
+                                buttonDisabled = true
+                            }
+                        })
+                    #else
                     TextEditor(text: $content)
                         .multilineTextAlignment(.leading)
                         .focused($isFocused)
@@ -120,6 +140,7 @@ private extension ReviewCreateView {
                                 buttonDisabled = true
                             }
                         })
+                    #endif
                     
                     Button {
                         showImagePicker = true

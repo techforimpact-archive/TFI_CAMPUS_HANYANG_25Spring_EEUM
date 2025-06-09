@@ -16,6 +16,7 @@ struct PlaceCategoryAllTag: View {
                         )
                     )
                     .background(Color.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
             }
     }
 }

@@ -36,7 +36,11 @@ struct PlaceMapView: View {
         .sheet(isPresented: $showPreview, content: {
             if let place = places.filter({$0.id == selectedPlaceID}).first {
                 placePreview(place: place)
+                    #if SKIP
+                    .presentationDetents([.height(250)])
+                    #else
                     .presentationDetents([.height(200)])
+                    #endif
                     .onTapGesture {
                         showDetail = true
                         showPreview = false
@@ -65,6 +69,7 @@ private extension PlaceMapView {
                 .overlay {
                     HStack(spacing: 8) {
                         TextField("검색어를 입력하세요.", text: $searchText)
+                            .textFieldStyle(.plain)
                             .lineLimit(1)
                             .submitLabel(.search)
                             .onSubmit {
@@ -170,7 +175,7 @@ private extension PlaceMapView {
             
             PlaceDetailTemperatureCell(temperature: place.temperature)
         }
-        .padding(.horizontal, 16)
+        .padding(16)
     }
 }
 
