@@ -1,8 +1,7 @@
 import SwiftUI
 
 enum WebpageLink: String {
-    case ddingdongInfo = "https://ddingdong.kr/intro"
-    case withDDingdong = "https://ddingdong.kr/give"
+    case withDDingdong = "https://pf.kakao.com/_AHndV"
     case placeRecommendation = "https://forms.gle/u3NQ3oQ5sEP2NZw17"
 }
 
@@ -41,7 +40,11 @@ struct InfoView: View {
                     
                     HStack(spacing: 16) {
                         NavigationLink {
-                            WebpageView(url: URL(string: WebpageLink.ddingdongInfo.rawValue)!)
+                            ScrollView {
+                                Image("ddingdongInfo", bundle: .module)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                            }
                         } label: {
                             cardButton {
                                 VStack(alignment: .center) {

@@ -116,6 +116,8 @@ struct PlaceDetailView: View {
         }
         #if os(iOS)
         .sensoryFeedback(.impact(weight: .medium), trigger: place?.favorite)
+        .sensoryFeedback(.selection, trigger: showPlaceActionSheet)
+        .sensoryFeedback(.success, trigger: showReportAlert)
         #endif
     }
 }
