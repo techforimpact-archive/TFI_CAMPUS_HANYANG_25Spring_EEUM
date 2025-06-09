@@ -22,13 +22,22 @@ struct UserFavoritesAndReviewsView: View {
     }
 }
 
-private enum ViewSection {
-    case favoritePlaces
-    case myReviews
+private enum ViewSection: String, CaseIterable {
+    case favoritePlaces = "저장 목록"
+    case myReviews = "리뷰"
 }
 
 private extension UserFavoritesAndReviewsView {
     var header: some View {
+        #if SKIP
+        Picker("", selection: $selectedSection) {
+            ForEach(ViewSection.allCases, id: \.self) { section in
+                Text(section.rawValue)
+            }
+        }
+        .pickerStyle(.segmented)
+        .frame(width: 240, height: 50)
+        #else
         HStack(spacing: 0) {
             Button {
                 selectedSection = .favoritePlaces
@@ -61,5 +70,6 @@ private extension UserFavoritesAndReviewsView {
             }
         }
         .frame(height: 50)
+        #endif
     }
 }
