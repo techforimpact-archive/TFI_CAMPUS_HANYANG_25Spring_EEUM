@@ -110,6 +110,10 @@ struct ReviewListCell: View {
                 Text("확인")
             }
         }
+        #if os(iOS)
+        .sensoryFeedback(.selection, trigger: showReviewActionSheet)
+        .sensoryFeedback(.success, trigger: showReportAlert)
+        #endif
     }
 }
 
