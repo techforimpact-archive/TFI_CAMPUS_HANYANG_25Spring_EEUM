@@ -40,6 +40,7 @@ struct ReviewListCell: View {
                 }
                 
                 HStack(alignment: .top, spacing: 8) {
+                    #if !SKIP
                     if let content = review.content {
                         Text(content)
                             .multilineTextAlignment(.leading)
@@ -47,6 +48,7 @@ struct ReviewListCell: View {
                     }
                     
                     Spacer()
+                    #endif
                     
                     if let imageUrl = review.imageUrls.first {
                         AsyncImage(url: URL(string: imageUrl)!) { image in
@@ -61,6 +63,14 @@ struct ReviewListCell: View {
                                 .foregroundStyle(Color.pink)
                         }
                     }
+                    
+                    #if SKIP
+                    if let content = review.content {
+                        Text(content)
+                            .multilineTextAlignment(.leading)
+                            .foregroundStyle(Color.black)
+                    }
+                    #endif
                 }
             }
             .padding()
