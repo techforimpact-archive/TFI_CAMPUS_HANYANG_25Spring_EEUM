@@ -2,7 +2,7 @@ import SwiftUI
 
 enum WebpageLink: String {
     case ddingdongInfo = "https://ddingdong.kr/intro"
-    case withDDingdong = "https://ddingdong.kr/give"
+    case withDDingdong = "https://pf.kakao.com/_AHndV"
     case placeRecommendation = "https://forms.gle/u3NQ3oQ5sEP2NZw17"
 }
 
