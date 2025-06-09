@@ -12,9 +12,9 @@ struct PlaceDetailDTO: Decodable {
     let categories: [String]
     let imageUrls: [String]
     let description: String
-    let phone: String
-    let email: String
-    let website: String
+    let phone: String?
+    let email: String?
+    let website: String?
     let temperature: Double
     let reviewCount: Int
     let status: String

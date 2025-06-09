@@ -12,30 +12,36 @@ struct PlaceDetailInfoCell: View {
                 Text(place.fullAddress)
             }
             
-            HStack(spacing: 8) {
-                Image(systemName: "phone.fill")
-                    .foregroundStyle(Color.pink)
-                
-                Text(place.phone)
-            }
-            
-            HStack(spacing: 8) {
-                Image(systemName: "envelope.fill")
-                    .foregroundStyle(Color.pink)
-                
-                Text(place.email)
-            }
-            
-            if let url = URL(string: place.website) {
+            if let phone = place.phone {
                 HStack(spacing: 8) {
-                    Image(systemName: "house.fill")
+                    Image(systemName: "phone.fill")
                         .foregroundStyle(Color.pink)
                     
-                    NavigationLink {
-                        WebpageView(url: url)
-                    } label: {
-                        Text(place.website)
-                            .foregroundStyle(Color.black)
+                    Text(phone)
+                }
+            }
+            
+            if let email = place.email {
+                HStack(spacing: 8) {
+                    Image(systemName: "envelope.fill")
+                        .foregroundStyle(Color.pink)
+                    
+                    Text(email)
+                }
+            }
+            
+            if let website = place.website {
+                if let url = URL(string: website) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "house.fill")
+                            .foregroundStyle(Color.pink)
+                        
+                        NavigationLink {
+                            WebpageView(url: url)
+                        } label: {
+                            Text(website)
+                                .foregroundStyle(Color.black)
+                        }
                     }
                 }
             }

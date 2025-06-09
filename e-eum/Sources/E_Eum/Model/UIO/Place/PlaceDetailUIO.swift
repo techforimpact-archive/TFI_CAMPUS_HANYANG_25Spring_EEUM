@@ -12,9 +12,9 @@ struct PlaceDetailUIO: Identifiable {
     let categories: [String]
     let imageUrls: [String]
     let description: String
-    let phone: String
-    let email: String
-    let website: String
+    let phone: String?
+    let email: String?
+    let website: String?
     let temperature: Double
     let reviewCount: Int
     let status: String
@@ -55,9 +55,9 @@ struct PlaceDetailUIO: Identifiable {
         self.categories = placeDetailDTO.categories
         self.imageUrls = placeDetailDTO.imageUrls
         self.description = placeDetailDTO.description
-        self.phone = placeDetailDTO.phone
-        self.email = placeDetailDTO.email
-        self.website = placeDetailDTO.website
+        self.phone = placeDetailDTO.phone ?? nil
+        self.email = placeDetailDTO.email ?? nil
+        self.website = placeDetailDTO.website ?? nil
         self.temperature = placeDetailDTO.temperature
         self.reviewCount = placeDetailDTO.reviewCount
         self.status = placeDetailDTO.status
