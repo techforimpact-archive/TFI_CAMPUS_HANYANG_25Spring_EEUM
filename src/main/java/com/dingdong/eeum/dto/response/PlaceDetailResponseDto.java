@@ -6,6 +6,7 @@ import com.dingdong.eeum.constant.PlaceStatus;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.List;
 
 @Builder
@@ -35,20 +36,20 @@ public class PlaceDetailResponseDto {
         return PlaceDetailResponseDto.builder()
                 .id(place.getId())
                 .name(place.getName())
-                .longitude(place.getLocation().getX())
-                .latitude(place.getLocation().getY())
-                .province(place.getAddress().getProvince())
-                .city(place.getAddress().getCity())
-                .district(place.getAddress().getDistrict())
-                .fullAddress(place.getAddress().getFullAddress())
+                .longitude(place.getLocation() != null ? place.getLocation().getX() : null)
+                .latitude(place.getLocation() != null ? place.getLocation().getY() : null)
+                .province(place.getAddress() != null ? place.getAddress().getProvince() : null)
+                .city(place.getAddress() != null ? place.getAddress().getCity() : null)
+                .district(place.getAddress() != null ? place.getAddress().getDistrict() : null)
+                .fullAddress(place.getAddress() != null ? place.getAddress().getFullAddress() : null)
                 .categories(place.getCategories())
                 .description(place.getDescription())
-                .phone(place.getContact().getPhone())
-                .email(place.getContact().getEmail())
+                .phone(place.getContact() != null ? place.getContact().getPhone() : null)
+                .email(place.getContact() != null ? place.getContact().getEmail() : null)
+                .website(place.getContact() != null ? place.getContact().getWebsite() : null)
                 .imageUrls(imageUrls)
-                .website(place.getContact().getWebsite())
-                .temperature(place.getReviewStats().getTemperature())
-                .reviewCount(place.getReviewStats().getCount())
+                .temperature(place.getReviewStats() != null ? place.getReviewStats().getTemperature() : null)
+                .reviewCount(place.getReviewStats() != null ? place.getReviewStats().getCount() : 0)
                 .status(place.getStatus())
                 .isVerified(place.isVerified())
                 .isFavorite(isFavorite)
