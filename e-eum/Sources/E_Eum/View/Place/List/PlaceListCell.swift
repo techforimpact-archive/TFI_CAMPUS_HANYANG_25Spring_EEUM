@@ -13,6 +13,7 @@ struct PlaceListCell: View {
                             .fontDesign(.rounded)
                             .bold()
                             .foregroundStyle(Color.pink)
+                            .lineLimit(1)
                         
                         ForEach(place.categories, id: \.self) { category in
                             PlaceCategoryTag(category: category)
@@ -25,6 +26,7 @@ struct PlaceListCell: View {
                         
                         Text(place.fullAddress)
                             .foregroundStyle(Color.black)
+                            .lineLimit(1)
                     }
                 }
                 
