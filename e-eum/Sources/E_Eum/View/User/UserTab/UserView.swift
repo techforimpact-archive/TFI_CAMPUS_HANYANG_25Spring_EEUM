@@ -95,6 +95,7 @@ struct UserView: View {
                 
                 Spacer()
                 
+                #if !SKIP
                 HStack {
                     Spacer()
                     
@@ -104,6 +105,7 @@ struct UserView: View {
                     
                     Spacer()
                 }
+                #endif
             }
             .padding(16)
             .alert("로그아웃", isPresented: $showSignOutAlert, actions: {

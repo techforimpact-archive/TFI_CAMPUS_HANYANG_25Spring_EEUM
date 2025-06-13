@@ -3,6 +3,7 @@ import SwiftUI
 enum WebpageLink: String {
     case withDDingdong = "https://pf.kakao.com/_AHndV"
     case placeRecommendation = "https://forms.gle/u3NQ3oQ5sEP2NZw17"
+    case techForImpact = "https://techforimpact.io/campus/info"
 }
 
 struct InfoView: View {
@@ -107,22 +108,26 @@ struct InfoView: View {
                             }
                         }
                         
-                        cardButton {
-                            VStack(alignment: .center, spacing: 24) {
-                                Image("ddingdong_icon_2", bundle: .module)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 110)
-                                
-                                Image("hyu_icon", bundle: .module)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 110)
-                                
-                                Image("kakaoimpact_icon", bundle: .module)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 110)
+                        NavigationLink {
+                            WebpageView(url: URL(string: WebpageLink.techForImpact.rawValue)!)
+                        } label: {
+                            cardButton {
+                                VStack(alignment: .center, spacing: 24) {
+                                    Image("ddingdong_icon_2", bundle: .module)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 110)
+                                    
+                                    Image("hyu_icon", bundle: .module)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 110)
+                                    
+                                    Image("kakaoimpact_icon", bundle: .module)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 110)
+                                }
                             }
                         }
                     }

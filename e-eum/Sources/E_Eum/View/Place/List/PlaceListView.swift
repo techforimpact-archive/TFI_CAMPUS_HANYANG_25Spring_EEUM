@@ -114,7 +114,7 @@ private extension PlaceListView {
                         selectedAll = true
                     } label: {
                         PlaceCategoryAllTag()
-                            .opacity(selectedAll ? 1.0 : 0.6)
+                            .opacity(selectedAll ? 1.0 : 0.5)
                     }
                     
                     ForEach(PlaceCategory.allCases, id: \.self) { category in
@@ -130,7 +130,7 @@ private extension PlaceListView {
                             }
                         } label: {
                             PlaceCategoryTag(category: category.rawValue)
-                                .opacity(selectedCategories.contains(category.rawValue) ? 1.0 : 0.6)
+                                .opacity(selectedCategories.contains(category.rawValue) ? 1.0 : 0.5)
                         }
                     }
                 }
