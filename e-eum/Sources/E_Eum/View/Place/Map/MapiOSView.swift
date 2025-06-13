@@ -4,6 +4,7 @@ import MapKit
 
 struct MapiOSView: View {
     @State private var placeService = PlaceService()
+    @State private var cameraPosition: MapCameraPosition
     
     let latitude: Double
     let longitude: Double
@@ -13,10 +14,23 @@ struct MapiOSView: View {
     
     @Namespace var mapScope
     
+    init(latitude: Double, longitude: Double, places: Binding<[PlaceUIO]>, showPreview: Binding<Bool>, selectedPlaceID: Binding<String>) {
+        self.latitude = latitude
+        self.longitude = longitude
+        self._places = places
+        self._showPreview = showPreview
+        self._selectedPlaceID = selectedPlaceID
+        
+        self._cameraPosition = State(initialValue: .region(MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
+            span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+        )))
+    }
+    
     var body: some View {
         if #available(iOS 17.0, macOS 14.0, *) {
             ZStack(alignment: .bottomTrailing) {
-                Map(initialPosition: .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))), scope: mapScope) {
+                Map(position: $cameraPosition, scope: mapScope) {
                     UserAnnotation()
                     
                     ForEach(places) { place in
@@ -30,6 +44,15 @@ struct MapiOSView: View {
                                 .onTapGesture {
                                     selectedPlaceID = place.id
                                     showPreview = true
+                                    withAnimation(.easeInOut(duration: 0.8)) {
+                                        cameraPosition = .region(MKCoordinateRegion(
+                                            center: CLLocationCoordinate2D(
+                                                latitude: place.latitude,
+                                                longitude: place.longitude
+                                            ),
+                                            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+                                        ))
+                                    }
                                 }
                         }
                     }
