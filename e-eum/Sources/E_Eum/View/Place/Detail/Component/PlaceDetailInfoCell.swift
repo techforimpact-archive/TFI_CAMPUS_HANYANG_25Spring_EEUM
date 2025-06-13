@@ -18,6 +18,11 @@ struct PlaceDetailInfoCell: View {
                         .foregroundStyle(Color.pink)
                     
                     Text(phone)
+                        #if !SKIP
+                        .onTapGesture {
+                            makePhoneCall(phoneNumber: phone)
+                        }
+                        #endif
                 }
             }
             
@@ -48,3 +53,18 @@ struct PlaceDetailInfoCell: View {
         }
     }
 }
+
+#if !SKIP
+private extension PlaceDetailInfoCell {
+    func makePhoneCall(phoneNumber: String) {
+        let cleanNumber = phoneNumber.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+        if let url = URL(string: "tel://\(cleanNumber)") {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            } else {
+                print("이 기기에서는 전화를 걸 수 없습니다")
+            }
+        }
+    }
+}
+#endif
