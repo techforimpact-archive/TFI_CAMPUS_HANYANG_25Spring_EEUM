@@ -143,4 +143,5 @@ xcuserdata
 secrets.properties
 ServerConfig.kt
 google-services.json
-
+keystore.properties
+keystore.jks
