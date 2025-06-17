@@ -4,7 +4,7 @@
 
 <img src="./images/LOGO.png" alt="Project Logo" width="150">
 
-**성소수자 청소년을 위한 안전하고 연결된 일상 지도**
+**성소수자 청소년을 위한 안전한 일상 지도**
 
 [![iOS App Store](https://img.shields.io/badge/iOS-App%20Store-blue?logo=apple&logoColor=white)](https://apps.apple.com/kr/app/%EC%9D%B4%EC%9D%8C-%EB%82%98%EC%97%90%EA%B2%8C-%EC%95%88%EC%A0%84%ED%95%9C-%EA%B3%B3-%EC%B0%BE%EA%B8%B0/id6744875640?l=en-GB)
 
