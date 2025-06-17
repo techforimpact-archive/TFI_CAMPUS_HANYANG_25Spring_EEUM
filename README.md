@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Project Logo](https://via.placeholder.com/150x150/6366f1/ffffff?text=IEUM)
+<img src="./images/LOGO.png" alt="Project Logo" width="150">
 
 **성소수자 청소년을 위한 안전하고 연결된 일상 지도**
 
@@ -95,7 +95,7 @@
 
 |             iOS             |               Android               |
 |:---------------------------:|:-----------------------------------:|
-| ![iOS QR](./images/IOS.png) | ![Android QR](./images/ANDROID.png) |
+| <img src="./images/IOS.png" alt="iOS QR" width="150"> | <img src="./images/ANDROID.png" alt="Android QR" width="150"> |
 
 </div>
 
