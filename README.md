@@ -54,7 +54,7 @@
 
 <table>
 <tr>
-<td width="33%" align="center">
+<td width="50%" align="center">
 
 ### **지도 서비스**
 - 실시간 장소 표시
@@ -84,6 +84,16 @@
 ### 화면 구성
 
 ![VIEWS](./images/VIEWS.png)
+
+---
+
+## 개발 환경
+
+| **Category** | **Stack / Tool**  |
+|:---:|:------------------|
+| **Frontend** | Swift, Skip       |
+| **Backend** | Java, Spring Boot |
+| **Deployment** | AWS               |
 
 ---
 
